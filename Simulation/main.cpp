@@ -15,13 +15,12 @@ const unsigned int SCR_HEIGHT = 600;
 const char *vertexShaderSource = 
 "#version 330 core\n"
 
-"in vec2 position;\n"
-"in vec3 color;\n"
+"layout (location = 0) in vec2 position;\n"
+"layout (location = 1) in vec3 color;\n"
 "out vec3 interpColor;\n"
 
 "void main() {\n"
 "   gl_Position = vec4(position, 0.0, 1.0);\n"
-"   gl_PointSize = 5;\n"
 "   interpColor = color;\n"
 "}\0";
 
@@ -29,11 +28,24 @@ const char *fragmentShaderSource =
 "#version 330 core\n"
 
 "in vec3 interpColor;\n"
-"out vec4 outColor;\n"
 
 "void main() {\n"
-"   outColor = vec4(interpColor, 1.0f);\n"
+"   vec2 pos = gl_PointCoord - vec2(0.5);"
+"   float dist_squared = dot(pos, pos);"
+"   gl_FragColor = mix(vec4(interpColor, 1.0), vec4(0.1, 0.1, 0.1, 0.0), smoothstep(0.2, 0.3, dist_squared));"
 "}\0";
+
+GLFWwindow* window;
+
+//     x,    y,   r,   g,   b
+float vertices[] = {
+    -0.5, -0.5, 1.0, 0.0, 0.0,
+     0.5, -0.5, 0.0, 1.0, 0.0,
+     0.0,  0.5, 0.0, 0.0, 1.0,
+    -0.4, -0.4, 1.0, 0.0, 0.0,
+     0.4, -0.4, 0.0, 1.0, 0.0,
+     0.0,  0.4, 0.0, 0.0, 1.0
+};
 
 int main() {
     // glfw: initialize and configure
@@ -42,6 +54,7 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
@@ -49,7 +62,8 @@ int main() {
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Bike Wheel Simulation", NULL, NULL);
+    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Bike Wheel Simulation", NULL, NULL);
+
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -68,99 +82,81 @@ int main() {
 
     // build and compile our shader program
     // ------------------------------------
-    glEnable(GL_PROGRAM_POINT_SIZE);
+    glPointSize(10.0);
 
     int vertexShader = getShader(&vertexShaderSource, GL_VERTEX_SHADER);
     int fragmentShader = getShader(&fragmentShaderSource, GL_FRAGMENT_SHADER);
+
     int shaderProgram = linkShaders(vertexShader, fragmentShader);
+
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-
-    // set up color data (and buffer(s))
-    // ---------------------------------
-
-    //    R,   G,   B
-    float colors[] = {
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f
-    };
-
-    // Vertex Buffer Object
-    unsigned int colorsVBO;
-    glGenBuffers(1, &colorsVBO);
-
-    // Upload data to GPU
-    glBindBuffer(GL_ARRAY_BUFFER, colorsVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-
-    // Setting the vertex attribute pointers
-    int colorAttrib = glGetAttribLocation(shaderProgram, "color");
-    glEnableVertexAttribArray(colorAttrib);
-    glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+    glUseProgram(shaderProgram);
 
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    float vertices[] = {
-        //  x,     y,
-        -1.0f, -0.5f,
-         0.5f, -0.5f,
-         0.0f,  0.5f,
-    };
+    GLuint VAO, VBO;
 
-    unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    glBindVertexArray(VAO);
 
+    glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    // Positions
+    GLint positionAttrib = glGetAttribLocation(shaderProgram, "position");
+    GLint colorAttrib = glGetAttribLocation(shaderProgram, "color");
 
-    int positionAttrib = glGetAttribLocation(shaderProgram, "position");
+    glVertexAttribPointer(positionAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(colorAttrib,    3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+
     glEnableVertexAttribArray(positionAttrib);
-    glVertexAttribPointer(positionAttrib, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+    glEnableVertexAttribArray(colorAttrib);
 
-    // note that this is allowed
-    // the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    glBindVertexArray(0);
-
-
-    // uncomment this call to draw in wireframe polygons.
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    int i = 0;
+    double lastTime = glfwGetTime();
+    int nbFrames = 0;
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
+        if (vertices[i] < 1) {
+            vertices[i] = vertices[i] += 0.01f;
+        }
+        if (++i >= sizeof(vertices)) {
+            i = 0;
+        }
+
+        double currentTime = glfwGetTime();
+        
+        nbFrames++;
+
+        if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
+            // printf and reset timer
+            printf("%f ms/frame\n", 1000.0 / double(nbFrames));
+            nbFrames = 0;
+            lastTime += 1.0;
+        }
+
         // input
         // -----
         processInput(window);
 
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.1, 0.1, 0.1, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // draw our first triangle
-        glUseProgram(shaderProgram);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        glDrawArrays(GL_POINTS, 0, sizeof(vertices) / (sizeof(float) * 5));
 
-        glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        //glDrawArrays(GL_TRIANGLES, 0, 3);
-        
-        glDrawArrays(GL_POINTS, 0, 3);
-
-        // glBindVertexArray(0); // no need to unbind it every time 
-
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
+        // Swap front and back buffers
         glfwSwapBuffers(window);
+        
+        // poll IO events (keys pressed/released, mouse moved etc.)
         glfwPollEvents();
     }
 
@@ -168,7 +164,6 @@ int main() {
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &colorsVBO);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
