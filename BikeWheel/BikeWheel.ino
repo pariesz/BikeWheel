@@ -16,7 +16,7 @@ void setup(void) {
     Serial.println(F("Connected"));
 #endif
 
-    static Pixels::Strip strips[] = {
+    Pixels::Strip strips[] = {
         Pixels::Strip(
             -32, 48,
             -51, 282
@@ -51,7 +51,7 @@ void loop(void) {
     HallSensor::update();
     
     if (HallSensor::interval_micros > 1000000L || HallSensor::interval_micros == 0) {
-        // No sensor information yet, or the wheel is moving to slow (less than 1rps)
+        // No sensor information yet, or the wheel is moving too slow (less than 1rps)
         Programs::set_color(0x000000);
     } else {
         Programs::set_half_color(0x001100, HallSensor::angle);

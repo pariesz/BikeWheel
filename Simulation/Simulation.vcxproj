@@ -121,8 +121,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Adafruit_DotStar.cpp" />
+    <ClCompile Include="SensorData.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mpu.cpp" />
+    <ClCompile Include="MPU6050.cpp" />
+    <ClCompile Include="Pixels.cpp" />
+    <ClCompile Include="Programs.cpp" />
+    <ClCompile Include="Shaders.cpp" />
+    <ClCompile Include="Graphics.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Adafruit_DotStar.h" />
+    <ClInclude Include="Arduino.h" />
+    <ClInclude Include="SensorData.h" />
+    <ClInclude Include="Mpu.h" />
+    <ClInclude Include="MPU6050.h" />
+    <ClInclude Include="Pixels.h" />
+    <ClInclude Include="Programs.h" />
+    <ClInclude Include="Shaders.h" />
+    <ClInclude Include="Vector.h" />
+    <ClInclude Include="Graphics.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

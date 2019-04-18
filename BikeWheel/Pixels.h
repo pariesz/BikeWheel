@@ -46,7 +46,9 @@ namespace Pixels {
     };
 
     extern int min_dist;
+    
     extern Pixel_Position positions[NUM_PIXELS];
+
     extern Adafruit_DotStar leds;
 
     void init(Strip* strips);

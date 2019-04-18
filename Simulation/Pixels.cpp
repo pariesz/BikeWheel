@@ -1,19 +1,18 @@
 #include <math.h>
-#include <SPI.h>
-#include <Adafruit_DotStar.h>
-#include <avr/power.h>
-#include "./Pixels.h"
+#include "Adafruit_DotStar.h"
+#include "Pixels.h"
+#include "arduino.h"
 
 namespace Pixels {
     int min_dist = 0;
-    
+
     Pixel_Position positions[NUM_PIXELS];
 
     Adafruit_DotStar leds = Adafruit_DotStar(NUM_PIXELS, DOTSTAR_BGR);
 
     /* LED count and placement data */
     void init(Strip* strips) {
-        float distMax;
+        float distMax = 0;
 
         /* Precalculate angles, Initilise strip */
         for (int si = 0; si < NUM_PIXEL_STRIPS; si++) {
@@ -23,7 +22,7 @@ namespace Pixels {
         }
 
         int led_count = 0;
-        
+
         for (int si = 0; si < NUM_PIXEL_STRIPS; si++) {
             auto s = strips[si];
             auto i = 0;
@@ -57,7 +56,7 @@ namespace Pixels {
         : first(x0, y0), last(x1, y1) {
     }
 
-    Pixel_Position::Pixel_Position() 
+    Pixel_Position::Pixel_Position()
         : dist(0), angle(0) {
     }
 }

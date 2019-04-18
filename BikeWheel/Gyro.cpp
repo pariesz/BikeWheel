@@ -138,8 +138,7 @@ namespace Gyro {
 
         uint32_t len = sq(acc.x) + sq(acc.y);
 
-        uint8_t correct = len > 0x1000000 / 2
-                    && len < 0x1000000 * 2;
+        uint8_t correct = len > 0x1000000 / 2 && len < 0x1000000 * 2;
 
         uint16_t acc_angle = atan2(acc.x, acc.y) * (-32768.0f / M_PI);
 

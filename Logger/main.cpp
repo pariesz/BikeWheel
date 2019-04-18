@@ -18,11 +18,11 @@ int main() {
     fout.open("output.csv");
 
     // csv header
-    fout << "ms,hall,acc_x,acc_y,acc_y,gyro_x,gyro_y,gyro_z";
+    fout << "ms,hall,acc_x,acc_y,acc_z,gyro_x,gyro_y,gyro_z";
 
     while(true) {
         // connect / reconnect
-        arduino = new SerialPort("\\\\.\\COM6", CBR_57600);
+        arduino = new SerialPort("\\\\.\\COM8", CBR_57600);
 
         if (arduino->isConnected()) {
             while (arduino->readSerialPort(buffer, sizeof(buffer))) {
@@ -41,6 +41,7 @@ int main() {
                     else if (*p == '\n') {
                         // start no first new line
                         if (!start) start = &high_resolution_clock::now();
+                        fout << *p;
 
                         // track time when newlines are read
                         //auto elapsed = high_resolution_clock::now() - *start;
