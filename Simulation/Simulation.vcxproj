@@ -129,7 +129,6 @@
     <ClCompile Include="MPU6050.cpp" />
     <ClCompile Include="Pixels.cpp" />
     <ClCompile Include="Programs.cpp" />
-    <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Graphics.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -140,9 +139,16 @@
     <ClInclude Include="MPU6050.h" />
     <ClInclude Include="Pixels.h" />
     <ClInclude Include="Programs.h" />
-    <ClInclude Include="Shaders.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="Graphics.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="5.1.framebuffers_screen.fs" />
+    <None Include="5.1.framebuffers_screen.vs" />
+    <None Include="leds.fs" />
+    <None Include="leds.vs" />
+    <None Include="output.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

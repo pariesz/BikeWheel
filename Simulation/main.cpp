@@ -3,7 +3,6 @@
 #include <iostream>
 #include <math.h>
 #include "Pixels.h"
-#include "Shaders.h"
 #include "Graphics.h"
 #include "Programs.h"
 #include "Mpu.h"
