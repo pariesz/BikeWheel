@@ -50,7 +50,7 @@ namespace SensorData {
 
             auto dl = new DataLine;
             
-            dl->ms     = stoi(cols.front());  cols.pop_front();
+            dl->us     = stoi(cols.front());  cols.pop_front();
             dl->hall   = cols.front() != "0"; cols.pop_front();
             dl->acc_x  = stoi(cols.front());  cols.pop_front();
             dl->acc_y  = stoi(cols.front());  cols.pop_front();
@@ -62,29 +62,40 @@ namespace SensorData {
             lines.push_back(*dl);
         }
 
-        iter = lines.begin();
-
-        start = high_resolution_clock::now();
+        reset();
+        update();
     }
 
     void update() {
+        // .end() points one past the end of the sequence
+        if (iter == lines.end()) {
+            return;
+        }
+
         auto elapsed = high_resolution_clock::now() - start;
 
         auto ms = duration_cast<microseconds>(elapsed).count();
 
-        if (ms > iter->ms) {
+        if (ms > iter->us) {
             start = high_resolution_clock::now();
-            
             iter = next(iter);
-            
-            // .end() points one past the end of the sequence
-            if (iter == lines.end()) {
-                iter = lines.begin();
-            }
         }
     }
 
+    bool get_ended() {
+        return iter == lines.end();
+    }
+
+    void reset() {
+        cout << "RESET" << endl;
+        iter = lines.begin();
+        start = high_resolution_clock::now();
+    }
+
     DataLine get() {
+        if (iter == lines.end()) {
+            return DataLine();
+        }
         return *iter;
     }
 }

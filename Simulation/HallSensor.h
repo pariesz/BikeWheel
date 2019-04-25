@@ -1,45 +1,50 @@
+#pragma once
+#include <chrono>
+#include <iostream>
 #include "arduino.h"
-#include "HallSensor.h"
-#include "./Debug.h"
-#define HALL_PIN 3
-#define LED_PIN 13 
+#include "SensorData.h"
 
 namespace HallSensor {
     uint16_t angle = 0;
-    long interval_micros = 0;
+
+    long long interval_micros = 0;
 
     static uint16_t angle_offset = 0;
-    int hallVal = HIGH; // This is where we record the OH137 Input
     
-    static unsigned long time_micros = 0;
+    int hallVal = HIGH; // This is where we record the OH137 Input
+
+    static unsigned long long time_micros = 0;
+
+    using namespace std::chrono;
+    static time_point<steady_clock> start;
+    long long micros() {
+        auto elapsed = high_resolution_clock::now() - start;
+        auto ms = duration_cast<microseconds>(elapsed);
+        return ms.count();
+    }
 
     void init(uint16_t offet) {
-        pinMode(HALL_PIN, INPUT); // input from the OH137
+        start = high_resolution_clock::now();
         angle_offset = offet;
         time_micros = micros();
     }
 
     void update(void) {
-        int val = digitalRead(HALL_PIN); // read OH137 Value
+        int val = SensorData::get().hall; // read OH137 Value
 
         if (hallVal == LOW && val == HIGH) {  // means magnetic field detected
             interval_micros = micros() - time_micros;
             time_micros = micros();
             angle = 0;
 
-#ifdef DEBUG
-            Serial.print(F("interval: "));
-            Serial.println(interval_micros);
-#endif
+            //std::cout << "interval: " << interval_micros << std::endl;
 
             hallVal = HIGH;
-            digitalWrite(LED_PIN, HIGH);
             return;
         }
 
         if (hallVal == HIGH && val == LOW) {
             hallVal = val;
-            digitalWrite(LED_PIN, LOW);
         }
 
         auto time_diff = micros() - time_micros;

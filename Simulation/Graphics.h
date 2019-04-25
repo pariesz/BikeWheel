@@ -3,6 +3,7 @@
 
 namespace Graphics {
     bool init();
+    void clear();
     bool render(GLsizeiptr size, const void *data);
     void terminate();
 };

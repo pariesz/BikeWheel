@@ -16,19 +16,21 @@ namespace Pixels {
 
         /* Precalculate angles, Initilise strip */
         for (int si = 0; si < NUM_PIXEL_STRIPS; si++) {
-            auto s = strips[si];
-            auto dist = sqrtf(sq(s.last.x) + sq(s.last.y));
+            Pixels::Strip s = strips[si];
+            uint16_t dist = sqrtf(sq(s.last.x) + sq(s.last.y));
             distMax = max(distMax, dist);
         }
+
+        //std::cout << "distmax: " << distMax << std::endl;
 
         int led_count = 0;
 
         for (int si = 0; si < NUM_PIXEL_STRIPS; si++) {
-            auto s = strips[si];
-            auto i = 0;
-            auto xLength = s.last.x - s.first.x;
-            auto yLength = s.last.y - s.first.y;
-            auto x = 0.0f, y = 0.0f;
+            Pixels::Strip s = strips[si];
+            uint8_t i = 0;
+            int16_t xLength = s.last.x - s.first.x;
+            int16_t yLength = s.last.y - s.first.y;
+            double x = 0.0f, y = 0.0f;
 
             for (i = 0; i < PIXELS_PER_STRIP; i++) {
                 // calculate the x/y for the pixel
@@ -41,9 +43,13 @@ namespace Pixels {
                 positions[led_count].dist = (sqrtf(sq(x) + sq(y)) / distMax) * 255;
 
                 // use trig tan to calculate the angle and scale to uint16
-                positions[led_count].angle = 32768L - (uint16_t)((atan2(x, y) * (32768.0 / M_PI)));
+                // angle is from the y-axis (0) clockwise away from bike to max uint16
+                positions[led_count].angle = (uint16_t)(atan2(x, y) * (32768.0f / M_PI));
 
                 min_dist = min(min_dist, positions[led_count].dist);
+
+                //std::cout << (int)i << ": " << positions[led_count].angle << ", " << (int)positions[led_count].dist << std::endl;
+
                 led_count++;
             }
         }

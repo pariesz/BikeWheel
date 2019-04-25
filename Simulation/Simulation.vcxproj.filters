@@ -36,9 +36,6 @@
     <ClCompile Include="MPU6050.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Programs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Mpu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -77,19 +74,31 @@
     <ClInclude Include="Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HallSensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Timers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="output.csv" />
     <None Include="leds.vs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="5.1.framebuffers_screen.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="5.1.framebuffers_screen.vs">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="leds.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="screen.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="screen.vs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

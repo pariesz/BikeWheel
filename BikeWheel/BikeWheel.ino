@@ -1,11 +1,13 @@
 #include "./Programs.h"
-//#include "./Gyro.h"
-//#include "./Mpu2.h"
-#include "./HallSensor.h"
+#include "./Mpu.h"
 #include "./Pixels.h"
 #include "./Timers.h"
-#include "./Vector.h"
 #include "./Debug.h"
+
+//#define HALL
+#ifdef HALL
+#include "./HallSensor.h"
+#endif
 
 void setup(void) {
 
@@ -18,50 +20,99 @@ void setup(void) {
 
     Pixels::Strip strips[] = {
         Pixels::Strip(
-            -32, 48,
-            -51, 282
+           59,   9,
+          262, 140
         ),
         Pixels::Strip(
-            32, 48,
-            51, 282
+            9,  -59,
+          140, -262
         ),
         Pixels::Strip(
-            58, 4,
-            270, -97
+            -59,  -9,
+           -262,-140
         ),
         Pixels::Strip(
-            25, -52,
-            219, -185
+             -9,  59,
+           -140, 262
         )
     };
 
     Pixels::init(strips);
 
-    //Vector3<int16_t> gyro_offset = Vector3<int16_t>(-2426, 1993, 5225);
-    //Vector3<int16_t> acc_offset = Vector3<int16_t>(149, 60, 59);
-    //Gyro::init(gyro_offset, acc_offset);
-    //Mpu2::init(gyro_offset, acc_offset);
+    Mpu::init();
 
+#ifdef HALL
     HallSensor::init(0);
-	
-    Timers::begin();
+#endif
 }
 
+bool off = true; // clear all pixels
+
+int16_t velocity = 0; // angle / ms
+
 void loop(void) {
+#ifdef HALL
     HallSensor::update();
-    
-    if (HallSensor::interval_micros > 1000000L || HallSensor::interval_micros == 0) {
-        // No sensor information yet, or the wheel is moving too slow (less than 1rps)
-        Programs::set_color(0x000000);
-    } else {
-        Programs::set_half_color(0x001100, HallSensor::angle);
+#endif
+
+    Mpu::update();
+
+    update_velocity();
+
+    /*
+       Persistence of vision is a theory which attempts to explain 
+       how the human eye/brain can be "fooled" into seeing continuous 
+       motion when presented with a sequence of discrete still images 
+       (film or video frames) at a rate of 10 frames per second (fps) 
+       or greater.
+
+       We have 4 stips so the wheel must 2 10/4 = 2.5 times a second.
+       The is a rate of change og about 26 angle/ms.
+
+       To stop flicker at the threashold we add a buffer zone.
+       Turn on at 20 ang/ms and off at 30 ang/ms. 
+    */
+
+    uint16_t velocity_abs = abs(velocity);
+
+    if (velocity_abs < 5) {
+        off = true;
+    } else if (velocity_abs > 15) {
+        off = false;
     }
 
-    Pixels::leds.show();
+    if (off) {
+        Programs::set_color(0x000000);
+    } else {
+        Programs::text(Mpu::angle, 14, "MASSA CRITICA ");
+    }
 
-#ifdef DEBUG
-    fps_counter();
-#endif
+
+    Pixels::leds.show();
+}
+
+void update_velocity() {
+    static uint16_t prev_angle = Mpu::angle;
+    static uint32_t prev_time = micros();
+
+    uint32_t time = micros();
+    uint16_t time_diff = prev_time - time;
+    if (time_diff < (1 << 15)) {
+        return;
+    }
+
+    prev_time = time;
+
+    if (DIFF_ABS(prev_angle, Mpu::angle) > (1 << 15)) {
+        // overflow check
+        prev_angle = Mpu::angle;
+        return;
+    }
+
+    velocity = (((int32_t)Mpu::angle - prev_angle) << 10) / time_diff;
+    prev_angle = Mpu::angle;
+
+    Serial.println(velocity);
 }
 
 #ifdef DEBUG

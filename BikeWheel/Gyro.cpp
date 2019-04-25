@@ -186,7 +186,7 @@ namespace Gyro {
         gyro_reading = ROUDED_RIGHT_BITSHIFT(gyro_reading_mult, c_mult_bits);
 
         int angle_step = ((int32_t)gyro_reading_mult * (int16_t)time_diff)
-            // degs     lsb/deg   us/sec     lsb/360deg rounding
+            // degs     lsb/deg   us/sec        lsb / 360deg rounding
             / (int32_t)(360.0f * 16.4f * 1000000.0f / 65536.0f + 0.499f);
 
         // TODO: use optimised avr multiplier */

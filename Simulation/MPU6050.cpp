@@ -25,6 +25,14 @@ void MPU6050::getAcceleration(int16_t* x, int16_t* y, int16_t* z) {
     *z = line.acc_z;
 }
 
+void MPU6050::getRotation(int16_t* x, int16_t* y, int16_t* z) {
+    auto line = SensorData::get();
+
+    *x = line.gyro_x;
+    *y = line.gyro_y;
+    *z = line.gyro_z;
+}
+
 MPU6050::~MPU6050() {
 
 }

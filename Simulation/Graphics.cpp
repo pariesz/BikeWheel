@@ -3,18 +3,18 @@
 #include <iostream>
 #include "Graphics.h"
 #include "Shader.h"
+#include "FrameBuffer.h"
 
 using namespace std;
 
 namespace Graphics {
     // settings
-    const unsigned int SCR_WIDTH = 600;
-    const unsigned int SCR_HEIGHT = 600;
+    const unsigned int  SCR_WIDTH = 600, SCR_HEIGHT = 600;
 
-    GLFWwindow* window;
-    GLuint VAO, VBO;
-    GLuint quadVAO, quadVBO, framebuffer, textureColorbuffer;
-    Shader *ledsShader = nullptr, *screenShader = nullptr;
+    static GLFWwindow* window;
+    static GLuint ledsVAO, ledsVBO;
+    static Shader *ledsShader, *screen_shader;
+    static FrameBuffer *screen_frame, *accum_frame;
 
     // glfw: whenever the window size changed (by OS or user resize) this callback function executes
     // ---------------------------------------------------------------------------------------------
@@ -65,15 +65,20 @@ namespace Graphics {
             return false;
         }
 
+        // Global Settings
+        glPointSize(5.0);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
-        ledsShader = &Shader("leds.vs", "leds.fs");
+        ledsShader = new Shader("leds.vs", "leds.fs");
 
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
+        glGenVertexArrays(1, &ledsVAO);
+        glGenBuffers(1, &ledsVBO);
 
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBindVertexArray(ledsVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, ledsVBO);
         
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
@@ -84,59 +89,22 @@ namespace Graphics {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         // screen quad VAO
-        screenShader = &Shader("5.1.framebuffers_screen.vs", "5.1.framebuffers_screen.fs");
-
-        float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-            // positions   // texCoords
-            -1.0f,  1.0f,  0.0f, 1.0f,
-            -1.0f, -1.0f,  0.0f, 0.0f,
-             1.0f, -1.0f,  1.0f, 0.0f,
-
-            -1.0f,  1.0f,  0.0f, 1.0f,
-             1.0f, -1.0f,  1.0f, 0.0f,
-             1.0f,  1.0f,  1.0f, 1.0f
-        };
-
-        glGenVertexArrays(1, &quadVAO);
-        glGenBuffers(1, &quadVBO);
-        glBindVertexArray(quadVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-
-        // framebuffer configuration
-        // -------------------------
-        glGenFramebuffers(1, &framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        screen_shader = new Shader("screen.vs", "screen.fs");
+        screen_frame = new FrameBuffer(SCR_WIDTH, SCR_HEIGHT);
+        accum_frame = new FrameBuffer(SCR_WIDTH, SCR_HEIGHT);
         
-        // create a color attachment texture
-        glGenTextures(1, &textureColorbuffer);
-        glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
-        
-        // create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
-        unsigned int rbo;
-        glGenRenderbuffers(1, &rbo);
-        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT); // use a single renderbuffer object for both a depth AND stencil buffer.
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
-        // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
-        
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
         return true;
     }
 
-    int n = 2;
-    int i = 0;
+    void clear() {
+        delete screen_frame;
+        delete accum_frame;
+        screen_frame = new FrameBuffer(SCR_WIDTH, SCR_HEIGHT);
+        accum_frame = new FrameBuffer(SCR_WIDTH, SCR_HEIGHT);
+        glClearColor(0.0, 0.0, 0.0, 1);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glfwSwapBuffers(window);
+    }
 
     bool render(GLsizeiptr size, const void *data) {
         processInput();
@@ -145,32 +113,37 @@ namespace Graphics {
             return false;
         }
 
-
-        // render
-        // ------
-
         // bind to framebuffer and draw scene as we normally would to color texture 
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-        glClearColor(0.1, 0.1, 0.1, 0.2);
+        glBindFramebuffer(GL_FRAMEBUFFER, screen_frame->FBO);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // Render the accum blur behind the scene
+        screen_shader->use();
+        screen_shader->setFloat("Alpha", 0.99);
+        accum_frame->draw();
+
+        glBindVertexArray(ledsVAO);
+
         ledsShader->use();
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, ledsVBO);
         glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
         glDrawArrays(GL_POINTS, 0, size / (sizeof(float) * 5));
 
-        // now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
+        // copy the scene to the accum blur
+        glBindFramebuffer(GL_FRAMEBUFFER, accum_frame->FBO);
+        screen_shader->use();
+        screen_frame->draw();
+
+        // now bind back to default framebuffer and draw a quad plane 
+        // with the attached accum framebuffer color texture
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         
-        glClearColor(0.1, 0.1, 0.1, 0.2);
+        glClearColor(0.0, 0.0, 0.0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        screenShader->use();
-        glBindVertexArray(quadVAO);
-        glBindTexture(GL_TEXTURE_2D, textureColorbuffer);	// use the color attachment texture as the texture of the quad plane
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        
+        screen_shader->use();
+        screen_shader->setFloat("Alpha", 1.0);
+        accum_frame->draw();
 
         // Swap front and back buffers
         glfwSwapBuffers(window);
@@ -184,11 +157,9 @@ namespace Graphics {
     void terminate() {
         // optional: de-allocate all resources once they've outlived their purpose:
         // ------------------------------------------------------------------------
-        glDeleteVertexArrays(1, &VAO);
-        glDeleteVertexArrays(1, &quadVAO);
-        glDeleteBuffers(1, &VBO);
-        glDeleteBuffers(1, &quadVBO);
-        glDeleteFramebuffers(1, &framebuffer);
+        
+        glDeleteVertexArrays(1, &ledsVAO);
+        glDeleteBuffers(1, &ledsVBO);
         glfwTerminate();
     }
 }

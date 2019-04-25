@@ -2,7 +2,7 @@
 
 class DataLine {
 public:
-    unsigned short ms;
+    unsigned short us;
     bool hall;
     short acc_x;
     short acc_y;
@@ -15,6 +15,8 @@ public:
 namespace SensorData {
     void init();
     void update();
+    void reset();
+    bool get_ended();
     DataLine get();
 };
 
