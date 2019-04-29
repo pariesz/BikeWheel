@@ -132,12 +132,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Adafruit_DotStar.h" />
+    <ClInclude Include="Image_Grayscale.h" />
+    <ClInclude Include="Image_IndexedColor.h" />
+    <ClInclude Include="Image_Pixels.h" />
     <ClInclude Include="Arduino.h" />
+    <ClInclude Include="Bmp.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="HallSensor.h" />
-    <ClInclude Include="SensorData.h" />
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="Image_6BitColor.h" />
     <ClInclude Include="Mpu.h" />
+    <ClInclude Include="SensorData.h" />
     <ClInclude Include="MPU6050.h" />
     <ClInclude Include="Pixels.h" />
     <ClInclude Include="Programs.h" />

@@ -9,12 +9,12 @@
 #include "HallSensor.h"
 #include "SensorData.h"
 #include "Adafruit_DotStar.h"
-#include "Timers.h"
-
+#include "Bmp.h"
+#include "Image_6BitColor.h"
+#include "Image_IndexedColor.h"
+#include "Image_Grayscale.h"
 
 bool off = true; // clear all pixels
-
-int16_t velocity = 0; // angle / ms
 
 float vertices[NUM_PIXELS * 5];
 
@@ -39,32 +39,6 @@ void updateVertices(uint16_t angle) {
     }
 }
 
-void update_velocity() {
-    static uint16_t prev_angle = Mpu::angle;
-    static uint32_t prev_time = Timers::micros();
-
-    uint32_t time = Timers::micros();
-    uint16_t time_diff = prev_time - time;
-    if (time_diff < (1 << 15)) {
-        return;
-    }
-
-    prev_time = time;
-
-    if ((prev_angle < 10000 && Mpu::angle > 50000) || (prev_angle > 50000 && Mpu::angle < 10000)) {
-        // overflow check
-        prev_angle = Mpu::angle;
-        return;
-    }
-
-    velocity = ((int32_t)prev_angle - Mpu::angle) << 10 / time_diff;
-
-    //std::cout << time_diff << "\t" << prev_angle << "\t" << Mpu::angle << "\t" << velocity << std::endl;
-
-    prev_angle = Mpu::angle;
-}
-
-
 int main() {
     SensorData::init();
 
@@ -88,7 +62,26 @@ int main() {
     };
 
     Pixels::init(strips);
+
     Mpu::init();
+
+    std::string imageName("rocket");
+    Bmp bmp("Images/" + imageName + ".bmp");
+    Image_Pixels pixels(bmp, Pixels::min_dist);
+
+    uint32_t colors[] = { 
+          0x000000, 0xFF0000, 0xFFFFFF
+        , 0x333333, 0x666666, 0x999999, 0xCCCCCC
+        , 0x330000, 0x660000, 0x990000, 0xCC0000
+        , 0xFF3333, 0xFF6666, 0xFF9999, 0xFFCCCC
+    };
+
+    Image *image = new Image_IndexedColor(pixels, colors, 15);
+    
+    //Image *image = new Image_Grayscale(pixels);
+    
+    //image->export_code(std::string("../BikeWheel/").append(imageName).append(".h"), imageName);
+    //return 0;
 
     if (!Graphics::init()) {
         return -1;
@@ -105,18 +98,18 @@ int main() {
         
         Mpu::update();
 
-        update_velocity();
-
         HallSensor::update();
 
         //uint16_t angle = HallSensor::angle;
         uint16_t angle = Mpu::angle;
-        uint16_t velocity_abs = abs(velocity);
+        uint32_t rotation_rate_abs = abs(Mpu::rotation_rate);
 
-        if (velocity_abs < 5) {
+        //std::cout << Mpu::angle << std::endl;
+
+        if (rotation_rate_abs < 5000) {
             off = true;
         }
-        else if (velocity_abs > 15) {
+        else if (rotation_rate_abs > 15000) {
             off = false;
         }
 
@@ -124,10 +117,11 @@ int main() {
             Programs::set_color(0x000000);
         }
         else {
-            //Programs::set_half_color(0x00FF00, angle);
+            //Programs::color_segments(Mpu::angle);
             //Programs::spiral(angle);
-            Programs::rainbow(angle);
-            //Programs::text(Mpu::angle, 15, "MASSA CRITICA");
+            //Programs::rainbow(angle);
+            //Programs::text(Mpu::angle, 15, "MASA CRITICA ");
+            Programs::image(Mpu::angle, Mpu::rotation_rate, image);
         }
 
         updateVertices(angle);
@@ -137,5 +131,6 @@ int main() {
     } while (Graphics::render(sizeof(vertices), (void*)vertices));
 
     Graphics::terminate();
+
     return 0;
 }

@@ -28,12 +28,6 @@
     <ClInclude Include="Timers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Gyro.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GyroConfig.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Pixels.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -41,9 +35,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HallSensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mpu2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Debug.h">
@@ -55,6 +46,15 @@
     <ClInclude Include="Font.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="rocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="finger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Timers.cpp">
@@ -63,19 +63,10 @@
     <ClCompile Include="Earth\Earth.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Gyro.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GyroConfig.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Pixels.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HallSensor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mpu2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

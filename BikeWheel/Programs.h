@@ -19,10 +19,25 @@ namespace Programs {
         }
     }
 
-    void set_half_color(uint32_t color, uint16_t angle) {
+#ifdef DEBUG
+    void color_segments(uint16_t zero_angle) {
         for (uint8_t i = 0; i < NUM_PIXELS; i++) {
-            uint16_t pixel_angle = angle + positions[i].angle;
-            leds.setPixelColor(i, pixel_angle > 16384 && pixel_angle < 49152 ? color : 0);
+            uint16_t angle = zero_angle + positions[i].angle;
+
+            switch (angle >> 14) {
+                case 0:
+                    leds.setPixelColor(i, 0xFF0000);
+                    break;
+                case 1:
+                    leds.setPixelColor(i, 0x00FF00);
+                    break;
+                case 2:
+                    leds.setPixelColor(i, 0x0000FF);
+                    break;
+                default:
+                    leds.setPixelColor(i, 0x000000);
+                    break;
+            }
         }
     }
 
@@ -31,7 +46,7 @@ namespace Programs {
         uint16_t millis = Timers::millis();
 
         for (uint8_t i = 0; i < NUM_PIXELS; i++) {
-            uint16_t angle = zero_angle - positions[i].angle;
+            uint16_t angle = zero_angle + positions[i].angle;
 
 
             int pos = angle - millis + ((uint32_t)positions[i].dist << 17) / 255;
@@ -46,51 +61,7 @@ namespace Programs {
             leds.setPixelColor(i, 0, 0, brightness);
         }
     }
-
-    static void pacman(uint16_t zero_angle) {
-        uint16_t subsec = Timers::millis() >> 5;
-        uint8_t halfsec = subsec >> 4;
-        bool open = halfsec & 1;
-
-        if (open) {
-            /* Pacman mouth open */
-            for (uint8_t i = 0, x = 0; i < NUM_PIXELS; i++, x++) {
-                uint16_t angle = zero_angle + positions[i].angle;
-
-                if (x == 15)
-                    x = 0;
-
-                if (angle > DEGS_TO_ANGLE(330) || angle < DEGS_TO_ANGLE(40)) {
-                    uint8_t dist = x - (15 - ((subsec + 8) & 15));
-                    uint16_t adist = 32768 / ((positions[i].dist >> 3) + 1);
-                    uint16_t y = angle - (DEGS_TO_ANGLE(0) - adist);
-
-                    if (dist < 3 && y < adist) {
-                        leds.setPixelColor(i, 255, 255, 255);
-                    }
-                    else {
-                        leds.setPixelColor(i, 0, 0, 0);
-                    }
-                }
-                else {
-                    leds.setPixelColor(i, 255, 255, 0);
-                }
-            }
-        }
-        else {
-            /* Pacman mouth closed */
-            for (uint8_t i = 0; i < NUM_PIXELS; i++) {
-                uint16_t angle = zero_angle + positions[i].angle;
-
-                if (angle > DEGS_TO_ANGLE(352) || angle < DEGS_TO_ANGLE(8)) {
-                    leds.setPixelColor(i, 0, 0, 0);
-                }
-                else {
-                    leds.setPixelColor(i, 255, 255, 0);
-                }
-            }
-        }
-    }
+#endif
 
     static void rainbow_pixel(uint8_t i, uint16_t angle) {
         if (angle < 21845) {
@@ -111,7 +82,6 @@ namespace Programs {
 
     static void rainbow(uint16_t zero_angle) {
         //uint16_t offset = Timers::millis() << 4;
-
         for (uint8_t i = 0; i < NUM_PIXELS; i++) {
             uint16_t angle = zero_angle + positions[i].angle; // +offset;
             rainbow_pixel(i, angle);

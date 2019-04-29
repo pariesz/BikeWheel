@@ -1,9 +1,9 @@
 #pragma once
-#include "arduino.h"
+#include "Arduino.h"
 
 namespace Mpu {
     extern uint16_t angle;
-    void init();
+    extern int32_t rotation_rate;
     void update();
-};
-
+    void init();
+}

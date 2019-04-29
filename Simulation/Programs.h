@@ -2,6 +2,7 @@
 #include "Arduino.h"
 #include "Timers.h"
 #include "Font.h"
+#include "Image.h"
 
 #define DEGS_TO_ANGLE(x) (uint16_t)((x) / 360.0f * (1uL << 16))
 #define DEGS_PER_S_TO_RATE(x) (uint16_t)((x) * 16.4f)
@@ -17,10 +18,24 @@ namespace Programs {
         }
     }
 
-    void set_half_color(uint32_t color, uint16_t angle) {
+    void color_segments(uint16_t zero_angle) {
         for (uint8_t i = 0; i < NUM_PIXELS; i++) {
-            uint16_t pixel_angle = angle + positions[i].angle;
-            leds.setPixelColor(i, pixel_angle > 16384 && pixel_angle < 49152 ? color : 0);
+            uint16_t angle = zero_angle + positions[i].angle;
+
+            switch (angle >> 14) {
+            case 0:
+                leds.setPixelColor(i, 0xFF0000);
+                break;
+            case 1:
+                leds.setPixelColor(i, 0x00FF00);
+                break;
+            case 2:
+                leds.setPixelColor(i, 0x0000FF);
+                break;
+            default:
+                leds.setPixelColor(i, 0x000000);
+                break;
+            }
         }
     }
 
@@ -93,7 +108,7 @@ namespace Programs {
         //uint16_t offset = Timers::millis() << 4;
 
         for (uint8_t i = 0; i < NUM_PIXELS; i++) {
-            uint16_t angle = zero_angle + positions[i].angle; // +offset;
+            uint16_t angle = positions[i].angle + zero_angle; // +offset;
             rainbow_pixel(i, angle);
         }
     }
@@ -103,13 +118,11 @@ namespace Programs {
             uint16_t color = (((uint32_t)angle) << 8) / 21845;
             leds.setPixelColor(i, 255 - color, color, 0);
 
-        }
-        else if (angle < 43690) {
+        } else if (angle < 43690) {
             uint16_t color = (((uint32_t)angle - 21845) << 8) / 21845;
             leds.setPixelColor(i, 0, 255 - color, color);
 
-        }
-        else if (angle < 65535) {
+        } else {
             uint16_t color = (((uint32_t)angle - 43690) << 8) / 21845;
             leds.setPixelColor(i, color, 0, 255 - color);
         }
@@ -184,6 +197,13 @@ namespace Programs {
                 uint16_t color = (((uint32_t)angle - 43690) << 8) / 21845;
                 leds.setPixelColor(i, color, 0, 255 - color);
             }
+        }
+    }
+
+    static void image(uint16_t zero_angle, uint32_t rotation_rate, Image* image) {
+        for (uint8_t i = 0; i < NUM_PIXELS; i++) {
+            uint16_t angle = zero_angle + positions[i].angle;
+            leds.setPixelColor(i, image->get_color(i % PIXELS_PER_STRIP, angle, rotation_rate));
         }
     }
 }

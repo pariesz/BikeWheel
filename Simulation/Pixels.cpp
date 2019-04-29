@@ -1,10 +1,10 @@
 #include <math.h>
 #include "Adafruit_DotStar.h"
 #include "Pixels.h"
-#include "arduino.h"
+#include "Arduino.h"
 
 namespace Pixels {
-    int min_dist = 0;
+    int min_dist = (1 << 16);
 
     Pixel_Position positions[NUM_PIXELS];
 

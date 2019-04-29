@@ -1,6 +1,6 @@
 #pragma once
 #include "Adafruit_DotStar.h"
-#include "arduino.h"
+#include "Arduino.h"
 #include "Vector.h"
 
 #define PIXELS_PER_STRIP 36

@@ -16,6 +16,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{cfa0ecf6-ba6e-4e11-8ea1-7b5f3ffdbbf9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Images">
+      <UniqueIdentifier>{b3eb0081-1c80-4d64-ae77-b83e14c22a7d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -36,10 +39,10 @@
     <ClCompile Include="MPU6050.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mpu.cpp">
+    <ClCompile Include="SensorData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SensorData.cpp">
+    <ClCompile Include="Mpu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,9 +68,6 @@
     <ClInclude Include="Programs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mpu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SensorData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -85,6 +85,27 @@
     </ClInclude>
     <ClInclude Include="Font.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mpu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bmp.h">
+      <Filter>Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Image_6BitColor.h">
+      <Filter>Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Image_Pixels.h">
+      <Filter>Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Image_IndexedColor.h">
+      <Filter>Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Image_Grayscale.h">
+      <Filter>Images</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
