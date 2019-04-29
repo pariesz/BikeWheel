@@ -19,7 +19,7 @@ protected:
 
     virtual uint32_t get_color(uint16_t arc) = 0;
 
-    virtual void export_body(std::ofstream& stream) {
+    virtual void export_data(std::ofstream& stream) {
         stream << "\tconst uint16_t arcs[] PROGMEM {" << endl;
 
         int k = 0;
@@ -34,9 +34,23 @@ protected:
             stream << endl;
         }
         stream << "\t}; // " << (k * 2) << " bytes" << endl;
+
         stream << endl;
-        
         export_int16_array(stream, "row_ends", row_ends, PIXELS_PER_STRIP);
+    }
+
+    virtual void export_class(std::ofstream& stream, const std::string& data_ns) {
+        stream << "protected:";
+
+        stream << endl
+               << "\tinline uint16_t get_arc(uint16_t i) override {" << endl
+               << "\t\treturn pgm_read_word(&" << data_ns.c_str() << "::arcs[i]);" << endl
+               << "\t}" << endl;
+
+        stream << endl
+               << "\tinline uint16_t get_row_end(uint8_t row_index) override {" << endl
+               << "\t\treturn pgm_read_word(&" << data_ns.c_str() << "::row_ends[row_index]);" << endl
+               << "\t}" << endl;
     }
 
     virtual void export_int16_array(std::ofstream& stream, std::string name, uint16_t* arr, int len) {
@@ -51,7 +65,7 @@ protected:
         stream << endl << "\t}; // " << (len * 2) << " bytes" << endl;
     }
 
-    virtual void export_int32_array(std::ofstream& stream, std::string name, uint32_t* arr, int len) {
+    void export_int32_array(std::ofstream& stream, std::string name, uint32_t* arr, int len) {
         stream << "\tconst uint32_t " << name.c_str() << "[] PROGMEM {" << endl;
         stream << "\t\t";
 
@@ -61,6 +75,12 @@ protected:
         }
 
         stream << endl << "\t}; // " << (len * 4) << " bytes" << endl;
+    }
+
+    void export_int16(std::ofstream& stream, std::string name, uint16_t value) {
+        stream << "\tconst uint32_t " << name.c_str() << " = ";
+        write_hex(stream, value);
+        stream << ";" << endl;
     }
 
     void write_hex(ofstream& stream, uint16_t val) {
@@ -196,15 +216,21 @@ public:
         std::ofstream stream;
 
         stream.open(filename);
-        stream << "#pragma once" << endl;
-        stream << "#include <avr/pgmspace.h>" << endl;
-        stream << "#include \"Image.h\"" << endl;
-        stream << endl;
-        stream << "namespace " << ns.c_str() << " {" << endl;
+        stream << "#pragma once" << endl
+               << "#include <avr/pgmspace.h>" << endl
+               << "#include \"Image.h\"" << endl
+               << "namespace " << ns.c_str() << "_data {" << endl;
 
-        export_body(stream);
+        export_data(stream);
 
         stream << "}" << endl;
+
+        stream << endl
+               << "class " << ns.c_str() << " : public Image {" << endl;
+
+        export_class(stream, ns + "_data");
+
+        stream << "};" << endl;
         stream.close();
     }
 

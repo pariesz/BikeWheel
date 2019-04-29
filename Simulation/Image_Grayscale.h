@@ -26,9 +26,28 @@ protected:
     uint32_t get_color(uint16_t arc) override {
         uint8_t i = ((arc & 0xF) << 4) + (arc & 0xF);
         
-        uint8_t rgba[] = { i, i, i, 0 }; // bits are stored in reverse order
+        uint8_t rgba[] { i, i, i, 0 }; // bits are stored in reverse order
 
         return *(uint32_t*)rgba; // type punning
+    }
+
+    void export_class(std::ofstream& stream, const std::string& data_ns) override {
+        Image::export_class(stream, data_ns);
+
+        stream << endl
+            << "protected:" << endl;
+
+        stream
+            << "\tinline uint16_t get_angle(uint16_t arc) override {" << endl
+            << "\t\treturn arc & 0xFFF0;" << endl
+            << "\t}" << endl;
+
+        stream << endl
+            << "\tinline uint32_t get_color(uint16_t arc) override {" << endl
+            << "\t\tuint8_t i = ((arc & 0xF) << 4) + (arc & 0xF);" << endl
+            << "\t\tuint8_t rgba[] { i, i, i, 0 };" << endl
+            << "\t\treturn *(uint32_t*)rgba;" << endl
+            << "\t}" << endl;
     }
 
 public:

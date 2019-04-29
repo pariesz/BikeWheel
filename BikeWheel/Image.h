@@ -1,32 +1,33 @@
 #pragma once
+#include <avr/pgmspace.h>
 #include "Pixels.h"
 
-class Image_IndexedColor {
+class Image {
 private:
-    const uint16_t* arcs = nullptr;
-    const uint16_t* row_ends = nullptr;
-    const uint32_t* colors = nullptr;
-    const uint16_t angle_mask;
-    const uint16_t color_mask;
-
     uint16_t iterators[PIXELS_PER_STRIP];
 
-    inline uint16_t get_angle(uint16_t arc) {
-        return arc & angle_mask;
+protected:
+    virtual inline uint16_t get_arc(uint16_t i) = 0;
+    virtual inline uint16_t get_row_end(uint8_t row_index) = 0;
+    virtual inline uint16_t get_angle(uint16_t arc) = 0;
+    virtual inline uint32_t get_color(uint16_t arc) = 0;
+
+    Image() {
+        // init iterators
+        for (int i = 0; i < PIXELS_PER_STRIP; i++) {
+            iterators[i] = 0;
+        }
     }
 
-    inline uint32_t get_color(uint16_t arc) {
-        return colors[arc & color_mask];
-    }
-
+private:
     uint32_t get_color(uint8_t row_index, uint16_t angle, uint32_t rotation_rate) {
         uint16_t i = iterators[row_index];
-        uint16_t end = row_ends[row_index];
-        uint16_t start = i = row_index == 0 ? 0 : row_ends[row_index - 1] + 1;
-        uint16_t arc = arcs[i];
+        uint16_t end = get_row_end(row_index);
+        uint16_t start = i = row_index == 0 ? 0 : get_row_end(row_index - 1) + 1;
+        uint16_t arc = get_arc(i);
 
         if (rotation_rate < 0) {
-            if (i != end && angle > get_angle(arcs[++i])) {
+            if (i != end && angle > get_angle(get_arc(++i))) {
                 // angle has wrapped around to end
                 i = end;
             }
@@ -38,7 +39,7 @@ private:
                     break;
                 }
 
-                uint16_t arc = arcs[--i];
+                uint16_t arc = get_arc(--i);
                 if (angle > get_angle(arc)) {
                     break;
                 }
@@ -56,7 +57,7 @@ private:
                     break;
                 }
 
-                uint16_t next_arc = arcs[++i];
+                uint16_t next_arc = get_arc(++i);
                 if (angle < get_angle(next_arc)) {
                     --i; break;
                 }
@@ -71,23 +72,6 @@ private:
     }
 
 public:
-    Image_IndexedColor(
-        const uint16_t* arcs,
-        const uint16_t* row_ends,
-        const uint32_t* colors,
-        const uint8_t colors_bits)
-        : arcs(arcs)
-        , row_ends(row_ends)
-        , colors(colors)
-        , color_mask((1 << colors_bits) - 1)
-        , angle_mask(~((1 << colors_bits) - 1)) {
-
-        // init iterators
-        for (int i = 0; i < PIXELS_PER_STRIP; i++) {
-            iterators[i] = 0;
-        }
-    }
-
     void render(uint16_t zero_angle, uint32_t rotation_rate) {
         for (uint8_t i = 0; i < NUM_PIXELS; i++) {
             uint16_t angle = zero_angle + Pixels::positions[i].angle;

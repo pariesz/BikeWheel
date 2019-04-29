@@ -41,6 +41,23 @@ protected:
              + ((arc & 0x0003) << 6);
     }
 
+    void export_class(std::ofstream& stream, const std::string& data_ns) override {
+        Image::export_class(stream, data_ns);
+
+        stream << endl
+            << "protected:" << endl;
+
+        stream
+            << "\tinline uint16_t get_angle(uint16_t arc) override {" << endl
+            << "\t\treturn arc & 0xFFC0;" << endl
+            << "\t}" << endl;
+
+        stream << endl
+            << "\tinline uint32_t get_color(uint16_t arc) override {" << endl
+            << "\t\treturn ((arc & 0x0030) << 18) + ((arc & 0x000C) << 12) + ((arc & 0x0003) << 6);" << endl
+            << "\t}" << endl;
+    }
+
 public:
     Image_6BitColor(Image_Pixels& arc_pixels) {
         vector<uint16_t> rows[PIXELS_PER_STRIP];

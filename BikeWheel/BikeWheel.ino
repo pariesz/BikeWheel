@@ -4,14 +4,13 @@
 #include "./Timers.h"
 #include "./Debug.h"
 #include "./rocket.h"
-#include "./image.h"
 
 //#define HALL
 #ifdef HALL
 #include "./HallSensor.h"
 #endif
 
-Image_IndexedColor image_rocket = *(rocket::init());
+rocket image;
 
 void setup(void) {
 
@@ -90,7 +89,7 @@ void loop(void) {
     } else {
         //Programs::text(Mpu::angle, 13, "MASA CRITICA ");
         //Programs::color_segments(Mpu::angle);
-        image_rocket.render(Mpu::angle, Mpu::rotation_rate);
+        image.render(Mpu::angle, Mpu::rotation_rate);
     }
 
     Pixels::leds.show();

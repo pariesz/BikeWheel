@@ -42,14 +42,30 @@ protected:
         return colors[arc & color_mask];
     }
 
-    void export_body(std::ofstream& stream) override {
-        Image::export_body(stream);
-        stream << endl;
+    void export_data(std::ofstream& stream) override {
+        Image::export_data(stream);
+
         export_int32_array(stream, "colors", colors, num_colors);
-        stream << endl;
-        stream << "\tinline Image_IndexedColor* init() {" << endl;
-        stream << "\t\treturn new Image_IndexedColor(arcs, row_ends, colors, " << (((uint8_t)log2(num_colors)) + 1) << ");" << endl;
-        stream << "\t}" << endl;
+    }
+
+    void export_class(std::ofstream& stream, const std::string& data_ns) override {
+        Image::export_class(stream, data_ns);
+
+        stream << endl 
+               << "protected:" << endl;
+
+        export_int16(stream, "angle_mask", angle_mask);
+        export_int16(stream, "color_mask", color_mask);
+
+        stream << endl
+               << "\tinline uint16_t get_angle(uint16_t arc) override {" << endl
+               << "\t\treturn arc & angle_mask;" << endl
+               << "\t}" << endl;
+        
+        stream << endl
+               << "\tinline uint32_t get_color(uint16_t arc) override {" << endl
+               << "\t\treturn pgm_read_dword(&" << data_ns.c_str() << "::colors[arc & color_mask]);" << endl
+               << "\t}" << endl;
     }
 
 public:

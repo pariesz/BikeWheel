@@ -80,8 +80,8 @@ int main() {
     
     //Image *image = new Image_Grayscale(pixels);
     
-    //image->export_code(std::string("../BikeWheel/").append(imageName).append(".h"), imageName);
-    //return 0;
+    image->export_code(std::string("../BikeWheel/").append(imageName).append(".h"), imageName);
+    return 0;
 
     if (!Graphics::init()) {
         return -1;

@@ -1,8 +1,7 @@
 #pragma once
 #include <avr/pgmspace.h>
 #include "Image.h"
-
-namespace rocket {
+namespace rocket_data {
 	const uint16_t arcs[] PROGMEM {
 		  0x0000
 		, 0x0000, 0x1468, 0x15E9, 0x1A4A, 0x20D9, 0x2538, 0x2760
@@ -45,12 +44,30 @@ namespace rocket {
 	const uint16_t row_ends[] PROGMEM {
 		0x0000, 0x0007, 0x0010, 0x0018, 0x001F, 0x0024, 0x002D, 0x003F, 0x0056, 0x0072, 0x0091, 0x00A6, 0x00BD, 0x00DD, 0x0101, 0x012B, 0x015E, 0x0186, 0x01B2, 0x01D5, 0x01F4, 0x0212, 0x0228, 0x023B, 0x0250, 0x0267, 0x0280, 0x0298, 0x02AD, 0x02BB, 0x02C7, 0x02D6, 0x02E7, 0x02EC, 0x02ED, 0x02EE
 	}; // 72 bytes
-
 	const uint32_t colors[] PROGMEM {
 		0x00000000, 0x00FF0000, 0x00FFFFFF, 0x00333333, 0x00666666, 0x00999999, 0x00CCCCCC, 0x00330000, 0x00660000, 0x00990000, 0x00CC0000, 0x00FF3333, 0x00FF6666, 0x00FF9999, 0x00FFCCCC
-	}; // 30 bytes
-
-	inline Image_IndexedColor* init() {
-		return new Image_IndexedColor(arcs, row_ends, colors, 4);
-	}
+	}; // 60 bytes
 }
+
+class rocket : public Image {
+protected:
+	inline uint16_t get_arc(uint16_t i) override {
+		return pgm_read_word(&rocket_data::arcs[i]);
+	}
+
+	inline uint16_t get_row_end(uint8_t row_index) override {
+		return pgm_read_word(&rocket_data::row_ends[row_index]);
+	}
+
+protected:
+	const uint32_t angle_mask = 0xFFF0;
+	const uint32_t color_mask = 0x000F;
+
+	inline uint16_t get_angle(uint16_t arc) override {
+		return arc & angle_mask;
+	}
+
+	inline uint32_t get_color(uint16_t arc) override {
+		return pgm_read_dword(&rocket_data::colors[arc & color_mask]);
+	}
+};
