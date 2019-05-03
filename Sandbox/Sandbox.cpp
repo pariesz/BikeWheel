@@ -33,11 +33,13 @@ int main()
     //Bitwise_Round(67, 2);
     //Bitwise_Round(68, 2);
 
-    uint8_t i = 0xFF;
-    uint8_t ii[] = { i, i, 0, 0 };
-    uint32_t int32 = *(uint32_t*)ii;
+    //uint8_t i = 0xFF;
+    //uint8_t ii[] = { i, i, 0, 0 };
+    //uint32_t int32 = *(uint32_t*)ii;
+    //cout << int32 << endl;
 
-    cout << int32 << endl;
+    uint8_t my_int = 64 / 43;
+    std::cout << +my_int << " = " << (64 / 43) << std::endl;
 
     return 1;
 }

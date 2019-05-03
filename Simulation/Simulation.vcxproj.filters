@@ -27,99 +27,126 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Pixels.cpp">
+    <ClCompile Include="Src\Export.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Adafruit_DotStar.cpp">
+    <ClCompile Include="Src\SensorData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics.cpp">
+    <ClCompile Include="Src\MPU6050_Mock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MPU6050.cpp">
+    <ClCompile Include="Src\Adafruit_DotStar_Mock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SensorData.cpp">
+    <ClCompile Include="Src\Arduino_Mock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mpu.cpp">
+    <ClCompile Include="..\BikeWheel\Image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BikeWheel\Leds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BikeWheel\Logging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BikeWheel\Wheel_Sensors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BikeWheel\Colors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\Leds_Export.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Leds_Export.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Pixels.h">
+    <ClInclude Include="Include\Graphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Arduino.h">
+    <ClInclude Include="Include\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vector.h">
+    <ClInclude Include="Include\SensorData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Adafruit_DotStar.h">
+    <ClInclude Include="Include\FrameBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MPU6050.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Programs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SensorData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HallSensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Timers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Font.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mpu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Bmp.h">
+    <ClInclude Include="Include\Image_Pixels.h">
       <Filter>Images</Filter>
     </ClInclude>
-    <ClInclude Include="Image.h">
+    <ClInclude Include="Include\Image_6BitColor.h">
       <Filter>Images</Filter>
     </ClInclude>
-    <ClInclude Include="Image_6BitColor.h">
+    <ClInclude Include="Include\Image_Grayscale.h">
       <Filter>Images</Filter>
     </ClInclude>
-    <ClInclude Include="Image_Pixels.h">
+    <ClInclude Include="Include\Image_IndexedColor.h">
       <Filter>Images</Filter>
     </ClInclude>
-    <ClInclude Include="Image_IndexedColor.h">
+    <ClInclude Include="Include\Bmp.h">
       <Filter>Images</Filter>
     </ClInclude>
-    <ClInclude Include="Image_Grayscale.h">
+    <ClInclude Include="Include\Export.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Image_Base.h">
       <Filter>Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Arduino_Mock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Adafruit_DotStar_Mock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\MPU6050_Mock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BikeWheel\Colors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BikeWheel\Font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BikeWheel\Helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BikeWheel\Image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BikeWheel\Leds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BikeWheel\Logging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BikeWheel\Programs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BikeWheel\Wheel_Sensors.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="output.csv" />
-    <None Include="leds.vs">
+    <None Include="Shaders\leds.fs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="leds.fs">
+    <None Include="Shaders\leds.vs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="screen.fs">
+    <None Include="Shaders\screen.fs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="screen.vs">
+    <None Include="Shaders\screen.vs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

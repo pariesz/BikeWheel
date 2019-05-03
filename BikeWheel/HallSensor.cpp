@@ -1,6 +1,7 @@
-#include "arduino.h"
 #include "HallSensor.h"
-#include "./Debug.h"
+#include "Logging.h"
+#include "Arduino.h"
+
 #define HALL_PIN 3
 #define LED_PIN 13 
 

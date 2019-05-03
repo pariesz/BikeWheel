@@ -70,8 +70,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Include;$(ProjectDir)Include;$(IncludePath);$(SolutionDir)BikeWheel</IncludePath>
     <LibraryPath>$(SolutionDir)Lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ProjectDir)Src;$(SourcePath);$(SolutionDir)BikeWheel</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -79,6 +80,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);SIMULATION;</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -121,42 +123,51 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Adafruit_DotStar.cpp" />
-    <ClCompile Include="SensorData.cpp" />
+    <ClCompile Include="..\BikeWheel\Image.cpp" />
+    <ClCompile Include="..\BikeWheel\Leds.cpp" />
+    <ClCompile Include="..\BikeWheel\Logging.cpp" />
+    <ClCompile Include="..\BikeWheel\Wheel_Sensors.cpp" />
+    <ClCompile Include="..\BikeWheel\Colors.cpp" />
+    <ClCompile Include="Src\Leds_Export.cpp" />
+    <ClCompile Include="Src\Adafruit_DotStar_Mock.cpp" />
+    <ClCompile Include="Src\Arduino_Mock.cpp" />
+    <ClCompile Include="Src\Export.cpp" />
+    <ClCompile Include="Src\SensorData.cpp" />
+    <ClCompile Include="Src\MPU6050_Mock.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Mpu.cpp" />
-    <ClCompile Include="MPU6050.cpp" />
-    <ClCompile Include="Pixels.cpp" />
-    <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="Include\Leds_Export.h" />
+    <ClCompile Include="Src\Graphics.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Adafruit_DotStar.h" />
-    <ClInclude Include="Image_Grayscale.h" />
-    <ClInclude Include="Image_IndexedColor.h" />
-    <ClInclude Include="Image_Pixels.h" />
-    <ClInclude Include="Arduino.h" />
-    <ClInclude Include="Bmp.h" />
-    <ClInclude Include="Font.h" />
-    <ClInclude Include="FrameBuffer.h" />
-    <ClInclude Include="HallSensor.h" />
-    <ClInclude Include="Image.h" />
-    <ClInclude Include="Image_6BitColor.h" />
-    <ClInclude Include="Mpu.h" />
-    <ClInclude Include="SensorData.h" />
-    <ClInclude Include="MPU6050.h" />
-    <ClInclude Include="Pixels.h" />
-    <ClInclude Include="Programs.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="Timers.h" />
-    <ClInclude Include="Vector.h" />
-    <ClInclude Include="Graphics.h" />
+    <ClInclude Include="Include\Adafruit_DotStar_Mock.h" />
+    <ClInclude Include="Include\Export.h" />
+    <ClInclude Include="Include\Image_Grayscale.h" />
+    <ClInclude Include="Include\Image_IndexedColor.h" />
+    <ClInclude Include="Include\Image_Pixels.h" />
+    <ClInclude Include="Include\Bmp.h" />
+    <ClInclude Include="Include\FrameBuffer.h" />
+    <ClInclude Include="Include\Image_Base.h" />
+    <ClInclude Include="Include\Image_6BitColor.h" />
+    <ClInclude Include="Include\Arduino_Mock.h" />
+    <ClInclude Include="Include\SensorData.h" />
+    <ClInclude Include="Include\MPU6050_Mock.h" />
+    <ClInclude Include="Include\Shader.h" />
+    <ClInclude Include="Include\Graphics.h" />
+    <ClInclude Include="..\BikeWheel\Colors.h" />
+    <ClInclude Include="..\BikeWheel\Font.h" />
+    <ClInclude Include="..\BikeWheel\Helpers.h" />
+    <ClInclude Include="..\BikeWheel\Image.h" />
+    <ClInclude Include="..\BikeWheel\Leds.h" />
+    <ClInclude Include="..\BikeWheel\Logging.h" />
+    <ClInclude Include="..\BikeWheel\Programs.h" />
+    <ClInclude Include="..\BikeWheel\Wheel_Sensors.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="screen.fs" />
-    <None Include="screen.vs" />
-    <None Include="leds.fs" />
-    <None Include="leds.vs" />
+    <None Include="Shaders\screen.fs" />
+    <None Include="Shaders\screen.vs" />
+    <None Include="Shaders\leds.fs" />
+    <None Include="Shaders\leds.vs" />
     <None Include="output.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,62 +1,33 @@
-#include "./Programs.h"
-#include "./Mpu.h"
-#include "./Pixels.h"
-#include "./Timers.h"
-#include "./Debug.h"
-#include "./rocket.h"
+#include "Programs.h"
+#include "Wheel_Sensors.h"
+#include "Leds.h"
+#include "Logging.h"
+#include "./Images/rocket.h"
 
-//#define HALL
-#ifdef HALL
-#include "./HallSensor.h"
-#endif
+//#define LOGGING
 
+bool on = 0; // clear all pixels
+uint8_t prog = 0;
 rocket image;
 
 void setup(void) {
 
-#ifdef DEBUG
+#ifdef LOGGING
     Serial.begin(9600);
     while (!Serial);
 
     Serial.println(F("Connected"));
 #endif
 
-    Pixels::Strip strips[] = {
-        Pixels::Strip(
-           59,   9,
-          262, 140
-        ),
-        Pixels::Strip(
-            9,  -59,
-          140, -262
-        ),
-        Pixels::Strip(
-            -59,  -9,
-           -262,-140
-        ),
-        Pixels::Strip(
-             -9,  59,
-           -140, 262
-        )
-    };
+    Leds::leds.setBrightness(20);
+    Leds::leds.begin();
+    Leds::leds.show();
 
-    Pixels::init(strips);
-
-    Mpu::init();
-
-#ifdef HALL
-    HallSensor::init(0);
-#endif
+    Wheel_Sensors::init();
 }
 
-bool off = true; // clear all pixels
-
 void loop(void) {
-#ifdef HALL
-    HallSensor::update();
-#endif
-
-    Mpu::update();
+    Wheel_Sensors::update();
 
     /*
        Persistence of vision is a theory which attempts to explain 
@@ -69,45 +40,50 @@ void loop(void) {
        The is a rate of change og about 26 angle/ms.
 
        To stop flicker at the threashold we add a buffer zone.
-       Turn on at 60 ang/ms and off at 30 ang/ms. 
+       Turn on at 270 deg/ms and off at 180 deg/s. 
     */
 
-    uint32_t rotation_rate_abs = abs(Mpu::rotation_rate);
+    uint32_t rotation_rate_abs = abs(Wheel_Sensors::rotation_rate);
 
 #ifdef DEBUG
-    off = false;
-#else
-    if (rotation_rate_abs < 30000) {
-        off = true;
-    } else if (rotation_rate_abs > 60000) {
-        off = false;
-    }
+    on = 0;  
 #endif
-
-    if (off) {
-        Programs::set_color(0x000000);
+    if (on) {
+        switch(prog) {
+            case 0:
+                Programs::spiral(Wheel_Sensors::angle); break;
+            case 1:
+                image.render(Wheel_Sensors::angle, Wheel_Sensors::rotation_rate); break;
+            case 2: 
+                Programs::rainbow_text(Wheel_Sensors::angle, 37, "- BCN - Critical Mass - Masa Critica"); break;
+            case 3:
+                Programs::masa_critica(Wheel_Sensors::angle); break;
+            case 4:
+                Programs::flower(Wheel_Sensors::angle); break;
+            case 5:
+                Programs::umbrella(Wheel_Sensors::angle); break;
+            case 6:
+                Programs::radioactive(Wheel_Sensors::angle); break;
+            default:
+                prog = 0; break;
+        }
+        
+        if (rotation_rate_abs < 30000) {
+            on = 0;
+        }
     } else {
-        //Programs::text(Mpu::angle, 13, "MASA CRITICA ");
-        //Programs::color_segments(Mpu::angle);
-        image.render(Mpu::angle, Mpu::rotation_rate);
+        Programs::set_color(0x000000);
+
+        if (rotation_rate_abs > 40000) {
+            on = 1;
+
+            if (Wheel_Sensors::rotation_rate < 0) {
+                prog--;
+            } else {
+                prog++;
+            }
+        }
     }
 
-    Pixels::leds.show();
+    Leds::leds.show();
 }
-
-#ifdef DEBUG
-void fps_counter() {
-    static unsigned int fps = 0;
-    static unsigned long fps_millis = millis();
-
-    if (millis() - fps_millis > 1000) {
-        Serial.print(fps);
-        Serial.println(F("fps"));
-
-        fps_millis = millis();
-        fps = 0;
-    }
-
-    fps++;
-}
-#endif

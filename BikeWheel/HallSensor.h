@@ -1,5 +1,6 @@
 #pragma once
-#define OPTIMIZE __attribute__((optimize("O3")))
+#include "Arduino.h"
+#include "Helpers.h"
 
 namespace HallSensor {
     extern uint16_t angle;
