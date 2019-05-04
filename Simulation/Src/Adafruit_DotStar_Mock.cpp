@@ -2,7 +2,6 @@
 #include "Arduino_Mock.h"
 #include "Graphics.h"
 #include "Leds.h"
-#include "Wheel_Sensors.h"
 
 uint8_t* Adafruit_DotStar::vertices;
 
@@ -36,11 +35,11 @@ inline float uint16ToRadians(uint16_t angle) {
     return  (angle / (float)65535) * 2 * PI;
 }
 
-void Adafruit_DotStar::show() {
+void Adafruit_DotStar::show(uint16_t angle) {
     for (int i = 0; i < NUM_PIXELS; i++) {
         int addr = i * 5;
         int vert = i * 3;
-        auto rads = uint16ToRadians(Leds::get_angle(i) + Wheel_Sensors::angle);
+        auto rads = uint16ToRadians(Leds::get_angle(i) + angle);
 
         // cos and sin are reversed as angle is 0 on y-axis
         Graphics::vertices[addr + 0] = Leds::get_distance(i) * (float)sin(rads) / (float)255; // x

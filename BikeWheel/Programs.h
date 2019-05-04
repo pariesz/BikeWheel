@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef _DEBUG
+#ifdef SIMULATION
 #include "Arduino_Mock.h"
 #endif
 

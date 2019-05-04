@@ -1,8 +1,8 @@
 #pragma once
 
-#define LOGGING 1
+#define LOGGING 0
 
-#ifdef LOGGING 
+#if LOGGING == 1
 
 #ifdef SIMULATION
 #define LOG(str) std::cout << (str)
@@ -14,8 +14,8 @@
 #define LOG(message) Serial.print(F(message))
 #define LOG_LN(message) Serial.println(F(message))
 #define LOG_VAL(name, val) Serial.print(F(name)); Serial.print(F(": ")); Serial.println(val)
-#define LOG_RGB(val) Serial.print(  "R:");   Serial.print((val & 0xFF0000) >> 16);\
-                     Serial.print(", G:");   Serial.print((val & 0x00FF00) >> 8);\
+#define LOG_RGB(val) Serial.print(  "R:"); Serial.print(  (val & 0xFF0000) >> 16);\
+                     Serial.print(", G:"); Serial.print(  (val & 0x00FF00) >> 8);\
                      Serial.print(", B:"); Serial.println((val & 0x0000FF))
 #endif
 

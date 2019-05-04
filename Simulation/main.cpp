@@ -1,4 +1,3 @@
-#define SENSOR_DATA 1 // use real data captured in output.csv
 #define SIMULATION 1
 #define LOGGING 1
 
@@ -8,7 +7,7 @@
 #include <math.h>
 #include "Leds.h"
 #include "Programs.h"
-#include "Wheel_Sensors.h"
+#include "WheelSensors.h"
 #include "Graphics.h"
 #include "Logging.h"
 #include "SensorData.h"
@@ -19,16 +18,20 @@
 #include "Leds_Export.h"
 
 bool on = true;
+WheelSensors sensors;
+Image_Base *image = nullptr;
 
 void loop() {
     if (!SensorData::update()) {
+        // reset sensors and graphics
         Graphics::clear();
-        Wheel_Sensors::init();
+        sensors = WheelSensors();
+        sensors.setup();
     }
-    Wheel_Sensors::update();
 
-    uint16_t angle = Wheel_Sensors::angle;
-    uint32_t rotation_rate_abs = abs(Wheel_Sensors::rotation_rate);
+    sensors.loop();
+
+    uint16_t angle = sensors.angle;
 
     //std::cout << Sensors::angle << std::endl;
 
@@ -40,9 +43,9 @@ void loop() {
     //Programs::flower(angle);
     //Programs::umbrella(angle);
     //Programs::radioactive(angle);
-    //image.render(angle, rotation_rate);
+    image->render(angle, sensors.rotation_rate);
 
-    Leds::leds.show();
+    Leds::leds.show(sensors.angle);
     //Sleep(100);
 }
 
@@ -73,12 +76,12 @@ int main() {
     //export_leds();
     //return 0;
 
-    //std::string imageName("rocket");
-    //BMP bmp("Images/" + imageName + ".bmp");
-    //Image_Pixels pixels(bmp, Leds::min_dist);
-    //
-    //uint32_t rocket_colors[] = { 0x000000, 0xFF0000, 0xFF9999, 0xFFFFFF };
-    //Image_Base *image = new Image_IndexedColor(pixels, rocket_colors, 4);
+    std::string imageName("fist");
+    BMP bmp("Images/" + imageName + ".bmp");
+    Image_Pixels pixels(bmp, Leds::min_dist);
+
+    uint32_t colors[] = { 0x000000, 0xFF0000 };
+    image = new Image_IndexedColor(pixels, colors, 2);
 
     //uint32_t mrSplat_colors[] = { 0x000000, 0x00FFFF, 0xFF9900 };
     //Image_Base *image = new Image_IndexedColor(pixels, mrSplat_colors, 3);
@@ -88,10 +91,8 @@ int main() {
     //image->export_code(std::string("../BikeWheel/Images/").append(imageName).append(".h"), imageName);
     //return 0;
 
-#ifdef MPU
     SensorData::init();
-#endif
-    Wheel_Sensors::init();
+    sensors.setup();
 
     if (!Graphics::init()) {
         return -1;

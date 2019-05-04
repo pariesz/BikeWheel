@@ -126,7 +126,8 @@
     <ClCompile Include="..\BikeWheel\Image.cpp" />
     <ClCompile Include="..\BikeWheel\Leds.cpp" />
     <ClCompile Include="..\BikeWheel\Logging.cpp" />
-    <ClCompile Include="..\BikeWheel\Wheel_Sensors.cpp" />
+    <ClCompile Include="..\BikeWheel\WheelSensors.cpp" />
+    <ClCompile Include="..\BikeWheel\HallSensor.cpp" />
     <ClCompile Include="..\BikeWheel\Colors.cpp" />
     <ClCompile Include="Src\Leds_Export.cpp" />
     <ClCompile Include="Src\Adafruit_DotStar_Mock.cpp" />
@@ -161,7 +162,8 @@
     <ClInclude Include="..\BikeWheel\Leds.h" />
     <ClInclude Include="..\BikeWheel\Logging.h" />
     <ClInclude Include="..\BikeWheel\Programs.h" />
-    <ClInclude Include="..\BikeWheel\Wheel_Sensors.h" />
+    <ClInclude Include="..\BikeWheel\WheelSensors.h" />
+    <ClInclude Include="..\BikeWheel\HallSensor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\screen.fs" />

@@ -51,10 +51,13 @@
     <ClInclude Include="Logging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Wheel_Sensors.h">
+    <ClInclude Include="Images\rocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Images\rocket.h">
+    <ClInclude Include="WheelSensors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Images\fist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -85,10 +88,10 @@
     <ClCompile Include="Logging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Wheel_Sensors.cpp">
+    <ClCompile Include="Colors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Colors.cpp">
+    <ClCompile Include="WheelSensors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

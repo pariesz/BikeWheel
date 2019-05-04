@@ -1,61 +1,68 @@
+
+#ifdef SIMULATION
+#include "SensorData.h"
+#include "Arduino_Mock.h"
+#endif
 #include "HallSensor.h"
 #include "Logging.h"
-#include "Arduino.h"
 
 #define HALL_PIN 3
-#define LED_PIN 13 
 
-namespace HallSensor {
-    uint16_t angle = 0;
-    long interval_micros = 0;
+HallSensor::HallSensor(uint16_t offset)
+        : offset(offset)
+        , angle(offset)
+        , rotations(0)
+        , rotation_rate(0)
+        , value(HIGH)
+        , rotation_us(micros())
+        , frame_us(micros()) {
+}
 
-    static uint16_t angle_offset = 0;
-    int hallVal = HIGH; // This is where we record the OH137 Input
-    
-    static unsigned long time_micros = 0;
+void HallSensor::setup() {
+#ifndef SIMULATION
+    pinMode(HALL_PIN, INPUT); // input from the OH137
+#endif
+}
 
-    void init(uint16_t offet) {
-        pinMode(HALL_PIN, INPUT); // input from the OH137
-        angle_offset = offet;
-        time_micros = micros();
-    }
-
-    void update(void) {
-        int val = digitalRead(HALL_PIN); // read OH137 Value
-
-        if (hallVal == LOW && val == HIGH) {  // means magnetic field detected
-            interval_micros = micros() - time_micros;
-            time_micros = micros();
-            angle = 0;
-
-#ifdef DEBUG
-            Serial.print(F("interval: "));
-            Serial.println(interval_micros);
+void HallSensor::loop(bool reverse) {
+#ifdef SIMULATION
+    int read = SensorData::get().hall;
+#else
+    int read = digitalRead(HALL_PIN); // read OH137 Value
 #endif
 
-            hallVal = HIGH;
-            digitalWrite(LED_PIN, HIGH);
-            return;
+    uint32_t us = micros();
+    uint32_t us_diff = us - rotation_us;
+
+    // if we are recording 10 rotations a second (us_diff > 100000)
+    // with a 299in wheel circumferance of ~2300mm we would be going
+    // ~80kmh so we can assume a bad read.
+    if (value == LOW && read == HIGH && us_diff > 100000) {
+        frame_us = rotation_us = us;
+        rotation_rate = ((uint16_t)-1) / (us_diff / 1000000.0f);
+
+        if (reverse) {
+            rotation_rate = -rotation_rate;
         }
 
-        if (hallVal == HIGH && val == LOW) {
-            hallVal = val;
-            digitalWrite(LED_PIN, LOW);
-        }
+        angle = offset;
+        value = read;
+        rotations++;
 
-        auto time_diff = micros() - time_micros;
-
-        if (time_diff > interval_micros) {
-            // Slowing down
-            interval_micros = time_diff;
-            angle = 65535;
-            return;
-        }
-
-        angle = (
-            (
-                time_diff / (float)interval_micros // divide the difference to get a factor reperesenting the rotation
-            ) * 65535 // scale the angle factor by uint16
-        ) + angle_offset; // offset the rotation relative to the y axis
+        return;
     }
+
+    value = read;
+
+    if (us_diff > 1000000) {
+        // if we are going less than 1 rotation a second (<8kmh) 
+        // it is too slow for any sort of accuracy so reset the count
+        rotations = 0;
+        return;
+    }
+
+    
+    angle += (rotation_rate * (int64_t)(us - frame_us)) / 1000000;
+    
+    frame_us = us;
 }

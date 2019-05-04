@@ -2,13 +2,15 @@
 
 #ifdef SIMULATION
 #include "Arduino_Mock.h"
+#else
+#include "Arduino.h"
 #endif
 
 #include "Colors.h"
 #include "Leds.h"
 #include "Logging.h"
 
-#ifdef LOGGING
+#if LOGGING == 1
 namespace Logging {
     inline void log_fps() {
         static unsigned int fps = 0;
