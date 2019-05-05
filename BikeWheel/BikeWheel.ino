@@ -44,8 +44,8 @@ void loop(void) {
         switch(prog) {
             case 0:
                 Programs::spiral(sensors.angle); break;
-            case 1: 
-                Programs::rainbow_text(sensors.angle, 37, "- BCN - Critical Mass - Masa Critica"); break;
+            case 1:
+                rocket_image.render(sensors.angle, sensors.rotation_rate); break;
             case 2:
                 Programs::masa_critica(sensors.angle); break;
             case 3:
@@ -55,7 +55,7 @@ void loop(void) {
             case 5:
                 Programs::radioactive(sensors.angle); break;
             case 6:
-                rocket_image.render(sensors.angle, sensors.rotation_rate); break;
+                Programs::rainbow_text(sensors.angle, 37, "- BCN - Critical Mass - Masa Critica"); break;
             default:
                 prog = sensors.rotation_rate < 0 ? 6 : 0; break;
         }

@@ -76,12 +76,12 @@ int main() {
     //export_leds();
     //return 0;
 
-    std::string imageName("fist");
+    std::string imageName("rocket");
     BMP bmp("Images/" + imageName + ".bmp");
     Image_Pixels pixels(bmp, Leds::min_dist);
 
-    uint32_t colors[] = { 0x000000, 0xFF0000 };
-    image = new Image_IndexedColor(pixels, colors, 2);
+    uint32_t colors[] = { 0x000000, 0xFF0000, 0xFFFFFF };
+    image = new Image_IndexedColor(pixels, colors, 3);
 
     //uint32_t mrSplat_colors[] = { 0x000000, 0x00FFFF, 0xFF9900 };
     //Image_Base *image = new Image_IndexedColor(pixels, mrSplat_colors, 3);
