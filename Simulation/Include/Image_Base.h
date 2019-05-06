@@ -110,9 +110,15 @@ protected:
 
             row_ends[i] = k;
         }
+
+        Image::Initialize();
     }
 
 public:
+    Image_Base() {
+        // override Image ctor
+    }
+
     void export_code(std::string& filename, std::string& ns) {
         std::ofstream stream;
 

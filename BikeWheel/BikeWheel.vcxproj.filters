@@ -60,6 +60,12 @@
     <ClInclude Include="Images\fist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Images\space.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Images\LaPandora.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Schematics\Nano Pinout.jpg">

@@ -66,6 +66,9 @@
     <ClCompile Include="..\BikeWheel\WheelSensors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\BikeWheel\HallSensor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Graphics.h">
@@ -107,9 +110,6 @@
     <ClInclude Include="Include\Adafruit_DotStar_Mock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\MPU6050_Mock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\BikeWheel\Colors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -132,6 +132,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\BikeWheel\WheelSensors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BikeWheel\HallSensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\MPU6050_Mock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

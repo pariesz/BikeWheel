@@ -16,10 +16,13 @@
 #include "Image_IndexedColor.h"
 #include "Image_Grayscale.h"
 #include "Leds_Export.h"
+#include "LaPandora.h"
+#include "rocket.h"
 
 bool on = true;
 WheelSensors sensors;
 Image_Base *image = nullptr;
+LaPandora la_pandora;
 
 void loop() {
     if (!SensorData::update()) {
@@ -76,21 +79,35 @@ int main() {
     //export_leds();
     //return 0;
 
-    std::string imageName("rocket");
+    // ROCKET
+    //std::string imageName("rocket");
+    //BMP bmp("Images/" + imageName + ".bmp");
+    //Image_Pixels pixels(bmp, Leds::min_dist);
+    //uint32_t colors[] = { 0x000000, 0xFF0000, 0x0000FF, 0xFFFFFF };
+    //image = new Image_IndexedColor(pixels, colors, 4);
+
+    // SPACE
+    //std::string imageName("space");
+    //BMP bmp("Images/" + imageName + ".bmp");
+    //Image_Pixels pixels(bmp, Leds::min_dist);
+    //image = new Image_6BitColor(pixels);
+
+    // FIST
+    std::string imageName("fist");
     BMP bmp("Images/" + imageName + ".bmp");
     Image_Pixels pixels(bmp, Leds::min_dist);
-
-    uint32_t colors[] = { 0x000000, 0xFF0000, 0xFFFFFF };
-    image = new Image_IndexedColor(pixels, colors, 3);
+    uint32_t colors[] = { 0x000000, 0xFF0000 };
+    image = new Image_IndexedColor(pixels, colors, 2);
 
     //uint32_t mrSplat_colors[] = { 0x000000, 0x00FFFF, 0xFF9900 };
     //Image_Base *image = new Image_IndexedColor(pixels, mrSplat_colors, 3);
 
     //Image_Base *image = new Image_Grayscale(pixels);
 
-    //image->export_code(std::string("../BikeWheel/Images/").append(imageName).append(".h"), imageName);
-    //return 0;
+    image->export_code(std::string("../BikeWheel/Images/").append(imageName).append(".h"), imageName);
+    return 0;
 
+    la_pandora.initialize();
     SensorData::init();
     sensors.setup();
 

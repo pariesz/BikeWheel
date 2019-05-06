@@ -33,4 +33,10 @@ namespace Leds {
     inline void set_color(uint16_t index, uint8_t r, uint8_t g, uint8_t b) {
         leds.setPixelColor(index, r, g, b);
     }
+
+    inline void setup() {
+        leds.setBrightness(20);
+        leds.begin();
+        leds.show();
+    }
 };

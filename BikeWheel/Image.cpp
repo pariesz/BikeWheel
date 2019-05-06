@@ -2,14 +2,14 @@
 #include "./Leds.h"
 #include "./Image.h"
 
-Image::Image() {
-    // init iterators
+void Image::Initialize() {
     for (int i = 0; i < NUM_PIXELS; i++) {
-        iterators[i] = 0;
+        uint8_t row_index = i % PIXELS_PER_STRIP;
+        iterators[i] = get_row_end(row_index);
     }
 }
 
-uint32_t Image::get_color(uint8_t index, uint16_t angle, bool reverse) {
+uint32_t Image::get_led_color(uint8_t index, uint16_t angle, bool reverse) {
     uint8_t row_index = index % PIXELS_PER_STRIP;
     uint16_t end = get_row_end(row_index);
     uint16_t start = row_index == 0 ? 0 : get_row_end(row_index - 1) + 1;
@@ -58,7 +58,7 @@ uint32_t Image::get_color(uint8_t index, uint16_t angle, bool reverse) {
         }
     }
 
-    iterators[row_index] = i;
+    iterators[index] = i;
 
     return get_color(arc);
 }
@@ -67,6 +67,6 @@ void Image::render(uint16_t zero_angle, int32_t rotation_rate) {
     bool reverse = rotation_rate < 0;
 
     for (uint8_t i = 0; i < NUM_PIXELS; i++) {
-        Leds::set_color(i, get_color(i % PIXELS_PER_STRIP, zero_angle + Leds::get_angle(i), reverse));
+        Leds::set_color(i, get_led_color(i, zero_angle + Leds::get_angle(i), reverse));
     }
 };

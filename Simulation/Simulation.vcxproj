@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)Include;$(ProjectDir)Include;$(IncludePath);$(SolutionDir)BikeWheel</IncludePath>
+    <IncludePath>$(SolutionDir)Include;$(ProjectDir)Include;$(IncludePath);$(SolutionDir)BikeWheel;$(SolutionDir)BikeWheel\Images</IncludePath>
     <LibraryPath>$(SolutionDir)Lib;$(LibraryPath)</LibraryPath>
     <SourcePath>$(ProjectDir)Src;$(SourcePath);$(SolutionDir)BikeWheel</SourcePath>
   </PropertyGroup>
@@ -164,6 +164,9 @@
     <ClInclude Include="..\BikeWheel\Programs.h" />
     <ClInclude Include="..\BikeWheel\WheelSensors.h" />
     <ClInclude Include="..\BikeWheel\HallSensor.h" />
+    <ClInclude Include="..\BikeWheel\Images\rocket.h" />
+    <ClInclude Include="..\BikeWheel\Images\space.h" />
+    <ClInclude Include="..\BikeWheel\Images\LaPandora.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\screen.fs" />

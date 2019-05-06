@@ -13,6 +13,7 @@ class Adafruit_DotStar {
         void setPixelColor(uint16_t index, uint8_t r, uint8_t g, uint8_t b);
         void setBrightness(uint8_t);
         void begin();
+        void show();
         void show(uint16_t angle);
 
         ~Adafruit_DotStar();

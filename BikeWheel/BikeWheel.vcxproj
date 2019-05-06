@@ -120,8 +120,10 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="Images\finger.h" />
     <ClInclude Include="Images\fist.h" />
+    <ClInclude Include="Images\LaPandora.h" />
     <ClInclude Include="Images\MrSplat.h" />
     <ClInclude Include="Images\rocket.h" />
+    <ClInclude Include="Images\space.h" />
     <ClInclude Include="Leds.h" />
     <ClInclude Include="Logging.h" />
     <ClInclude Include="Programs.h" />

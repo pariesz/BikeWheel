@@ -2,12 +2,19 @@
 #include "WheelSensors.h"
 #include "Leds.h"
 #include "Logging.h"
-#include "./Images/rocket.h"
+#include "./Images/LaPandora.h"
+#include "./Images/fist.h"
 
+
+WheelSensors sensors;
+
+// settings
 bool on = 0;
 uint8_t prog = 0;
-rocket rocket_image;
-WheelSensors sensors;
+
+// images
+LaPandora* la_pandora = nullptr;
+fist* fist_img = nullptr;
 
 void setup(void) {
 
@@ -18,10 +25,35 @@ void setup(void) {
 #endif
 
     sensors.setup();
+    Leds::setup();
+}
 
-    Leds::leds.setBrightness(20);
-    Leds::leds.begin();
-    Leds::leds.show();
+void stop(void) {
+    on = 0;
+
+    switch (prog) {
+        case 1:
+            delete la_pandora;
+            break;
+        case 6:
+            delete fist_img;
+            break;
+    }
+}
+
+void start(void) {
+    on = 1;
+
+    switch (prog) {
+        case 1:
+            la_pandora = new LaPandora();
+            la_pandora->initialize();
+            break;
+        case 6:
+            fist_img = new fist();
+            fist_img->Initialize();
+            break;
+    }
 }
 
 void loop(void) {
@@ -45,7 +77,7 @@ void loop(void) {
             case 0:
                 Programs::spiral(sensors.angle); break;
             case 1:
-                rocket_image.render(sensors.angle, sensors.rotation_rate); break;
+                la_pandora->render(sensors.angle, sensors.rotation_rate); break;
             case 2:
                 Programs::masa_critica(sensors.angle); break;
             case 3:
@@ -55,25 +87,29 @@ void loop(void) {
             case 5:
                 Programs::radioactive(sensors.angle); break;
             case 6:
+                fist_img->render(sensors.angle, sensors.rotation_rate); break;
+            case 7:
                 Programs::rainbow_text(sensors.angle, 37, "- BCN - Critical Mass - Masa Critica"); break;
             default:
-                prog = sensors.rotation_rate < 0 ? 6 : 0; break;
+                prog = sensors.rotation_rate < 0 ? 7 : 0; 
+                start(); 
+                break;
         }
         
         if (abs(sensors.rotation_rate) < 60000) {
-            on = 0;
+            stop();
         }
     } else {
         Programs::set_color(0x000000);
 
         if (abs(sensors.rotation_rate) > 80000) {
-            on = 1;
-
             if (sensors.rotation_rate < 0) {
                 prog--;
             } else {
                 prog++;
             }
+
+            start();
         }
     }
 

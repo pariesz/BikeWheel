@@ -32,7 +32,7 @@ namespace SensorData {
     static time_point<steady_clock> start;
 
     static uint16_t angle = 0;
-    static int16_t gyro_y = -2000; // Mock sensor in reverse
+    static int16_t gyro_y = -3000; // Mock sensor in reverse
     static bool loaded = false;
 
     void load_csv() {

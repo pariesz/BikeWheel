@@ -35,6 +35,10 @@ inline float uint16ToRadians(uint16_t angle) {
     return  (angle / (float)65535) * 2 * PI;
 }
 
+void Adafruit_DotStar::show() {
+
+}
+
 void Adafruit_DotStar::show(uint16_t angle) {
     for (int i = 0; i < NUM_PIXELS; i++) {
         int addr = i * 5;

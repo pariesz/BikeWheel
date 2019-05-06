@@ -18,9 +18,8 @@ protected:
     virtual inline uint16_t get_row_end(uint8_t row_index) = 0;
     virtual inline uint16_t get_angle(uint16_t arc) = 0;
     virtual inline uint32_t get_color(uint16_t arc) = 0;
-    Image();
-private:
-    uint32_t get_color(uint8_t row_index, uint16_t angle, bool reverse) OPTIMIZE;
 public:
+    uint32_t get_led_color(uint8_t index, uint16_t angle, bool reverse) OPTIMIZE;
+    void Initialize();
     void render(uint16_t zero_angle, int32_t rotation_rate) OPTIMIZE;
 };
