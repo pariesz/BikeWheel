@@ -1,10 +1,12 @@
+#define LOGGING 0
+
 #include "Programs.h"
 #include "WheelSensors.h"
 #include "Leds.h"
 #include "Logging.h"
+#include "./Images/Hamster.h"
 #include "./Images/LaPandora.h"
 #include "./Images/fist.h"
-
 
 WheelSensors sensors;
 
@@ -13,6 +15,7 @@ bool on = 0;
 uint8_t prog = 0;
 
 // images
+Hamster* hamster = nullptr;
 LaPandora* la_pandora = nullptr;
 fist* fist_img = nullptr;
 
@@ -31,14 +34,14 @@ void setup(void) {
 void stop(void) {
     on = 0;
 
-    switch (prog) {
-        case 1:
-            delete la_pandora;
-            break;
-        case 6:
-            delete fist_img;
-            break;
-    }
+    delete la_pandora;
+    la_pandora = nullptr;
+
+    delete fist_img;
+    fist_img = nullptr;
+
+    delete hamster;
+    hamster = nullptr;
 }
 
 void start(void) {
@@ -46,12 +49,15 @@ void start(void) {
 
     switch (prog) {
         case 1:
-            la_pandora = new LaPandora();
+            la_pandora = new LaPandora;
             la_pandora->initialize();
             break;
         case 6:
-            fist_img = new fist();
+            fist_img = new fist;
             fist_img->Initialize();
+            break;
+        case 8:
+            hamster = new Hamster;
             break;
     }
 }
@@ -90,8 +96,10 @@ void loop(void) {
                 fist_img->render(sensors.angle, sensors.rotation_rate); break;
             case 7:
                 Programs::rainbow_text(sensors.angle, 37, "- BCN - Critical Mass - Masa Critica"); break;
+            case 8:
+                hamster->render(sensors.angle, sensors.rotation_rate); break;
             default:
-                prog = sensors.rotation_rate < 0 ? 7 : 0; 
+                prog = sensors.rotation_rate < 0 ? 8 : 0; 
                 start(); 
                 break;
         }

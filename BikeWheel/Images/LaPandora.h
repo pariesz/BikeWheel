@@ -21,11 +21,12 @@ public:
 
         for (uint8_t i = 0; i < NUM_PIXELS; i++) {
             uint16_t led_angle = Leds::get_angle(i);
-
-            uint32_t color = rocket_img.get_led_color(i, rocket_angle + led_angle, reverse);
+            uint16_t angle = rocket_angle + led_angle;
+            uint32_t color = rocket_img.get_led_color(i, reverse ? ~angle : angle);
 
             if (color == 0) {
-                color = space_img.get_led_color(i, zero_angle + led_angle, reverse);
+                angle = zero_angle + led_angle;
+                color = space_img.get_led_color(i, reverse ? ~angle : angle);
             }
 
             Leds::set_color(i, color);

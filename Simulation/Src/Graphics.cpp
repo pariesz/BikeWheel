@@ -142,7 +142,7 @@ namespace Graphics {
 
         // Render the accum blur behind the scene
         screen_shader->use();
-        screen_shader->setFloat("Alpha", 0.99);
+        screen_shader->setFloat("Alpha", 0.99f);
         accum_frame->draw();
 
         glBindVertexArray(ledsVAO);

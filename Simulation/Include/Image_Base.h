@@ -124,7 +124,7 @@ public:
 
         stream.open(filename);
         stream << "#pragma once" << endl
-               << "#ifdef SIMULATION"
+               << "#ifdef SIMULATION" << endl
                << "#include \"Arduino_Mock.h\"" << endl
                << "#else" << endl
                << "#include <avr/pgmspace.h>" << endl

@@ -1,7 +1,5 @@
 #pragma once
 
-#define LOGGING 0
-
 #if LOGGING == 1
 
 #ifdef SIMULATION

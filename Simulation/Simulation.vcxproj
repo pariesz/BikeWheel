@@ -167,6 +167,13 @@
     <ClInclude Include="..\BikeWheel\Images\rocket.h" />
     <ClInclude Include="..\BikeWheel\Images\space.h" />
     <ClInclude Include="..\BikeWheel\Images\LaPandora.h" />
+    <ClInclude Include="..\BikeWheel\Images\run1.h" />
+    <ClInclude Include="..\BikeWheel\Images\run2.h" />
+    <ClInclude Include="..\BikeWheel\Images\roll1.h" />
+    <ClInclude Include="..\BikeWheel\Images\roll2.h" />
+    <ClInclude Include="..\BikeWheel\Images\gore1.h" />
+    <ClInclude Include="..\BikeWheel\Images\gore2.h" />
+    <ClInclude Include="..\BikeWheel\Images\Hamster.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\screen.fs" />

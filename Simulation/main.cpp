@@ -17,12 +17,14 @@
 #include "Image_Grayscale.h"
 #include "Leds_Export.h"
 #include "LaPandora.h"
+#include "Hamster.h"
 #include "rocket.h"
 
 bool on = true;
 WheelSensors sensors;
 Image_Base *image = nullptr;
 LaPandora la_pandora;
+Hamster hamster;
 
 void loop() {
     if (!SensorData::update()) {
@@ -46,7 +48,8 @@ void loop() {
     //Programs::flower(angle);
     //Programs::umbrella(angle);
     //Programs::radioactive(angle);
-    image->render(angle, sensors.rotation_rate);
+    //image->render(angle, sensors.rotation_rate);
+    hamster.render(angle, sensors.rotation_rate);
 
     Leds::leds.show(sensors.angle);
     //Sleep(100);
@@ -93,21 +96,28 @@ int main() {
     //image = new Image_6BitColor(pixels);
 
     // FIST
-    std::string imageName("fist");
-    BMP bmp("Images/" + imageName + ".bmp");
-    Image_Pixels pixels(bmp, Leds::min_dist);
-    uint32_t colors[] = { 0x000000, 0xFF0000 };
-    image = new Image_IndexedColor(pixels, colors, 2);
+    //std::string imageName("fist");
+    //BMP bmp("Images/" + imageName + ".bmp");
+    //Image_Pixels pixels(bmp, Leds::min_dist);
+    //uint32_t colors[] = { 0x000000, 0xFF0000 };
+    //image = new Image_IndexedColor(pixels, colors, 2);
+
+    // HAMSTER
+    //std::string imageName("gore2");
+    //BMP bmp("Images/" + imageName + ".bmp");
+    //Image_Pixels pixels(bmp, Leds::min_dist);
+    //uint32_t colors[] = { 0x000000, 0xFFCC00, 0xFF5555, 0x800000, 0xFFFFFF };
+    //image = new Image_IndexedColor(pixels, colors, 5);
 
     //uint32_t mrSplat_colors[] = { 0x000000, 0x00FFFF, 0xFF9900 };
     //Image_Base *image = new Image_IndexedColor(pixels, mrSplat_colors, 3);
 
     //Image_Base *image = new Image_Grayscale(pixels);
 
-    image->export_code(std::string("../BikeWheel/Images/").append(imageName).append(".h"), imageName);
-    return 0;
+    //image->export_code(std::string("../BikeWheel/Images/").append(imageName).append(".h"), imageName);
+    //return 0;
 
-    la_pandora.initialize();
+    //la_pandora.initialize();
     SensorData::init();
     sensors.setup();
 

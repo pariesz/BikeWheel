@@ -44,7 +44,7 @@ public:
                 int cx = (x - max_dist) - x_offset;
                 int cy = (max_dist - y) - y_offset;
 
-                uint16_t dist = sqrtf(sq(cx) + sq(cy));
+                uint16_t dist = (uint16_t)sqrtf(sq(cx) + sq(cy));
 
                 if (dist > max_dist || dist < min_dist) {
                     continue;

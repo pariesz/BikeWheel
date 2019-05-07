@@ -140,6 +140,15 @@
     <ClInclude Include="Include\MPU6050_Mock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\BikeWheel\Images\rocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BikeWheel\Images\space.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BikeWheel\Images\LaPandora.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="output.csv" />

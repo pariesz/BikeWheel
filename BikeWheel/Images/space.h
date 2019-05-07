@@ -1,5 +1,6 @@
 #pragma once
-#ifdef SIMULATION#include "Arduino_Mock.h"
+#ifdef SIMULATION
+#include "Arduino_Mock.h"
 #else
 #include <avr/pgmspace.h>
 #endif

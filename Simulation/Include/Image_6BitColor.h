@@ -72,7 +72,7 @@ public:
 
             for (int j = 0; j < res; j++) {
                 auto pixel_arc = pixel_row->at(j);
-                uint16_t angle = (j / (float)res) * (1 << 16);
+                uint16_t angle = (j / (float)res) * 0xFFFF;
 
                 if (!pixel_arc->empty()) {
                     uint32_t color32 = Image_Base::average_colors(pixel_arc);
