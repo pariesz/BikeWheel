@@ -125,6 +125,9 @@
     <ClInclude Include="Images\Hamster.h" />
     <ClInclude Include="Images\LaPandora.h" />
     <ClInclude Include="Images\MrSplat.h" />
+    <ClInclude Include="Images\NyanCat.h" />
+    <ClInclude Include="Images\NyanCat1.h" />
+    <ClInclude Include="Images\NyanCat2.h" />
     <ClInclude Include="Images\rocket.h" />
     <ClInclude Include="Images\roll1.h" />
     <ClInclude Include="Images\roll2.h" />

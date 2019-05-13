@@ -72,6 +72,6 @@ protected:
 	}
 
 	inline uint32_t get_color(uint16_t arc) override {
-		return ((arc & 0x0030) << 18) + ((arc & 0x000C) << 12) + ((arc & 0x0003) << 6);
+		return ((uint32_t)(arc & 0x0030) << 18) + ((uint32_t)(arc & 0x000C) << 12) + ((arc & 0x0003) << 6);
 	}
 };

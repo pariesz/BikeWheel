@@ -19,6 +19,7 @@
 #include "LaPandora.h"
 #include "Logging.h"
 #include "Hamster.h"
+#include "NyanCat.h"
 #include "rocket.h"
 
 bool on = true;
@@ -27,6 +28,7 @@ WheelSensors sensors;
 Image_Base *image = nullptr;
 LaPandora la_pandora;
 Hamster hamster;
+NyanCat nyan_cat;
 
 void loop() {
     if (!SensorData::update()) {
@@ -40,7 +42,7 @@ void loop() {
 
     uint16_t angle = sensors.angle;
 
-    Logging::test_segments(angle, SensorData::get().hall);
+    //Logging::test_segments(angle, SensorData::get().hall);
     //Programs::spiral(angle);
     //Programs::rainbow(angle);
     //Programs::masa_critica(angle);
@@ -50,6 +52,7 @@ void loop() {
     //Programs::radioactive(angle);
     //image->render(angle, sensors.rotation_rate);
     //hamster.render(angle, sensors.rotation_rate);
+    nyan_cat.render(angle, sensors.rotation_rate);
 
     Leds::leds.show(sensors.angle);
     //Sleep(100);
@@ -109,6 +112,12 @@ int main() {
     //Image_Pixels pixels(bmp, Leds::min_dist);
     //uint32_t colors[] = { 0x000000, 0xFFCC00, 0xFF5555, 0x800000, 0xFFFFFF };
     //image = new Image_IndexedColor(pixels, colors, 5);
+
+    // NYAN CAT
+    //std::string imageName("NyanCat1");
+    //BMP bmp("Images/" + imageName + ".bmp");
+    //Image_Pixels pixels(bmp, Leds::min_dist);
+    //image = new Image_6BitColor(pixels);
 
     //uint32_t mrSplat_colors[] = { 0x000000, 0x00FFFF, 0xFF9900 };
     //Image_Base *image = new Image_IndexedColor(pixels, mrSplat_colors, 3);

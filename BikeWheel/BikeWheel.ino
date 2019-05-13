@@ -16,6 +16,7 @@
 #include "Leds.h"
 #include "Logging.h"
 #include "./Images/Hamster.h"
+#include "./Images/NyanCat.h"
 #include "./Images/LaPandora.h"
 #include "./Images/fist.h"
 
@@ -30,6 +31,7 @@ uint8_t prog = 0;
 fist* fist_img = nullptr;
 Hamster* hamster = nullptr;
 LaPandora* la_pandora = nullptr;
+NyanCat* nyan_cat = nullptr;
 
 void setup(void) {
 
@@ -54,6 +56,9 @@ void stop(void) {
 
     delete hamster;
     hamster = nullptr;
+
+    delete nyan_cat;
+    nyan_cat = nullptr;
 }
 
 void start(void) {
@@ -70,6 +75,9 @@ void start(void) {
             break;
         case 7:
             hamster = new Hamster;
+            break;
+        case 8:
+            nyan_cat = new NyanCat;
             break;
     }
 }
@@ -99,8 +107,10 @@ void loop(void) {
                 Programs::rainbow_text(sensors.angle, 37, "- BCN - Critical Mass - Masa Critica"); break;
             case 7:
                 hamster->render(sensors.angle, sensors.rotation_rate); break;
+            case 8:
+                nyan_cat->render(sensors.angle, sensors.rotation_rate); break;
             default:
-                prog = sensors.rotation_rate < 0 ? 7 : 0; 
+                prog = sensors.rotation_rate < 0 ? 8 : 0; 
                 start(); 
                 break;
         }

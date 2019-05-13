@@ -87,6 +87,15 @@
     <ClInclude Include="Images\MrSplat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Images\NyanCat2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Images\NyanCat1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Images\NyanCat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Schematics\Nano Pinout.jpg">

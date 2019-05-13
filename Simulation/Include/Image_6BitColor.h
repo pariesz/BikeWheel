@@ -53,7 +53,7 @@ protected:
 
         stream << endl
             << "\tinline uint32_t get_color(uint16_t arc) override {" << endl
-            << "\t\treturn ((arc & 0x0030) << 18) + ((arc & 0x000C) << 12) + ((arc & 0x0003) << 6);" << endl
+            << "\t\treturn ((uint32_t)(arc & 0x0030) << 18) + ((uint32_t)(arc & 0x000C) << 12) + ((arc & 0x0003) << 6);" << endl
             << "\t}" << endl;
     }
 
