@@ -10,8 +10,8 @@ private:
 
 public:
     void initialize() {
-        space_img.Initialize();
-        rocket_img.Initialize();
+        space_img.initialize();
+        rocket_img.initialize();
     }
 
     void render(uint16_t zero_angle, int32_t rotation_rate) {

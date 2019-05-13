@@ -20,6 +20,6 @@ protected:
     virtual inline uint32_t get_color(uint16_t arc) = 0;
 public:
     uint32_t get_led_color(uint8_t index, uint16_t angle) OPTIMIZE;
-    void Initialize();
+    void initialize();
     void render(uint16_t zero_angle, int32_t rotation_rate) OPTIMIZE;
 };

@@ -44,53 +44,49 @@ namespace Programs {
         }
     }
 
-    void rainbow(uint16_t zero_angle) OPTIMIZE;
-    static void rainbow(uint16_t zero_angle) {
-        //uint16_t offset = Timers::millis() << 4;
+    void kaleidoscope(uint16_t zero_angle) OPTIMIZE;
+    static void kaleidoscope(uint16_t zero_angle) {
 
-        for (uint8_t i = 0; i < NUM_PIXELS; i++) {
-            uint16_t angle = Leds::get_angle(i) + zero_angle; // +offset;
-            uint32_t color = HslToRgb(angle >> 8, 255, 255);
-            Leds::set_color(i, color);
+        uint16_t ms = millis();
+        zero_angle -= ms;
+
+        uint8_t angle_shift = (ms >> 9) & 0xF;
+        if (angle_shift > 8) {
+            angle_shift ^= 0xF;
         }
-    }
+        angle_shift += 1;
 
-    void flower(uint16_t zero_angle) OPTIMIZE;
-    static void flower(uint16_t zero_angle) {
-        static uint8_t segment_offset = 0;
-        static uint8_t prev_segment = (zero_angle - Leds::get_angle(8)) >> 13;
-
-        uint8_t current_segment = (zero_angle - Leds::get_angle(8)) >> 13;
-
-        if (current_segment != prev_segment) {
-            prev_segment = current_segment;
-            segment_offset++;
+        uint8_t segment_shift = (ms >> 10) & 0xF;
+        if (segment_shift > 8) {
+            segment_shift ^= 0xF;
         }
 
         for (int i = 0; i < NUM_PIXELS; i++) {
             uint16_t angle = zero_angle + Leds::get_angle(i);
+            
             uint16_t segment_angle = angle & ((1 << 13) - 1);
+
             uint8_t inverse_dist = (uint8_t)~Leds::get_distance(i);
 
-            if (segment_angle < ((uint16_t)(inverse_dist) << 4)) {
+            // set black space between petals
+            if (segment_angle < ((uint16_t)(inverse_dist) << segment_shift)) {
                 Leds::set_color(i, black);
                 continue;
             }
 
-            // lower and raise
+            // lower and raise petal angle
             if (segment_angle & (1 << 12)) {
                 segment_angle = segment_angle - (1 << 12);
             } else {
                 segment_angle = (1 << 12) - segment_angle;
             }
-
-            if ((segment_angle >> 5) > inverse_dist) {
+            if ((segment_angle >> angle_shift) > inverse_dist) {
                 Leds::set_color(i, black);
                 continue;
             }
 
-            uint8_t segment = angle >> 13;
-            switch ((segment - (segment_offset >> 3)) & 0x07) {
+            // set color of each petal
+            switch ((angle >> 13) & 0x07) {
                 case 0: Leds::set_color(i, red); break;
                 case 1: Leds::set_color(i, orange); break;
                 case 2: Leds::set_color(i, yellow); break;
@@ -120,34 +116,6 @@ namespace Programs {
             } else {
                 Leds::set_color(i, yellow);
             }
-        }
-    }
-
-    void umbrella(uint16_t zero_angle) OPTIMIZE;
-    static void umbrella(uint16_t zero_angle) {
-        zero_angle -= (1 << 12); // rotate 1/16 turn
-
-        for (int i = 0; i < NUM_PIXELS; i++) {
-            uint16_t angle = zero_angle + Leds::get_angle(i);
-            uint8_t segment = angle >> 13;
-            uint16_t segment_angle = angle & ((1 << 13) - 1);
-            uint8_t inverse_dist = (uint8_t)~Leds::get_distance(i);
-
-            if (segment_angle < 500 + ((uint16_t)(inverse_dist) << 3)) {
-                Leds::set_color(i, black);
-                continue;
-            }
-
-            if (segment_angle & (1 << 12)) {
-                segment_angle = (1 << 13) - segment_angle;
-            }
-
-            if ((segment_angle >> 7) > inverse_dist) {
-                Leds::set_color(i, black);
-                continue;
-            }
-
-            Leds::set_color(i, segment & 1 ? white : red);
         }
     }
 

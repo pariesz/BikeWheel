@@ -8,16 +8,13 @@
 
 class HallSensor {
 private:
-    uint32_t frame_us;
-    uint32_t rotation_us;
-    uint16_t offset; // offset the rotation relative to the y axis
-    uint8_t value;  // This is where we record the OH137 Input
+    uint32_t us_rotation;
 public:
+    uint8_t value;  // This is where we record the OH137 Input
     uint16_t angle;
-    uint16_t rotations; // The number of 'accurate' rotations
     int32_t rotation_rate; // number of uint16 rotations per second
 public:
-    HallSensor(uint16_t offset);
+    HallSensor();
     void setup();
-    void loop(bool reverse) OPTIMIZE;
+    void loop(bool reverse, uint32_t us, uint32_t us_diff) OPTIMIZE;
 };

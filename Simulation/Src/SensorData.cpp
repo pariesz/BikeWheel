@@ -32,7 +32,7 @@ namespace SensorData {
     static time_point<steady_clock> start;
 
     static uint16_t angle = 0;
-    static int16_t gyro_y = -3000; // Mock sensor in reverse
+    static int16_t gyro_y = -9000; // Mock sensor in reverse
     static bool loaded = false;
 
     void load_csv() {
@@ -102,8 +102,8 @@ namespace SensorData {
         int us = micros();
         int diff = us - us_prev;
         us_prev = us;
-        
-        --gyro_y;
+
+        //gyro_y--;
 
         angle += gyro_y 
               * ((float)diff / 1000000) // us to seconds
@@ -126,9 +126,9 @@ namespace SensorData {
 
         dl->us     = 6000;
         dl->hall   = angle < 500 ? LOW : HIGH;
-        dl->acc_x  = sin(radians) * ((1 << 15) - 1);
+        dl->acc_x  = sin(radians) * ((1 << 12) - 1);
         dl->acc_y  = 0;
-        dl->acc_z  = ~(uint16_t)(cos(radians) * ((1 << 15) - 1));
+        dl->acc_z  = ~(uint16_t)(cos(radians) * ((1 << 12) - 1));
         dl->gyro_x = 0;
         dl->gyro_y = gyro_y;
         dl->gyro_z = 0;

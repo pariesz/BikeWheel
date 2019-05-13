@@ -17,10 +17,12 @@
 #include "Image_Grayscale.h"
 #include "Leds_Export.h"
 #include "LaPandora.h"
+#include "Logging.h"
 #include "Hamster.h"
 #include "rocket.h"
 
 bool on = true;
+
 WheelSensors sensors;
 Image_Base *image = nullptr;
 LaPandora la_pandora;
@@ -38,18 +40,16 @@ void loop() {
 
     uint16_t angle = sensors.angle;
 
-    //std::cout << Sensors::angle << std::endl;
-
-    //Logging::test_segments(angle, SensorData::get().hall);
+    Logging::test_segments(angle, SensorData::get().hall);
     //Programs::spiral(angle);
     //Programs::rainbow(angle);
     //Programs::masa_critica(angle);
     //Programs::rainbow_text(angle, 37, "- BCN - Critical Mass - Masa Critica");
-    //Programs::flower(angle);
+    //Programs::kaleidoscope(angle);
     //Programs::umbrella(angle);
     //Programs::radioactive(angle);
     //image->render(angle, sensors.rotation_rate);
-    hamster.render(angle, sensors.rotation_rate);
+    //hamster.render(angle, sensors.rotation_rate);
 
     Leds::leds.show(sensors.angle);
     //Sleep(100);
@@ -75,6 +75,7 @@ void export_leds() {
            -140, 262
         }
     };
+    
     Leds_Export::export_code("../BikeWheel/Leds.cpp", led_positions);
 }
 

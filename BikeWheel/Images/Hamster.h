@@ -10,7 +10,7 @@ class Hamster {
 private:
     Image* frame1 = nullptr;
     Image* frame2 = nullptr;
-    uint8_t index = 0;
+    uint8_t index = -1;
 
 private:
     void update_index(uint16_t new_index) {
@@ -47,8 +47,8 @@ private:
                 break;
         }
 
-        frame1->Initialize();
-        frame2->Initialize();
+        frame1->initialize();
+        frame2->initialize();
     }
 
 public:

@@ -14,7 +14,11 @@
 #include "Logging.h"
 #include "WheelSensors.h"
 
-#define REVERSE
+// distance in mm
+// required to calculate and offset centrifugal acceleration
+#define MPU_RADIUS 25
+
+#define REVERSE 1
 #define diff_abs(a,b) (((a)>(b)) ? ((a)-(b)) : ((b)-(a)))
 
 WheelSensors::WheelSensors()
@@ -59,13 +63,12 @@ void WheelSensors::setup() {
 }
 
 void WheelSensors::loop() {
-    static uint32_t prev_time = micros();
-    static uint16_t prev_acc_angle = 0;
-
     // get time interval
-    uint32_t time = micros();
-    uint32_t time_diff = time - prev_time;
-    prev_time = time;
+    uint32_t us = micros();
+    static uint32_t us_prev = us;
+
+    uint32_t us_diff = us - us_prev;
+    us_prev = us;
 
     // read sensor data
     int16_t acc[3], gyro[3];
@@ -73,8 +76,8 @@ void WheelSensors::loop() {
 
     // validate data
     if (acc[0] == 0 && acc[2] == 0) {
-        LOG_LN("BAD ACC READ: 0");
-        angle = get_gyro_angle(time_diff);
+        log_ln("MPU6050 ZERO");
+        angle = get_rotation_rate_angle(us_diff);
         return;
     }
 
@@ -95,51 +98,71 @@ void WheelSensors::loop() {
 #endif
 */
 
-#ifdef REVERSE
-    rotation_rate = -gyro[1];
-#else
-    rotation_rate = gyro[1];
-#endif
-
     // gyro is signed int16 at a scale of +-2000deg/s : +-32768
     // so to convert: gyro_y * (2000 / 360) * 2
-    rotation_rate *= 11.1111111f;
-
-    uint16_t gyro_angle = get_gyro_angle(time_diff);
-    uint16_t acc_angle = get_acc_angle(acc);    
-
-    // MPU6050 sometimes sticks on a value
-    if (prev_acc_angle == acc_angle) {
-#ifdef DEBUG
-        Serial.print(F("BAD ACC READ: "));
-        Serial.println(acc_angle);
+#if REVERSE == 1
+    rotation_rate = gyro[1] * -11.1111111f;
+#else
+    rotation_rate = gyro[1] * 11.1111111f;
 #endif
-        angle = gyro_angle;
+
+    uint16_t rotation_rate_angle = get_rotation_rate_angle(us_diff); 
+    
+    uint16_t acc_angle = get_acc_angle(acc);
+
+    //angle = rotation_rate_angle;
+    //angle = acc_angle;
+    //return;
+
+    // Validation: MPU6050 sometimes sticks on a value
+    // or gives wild values at higher speeds
+    static uint16_t prev_acc_angle = acc_angle;
+
+    if (prev_acc_angle == acc_angle) {
+        log_val("MPU6050 STUCK: ", acc_angle);
+        angle = rotation_rate_angle;
         return;
     }
+
     prev_acc_angle = acc_angle;
 
     // overflow check.  gyro and acc are 180 degress out 
-    if (diff_abs(gyro_angle, acc_angle) > 0xF000) {
-        angle = gyro_angle;
+    if (diff_abs(rotation_rate_angle, acc_angle) > 0xF000) {
+        angle = rotation_rate_angle;
         return;
     }
 
     // combination filter: 95% gyro + 5% acc
-    angle = (gyro_angle * 0.95f) + (acc_angle * 0.05f);
+    angle = (rotation_rate_angle * 0.95f) + (acc_angle * 0.05f);
 }
 
-inline uint16_t WheelSensors::get_gyro_angle(uint32_t time_diff) {
-    // >> 20 (/ 1048576) to convert micros to seconds
-    // update angle from gyro reading (subtract?)
-    return angle += (rotation_rate * (int64_t)time_diff) / 1000000;
+inline uint16_t WheelSensors::get_rotation_rate_angle(uint32_t time_diff) {
+    return angle + ((rotation_rate * (int64_t)time_diff) / 1000000);
 }
 
 inline uint16_t WheelSensors::get_acc_angle(int16_t* acc) {
-#ifdef REVERSE
+    // Centrifugal Acceleration: a = v^2 / r 
+    // rs = rotations per second  = rotation_rate(int16/s) / (2^15)
+    // v  = circumference (2PI * MPU_RADIUS) * rot
+    // a  = (2PI * MPU_RADIUS * rs)^2 / MPU_RADIUS
+    //    = MPU_RADIUS * (2PI * rs)^2
+
+    // Acceleromter full-range (int16) is set to ±8g
+    // a(mpu) = (a * (2^15)) / (9.8ms2 * 1000mm * 8g) = a * 0.417959
+    
+    // acts on the z-axis in the positive direction
+    // so we subtract to correct
+    float x = TWO_PI * abs(rotation_rate) / (float)0xFFFF;
+    
+    uint16_t centrifugal_acceleration = (MPU_RADIUS * sq(x) * 0.417959);
+    
+    // Possible overflow, but we shouldn't be approaching those accelerations
+    int16_t acc_z = acc[2] - centrifugal_acceleration;
+
+#if REVERSE == 1
     // offset 90 degrees
-    return (1 << 14) + ((atan2(acc[2], ~acc[0]) * (32768.0f / PI)));
+    return (1 << 14) + ((atan2(acc_z, ~acc[0]) * (32768 / (float)PI)));
 #else
-    return (atan2(acc[2], acc[0]) * (32768.0f / M_PI));
+    return (atan2(acc_z, acc[0]) * (32768 / (float)PI));
 #endif
 }

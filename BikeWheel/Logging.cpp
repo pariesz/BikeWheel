@@ -12,12 +12,12 @@
 
 #if LOGGING == 1
 namespace Logging {
-    inline void log_fps() {
+    inline void log_fps_impl() {
         static unsigned int fps = 0;
         static unsigned long fps_millis = millis();
 
         if (millis() - fps_millis > 1000) {
-            LOG_VAL("fps", fps);
+            log_val("fps", fps);
             fps_millis = millis();
             fps = 0;
         }
@@ -30,11 +30,16 @@ namespace Logging {
         using namespace Leds;
 
         for (uint8_t i = 0; i < NUM_PIXELS; i++) {
-            if (get_distance(i) < 250) {
+            int num = i + 1;
+
+            if (num <= 34) {
+                set_color(i, white);
+                continue;
+            }
+            if (num % 36 && (num + 1) % 36) {
                 set_color(i, black);
                 continue;
             }
-
             if (hallVal == LOW) {
                 set_color(i, white);
                 continue;

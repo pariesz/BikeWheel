@@ -111,7 +111,7 @@ protected:
             row_ends[i] = k;
         }
 
-        Image::Initialize();
+        Image::initialize();
     }
 
 public:

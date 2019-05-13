@@ -15,6 +15,7 @@ public:
 
 private:
     MPU6050 mpu;
+    uint8_t mpu_radius;
 
 public:
     WheelSensors();
@@ -22,6 +23,6 @@ public:
     void loop() OPTIMIZE;
 
 private:
-    inline uint16_t get_gyro_angle(uint32_t time_diff) OPTIMIZE;
+    inline uint16_t get_rotation_rate_angle(uint32_t time_diff) OPTIMIZE;
     inline uint16_t get_acc_angle(int16_t* acc) OPTIMIZE;
 };

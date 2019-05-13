@@ -2,7 +2,7 @@
 #include "./Leds.h"
 #include "./Image.h"
 
-void Image::Initialize() {
+void Image::initialize() {
     for (int i = 0; i < NUM_PIXELS; i++) {
         uint8_t row_index = i % PIXELS_PER_STRIP;
         iterators[i] = get_row_end(row_index);

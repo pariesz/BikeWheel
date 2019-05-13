@@ -5,7 +5,7 @@
 
 class MPU6050 {
     private:
-        int16_t zAccelOffset;
+        int16_t zAccelOffset = 0;
 
     public:
         MPU6050(int addr);
