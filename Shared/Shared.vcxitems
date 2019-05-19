@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{205fec87-a5d9-49c7-95a1-86a21a2c633c}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="$(MSBuildThisFileDirectory)library.properties" />
+    <Text Include="$(MSBuildThisFileDirectory)Shared.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- <ClInclude Include="$(MSBuildThisFileDirectory)Shared.h" /> -->
+    <ClInclude Include="$(MSBuildThisFileDirectory)Colors.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Font.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)HallSensor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Helpers.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Image.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\finger.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\fist.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\gore1.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\gore2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\Hamster.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\LaPandora.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\MrSplat.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\NyanCat.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\NyanCat1.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\NyanCat2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\Poo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\rocket.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\roll1.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\roll2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\run1.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\run2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\space.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Leds.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Logging.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WheelSensors.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Colors.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)HallSensor.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Image.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Leds.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Logging.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Programs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Shared.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)WheelSensors.cpp" />
+  </ItemGroup>
+</Project>

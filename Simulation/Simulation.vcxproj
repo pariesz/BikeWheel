@@ -55,6 +55,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="..\Shared\Shared.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -70,9 +71,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)Include;$(ProjectDir)Include;$(IncludePath);$(SolutionDir)BikeWheel;$(SolutionDir)BikeWheel\Images</IncludePath>
+    <IncludePath>$(SolutionDir)Include;$(ProjectDir)Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Lib;$(LibraryPath)</LibraryPath>
-    <SourcePath>$(ProjectDir)Src;$(SourcePath);$(SolutionDir)BikeWheel</SourcePath>
+    <SourcePath>$(ProjectDir)Src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -123,12 +124,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\BikeWheel\Image.cpp" />
-    <ClCompile Include="..\BikeWheel\Leds.cpp" />
-    <ClCompile Include="..\BikeWheel\Logging.cpp" />
-    <ClCompile Include="..\BikeWheel\WheelSensors.cpp" />
-    <ClCompile Include="..\BikeWheel\HallSensor.cpp" />
-    <ClCompile Include="..\BikeWheel\Colors.cpp" />
     <ClCompile Include="Src\Leds_Export.cpp" />
     <ClCompile Include="Src\Adafruit_DotStar_Mock.cpp" />
     <ClCompile Include="Src\Arduino_Mock.cpp" />
@@ -137,46 +132,24 @@
     <ClCompile Include="Src\MPU6050_Mock.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Include\Leds_Export.h" />
     <ClCompile Include="Src\Graphics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Adafruit_DotStar_Mock.h" />
+    <ClInclude Include="Include\Arduino_Mock.h" />
+    <ClInclude Include="Include\Bmp.h" />
     <ClInclude Include="Include\Export.h" />
+    <ClInclude Include="Include\FrameBuffer.h" />
+    <ClInclude Include="Include\Graphics.h" />
+    <ClInclude Include="Include\Image_6BitColor.h" />
+    <ClInclude Include="Include\Image_Base.h" />
     <ClInclude Include="Include\Image_Grayscale.h" />
     <ClInclude Include="Include\Image_IndexedColor.h" />
     <ClInclude Include="Include\Image_Pixels.h" />
-    <ClInclude Include="Include\Bmp.h" />
-    <ClInclude Include="Include\FrameBuffer.h" />
-    <ClInclude Include="Include\Image_Base.h" />
-    <ClInclude Include="Include\Image_6BitColor.h" />
-    <ClInclude Include="Include\Arduino_Mock.h" />
+    <ClInclude Include="Include\Leds_Export.h" />
     <ClInclude Include="Include\SensorData.h" />
-    <ClInclude Include="Include\MPU6050_Mock.h" />
     <ClInclude Include="Include\Shader.h" />
-    <ClInclude Include="Include\Graphics.h" />
-    <ClInclude Include="..\BikeWheel\Colors.h" />
-    <ClInclude Include="..\BikeWheel\Font.h" />
-    <ClInclude Include="..\BikeWheel\Helpers.h" />
-    <ClInclude Include="..\BikeWheel\Image.h" />
-    <ClInclude Include="..\BikeWheel\Leds.h" />
-    <ClInclude Include="..\BikeWheel\Logging.h" />
-    <ClInclude Include="..\BikeWheel\Programs.h" />
-    <ClInclude Include="..\BikeWheel\WheelSensors.h" />
-    <ClInclude Include="..\BikeWheel\HallSensor.h" />
-    <ClInclude Include="..\BikeWheel\Images\rocket.h" />
-    <ClInclude Include="..\BikeWheel\Images\space.h" />
-    <ClInclude Include="..\BikeWheel\Images\LaPandora.h" />
-    <ClInclude Include="..\BikeWheel\Images\run1.h" />
-    <ClInclude Include="..\BikeWheel\Images\run2.h" />
-    <ClInclude Include="..\BikeWheel\Images\roll1.h" />
-    <ClInclude Include="..\BikeWheel\Images\roll2.h" />
-    <ClInclude Include="..\BikeWheel\Images\gore1.h" />
-    <ClInclude Include="..\BikeWheel\Images\gore2.h" />
-    <ClInclude Include="..\BikeWheel\Images\Hamster.h" />
-    <ClInclude Include="..\BikeWheel\Images\NyanCat.h" />
-    <ClInclude Include="..\BikeWheel\Images\NyanCat1.h" />
-    <ClInclude Include="..\BikeWheel\Images\NyanCat2.h" />
+    <ClInclude Include="Include\MPU6050_Mock.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\screen.fs" />

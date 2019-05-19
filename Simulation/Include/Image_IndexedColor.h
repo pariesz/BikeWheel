@@ -39,8 +39,12 @@ protected:
         return arc & angle_mask;
     }
 
+    uint8_t get_color_index(uint16_t arc) {
+        return arc & color_mask;
+    }
+
     uint32_t get_color(uint16_t arc) override {
-        return colors[arc & color_mask];
+        return colors[get_color_index(arc)];
     }
 
     void export_data(std::ofstream& stream) override {
@@ -85,6 +89,8 @@ public:
         for (int i = 0; i < PIXELS_PER_STRIP; i++) {
             int res = arc_pixels.get_resolution(i);
 
+            int edge_threshold = ((1 << 16) / res) * 3;
+
             auto pixel_row = arc_pixels.arcs->at(i);
 
             vector<uint16_t> row;
@@ -98,10 +104,40 @@ public:
 
                     uint8_t color_index = get_index_from_rgb(color);
 
-                    if (row.size() > 0) {
-                        // Combine adjacent arclets of the same color
-                        if ((row.back() & color_mask) == color_index) {
+                    size_t size = row.size();
+                    if (size > 0) {
+                        // Compression: combine adjacent arclets of the same color
+                        uint16_t back = row.back();
+
+                        if (get_color_index(back) == color_index) {
                             continue;
+                        }
+
+                        // Simple edge detection compression: if the previous arc is an average
+                        // of this arc and the one before and has a an angle equal to the resolution
+                        // we can assume it was an edge
+                        if (size > 1) {
+                            uint16_t backAngle = get_angle(back);
+
+                            if (angle - backAngle <= edge_threshold) {
+                                uint16_t back2 = row.at(row.size() - 2);
+
+                                if (backAngle - get_angle(back2) > edge_threshold) {
+                                    // the arc is sandwiched at minimum size between 2 large arcs
+                                    uint8_t back2Color = get_color_index(back2);
+
+                                    if (back2Color != color_index) {
+                                        //uint8_t avgColor = average_colors(color6, back2Color);
+
+                                        //if (avgColor == backColor) {
+                                            // the back arc has an average color of the arcs it is sandwiched between
+                                            // and we can assume its and edge
+                                        row.pop_back();
+                                        size--;
+                                        //}
+                                    }
+                                }
+                            }
                         }
                     }
                     row.push_back(get_arc(angle, color_index));

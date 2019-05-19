@@ -5,22 +5,14 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <math.h>
-#include "Leds.h"
-#include "Programs.h"
-#include "WheelSensors.h"
 #include "Graphics.h"
-#include "Logging.h"
 #include "SensorData.h"
 #include "Bmp.h"
 #include "Image_6BitColor.h"
 #include "Image_IndexedColor.h"
 #include "Image_Grayscale.h"
 #include "Leds_Export.h"
-#include "LaPandora.h"
-#include "Logging.h"
-#include "Hamster.h"
-#include "NyanCat.h"
-#include "rocket.h"
+#include "Shared.h"
 
 bool on = true;
 
@@ -107,17 +99,45 @@ int main() {
     //image = new Image_IndexedColor(pixels, colors, 2);
 
     // HAMSTER
-    //std::string imageName("gore2");
+    //std::string imageName("roll2");
     //BMP bmp("Images/" + imageName + ".bmp");
     //Image_Pixels pixels(bmp, Leds::min_dist);
-    //uint32_t colors[] = { 0x000000, 0xFFCC00, 0xFF5555, 0x800000, 0xFFFFFF };
+    //uint32_t colors[] = { 
+    //    0x000000,
+    //    0xFFCC00,
+    //    0xFF5555,
+    //    0xFFFFFF
+    //};
     //image = new Image_IndexedColor(pixels, colors, 5);
 
     // NYAN CAT
     //std::string imageName("NyanCat1");
     //BMP bmp("Images/" + imageName + ".bmp");
     //Image_Pixels pixels(bmp, Leds::min_dist);
+    //uint32_t colors[] = {
+    //    0x000000, 0x888888, 0xFFFFFF,
+    //    0xff0000, 0x880000,
+    //    0xff8800,
+    //    0xffff00, 0x888800,
+    //    0x00ff00, 0x008800,
+    //    0x00ffff, 0x008888,
+    //    0xff00ff, 0x880088
+    //   
+    //};
+    //image = new Image_IndexedColor(pixels, colors, 14);
     //image = new Image_6BitColor(pixels);
+
+
+    // POO
+    //std::string imageName("Poo");
+    //BMP bmp("Images/" + imageName + ".bmp");
+    //Image_Pixels pixels(bmp, Leds::min_dist);
+    //uint32_t colors[] = { 
+    //    0x000000, 0x999999, 0xFFFFFF,
+    //    0x3b1800 ,0x803300, 0xff7f2a, 
+    //    0xff0000, 0x660000
+    //};
+    //image = new Image_IndexedColor(pixels, colors, 8);
 
     //uint32_t mrSplat_colors[] = { 0x000000, 0x00FFFF, 0xFF9900 };
     //Image_Base *image = new Image_IndexedColor(pixels, mrSplat_colors, 3);

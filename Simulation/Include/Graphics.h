@@ -9,4 +9,3 @@ namespace Graphics {
     bool render();
     void terminate();
 };
-

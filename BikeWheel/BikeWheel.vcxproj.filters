@@ -21,81 +21,6 @@
     <ClInclude Include="__vm\.BikeWheel.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Images\finger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Font.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Colors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HallSensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Helpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Leds.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Programs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Logging.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\rocket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WheelSensors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\fist.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\space.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\LaPandora.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\gore1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\gore2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\roll1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\roll2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\run1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\run2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\Hamster.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\MrSplat.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\NyanCat2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\NyanCat1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Images\NyanCat.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Schematics\Nano Pinout.jpg">
@@ -110,25 +35,5 @@
     <Image Include="Logo\logo.png">
       <Filter>Resource Files</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="HallSensor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Leds.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Logging.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Colors.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WheelSensors.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

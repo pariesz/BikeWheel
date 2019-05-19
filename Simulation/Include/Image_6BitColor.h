@@ -103,7 +103,7 @@ public:
                                     uint8_t back2Color = get_color_6bit(back2);
 
                                     if (back2Color != color6) {
-                                        uint8_t avgColor = average_colors(color6, back2Color);
+                                        //uint8_t avgColor = average_colors(color6, back2Color);
 
                                         //if (avgColor == backColor) {
                                             // the back arc has an average color of the arcs it is sandwiched between

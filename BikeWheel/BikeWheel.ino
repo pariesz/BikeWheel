@@ -11,14 +11,7 @@
    To stop flicker at the threashold we add a buffer zone.
    Turn on at ~360 deg/ms and off at ~450 deg/s.
 */
-#include "Programs.h"
-#include "WheelSensors.h"
-#include "Leds.h"
-#include "Logging.h"
-#include "./Images/Hamster.h"
-#include "./Images/NyanCat.h"
-#include "./Images/LaPandora.h"
-#include "./Images/fist.h"
+#include <shared.h>
 
 // upside down
 WheelSensors sensors;
@@ -32,6 +25,7 @@ fist* fist_img = nullptr;
 Hamster* hamster = nullptr;
 LaPandora* la_pandora = nullptr;
 NyanCat* nyan_cat = nullptr;
+Poo* poo = nullptr;
 
 void setup(void) {
 
@@ -59,26 +53,20 @@ void stop(void) {
 
     delete nyan_cat;
     nyan_cat = nullptr;
+
+    delete poo;
+    poo = nullptr;
 }
 
 void start(void) {
     on = 1;
 
     switch (prog) {
-        case 1:
-            la_pandora = new LaPandora;
-            la_pandora->initialize();
-            break;
-        case 5:
-            fist_img = new fist;
-            fist_img->initialize();
-            break;
-        case 7:
-            hamster = new Hamster;
-            break;
-        case 8:
-            nyan_cat = new NyanCat;
-            break;
+        case 1: la_pandora = new LaPandora; break;
+        case 5: fist_img = new fist; break;
+        case 7: hamster = new Hamster; break;
+        case 8: nyan_cat = new NyanCat; break;
+        case 9: poo = new Poo; break;
     }
 }
 
@@ -109,8 +97,10 @@ void loop(void) {
                 hamster->render(sensors.angle, sensors.rotation_rate); break;
             case 8:
                 nyan_cat->render(sensors.angle, sensors.rotation_rate); break;
+            case 9:
+                poo->render(sensors.angle, sensors.rotation_rate); break;
             default:
-                prog = sensors.rotation_rate < 0 ? 8 : 0; 
+                prog = sensors.rotation_rate < 0 ? 9 : 0; 
                 start(); 
                 break;
         }

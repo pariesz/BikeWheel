@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <shared.h>
 #include "Leds.h"
 #include "Export.h"
 
@@ -13,6 +14,7 @@ class Image_Base : public Image {
 private:
     uint16_t* arcs;
     uint16_t row_ends[PIXELS_PER_STRIP];
+
 protected:
     virtual uint16_t get_angle(uint16_t arc) = 0;
 
@@ -61,8 +63,8 @@ protected:
     }
 
     uint32_t get_color_diff(uint32_t c1, uint32_t c2) {
-        int r = abs((int)((c1 & 0x00ff0000) - (c2 & 0x00ff0000)));
-        int g = abs((int)((c1 & 0x0000ff00) - (c2 & 0x0000ff00)));
+        int r = abs((int)((c1 & 0x00ff0000) - (c2 & 0x00ff0000))) >> 16;
+        int g = abs((int)((c1 & 0x0000ff00) - (c2 & 0x0000ff00))) >> 8;
         int b = abs((int)((c1 & 0x000000ff) - (c2 & 0x000000ff)));
         return r + g + b;
     }
@@ -111,7 +113,7 @@ protected:
             row_ends[i] = k;
         }
 
-        Image::initialize();
+        Image::Initialise();
     }
 
 public:
@@ -124,10 +126,10 @@ public:
 
         stream.open(filename);
         stream << "#pragma once" << endl
-               << "#ifdef SIMULATION" << endl
-               << "#include \"Arduino_Mock.h\"" << endl
-               << "#else" << endl
+               << "#if defined(ARDUINO) && ARDUINO >= 100" << endl
                << "#include <avr/pgmspace.h>" << endl
+               << "#else" << endl
+               << "#include \"Arduino_Mock.h\"" << endl
                << "#endif" << endl
                << endl
                << "#include \"../Image.h\"" << endl
@@ -140,6 +142,13 @@ public:
 
         stream << endl
                << "class " << ns.c_str() << " : public Image {" << endl;
+
+        stream << "public:";
+
+        stream << endl
+            << "\t" << ns.c_str() << "() {" << endl
+            << "\t\tImage::Initialise();" << endl
+            << "\t}" << endl;
 
         export_class(stream, ns + "_data");
 
