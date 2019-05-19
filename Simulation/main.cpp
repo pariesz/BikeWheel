@@ -21,6 +21,7 @@ Image_Base *image = nullptr;
 LaPandora la_pandora;
 Hamster hamster;
 NyanCat nyan_cat;
+Poo poo;
 
 void loop() {
     if (!SensorData::update()) {
@@ -44,7 +45,7 @@ void loop() {
     //Programs::radioactive(angle);
     //image->render(angle, sensors.rotation_rate);
     //hamster.render(angle, sensors.rotation_rate);
-    nyan_cat.render(angle, sensors.rotation_rate);
+    poo.render(angle, sensors.rotation_rate);
 
     Leds::leds.show(sensors.angle);
     //Sleep(100);
@@ -144,7 +145,7 @@ int main() {
 
     //Image_Base *image = new Image_Grayscale(pixels);
 
-    //image->export_code(std::string("../BikeWheel/Images/").append(imageName).append(".h"), imageName);
+    //image->export_code(std::string("../Shared/Images/").append(imageName).append(".h"), imageName);
     //return 0;
 
     //la_pandora.initialize();
