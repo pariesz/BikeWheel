@@ -14,13 +14,15 @@ inline uint32_t pgm_read_dword(const uint32_t *ptr) {
     return *ptr;
 }
 
-#define PROGMEM
-#define F(str) str
-//#define F_CPU 16000000L
-
 uint32_t millis();
 
 uint32_t micros();
+
+char *dtostrf(double val, int width, unsigned int prec, char *sout);
+
+#define PROGMEM
+#define F(str) str
+//#define F_CPU 16000000L
 
 #define min(a,b) ((a)<(b)?(a):(b))
 #define max(a,b) ((a)>(b)?(a):(b))

@@ -103,7 +103,7 @@ namespace SensorData {
         int diff = us - us_prev;
         us_prev = us;
 
-        //gyro_y--;
+        gyro_y--;
 
         angle += gyro_y 
               * ((float)diff / 1000000) // us to seconds

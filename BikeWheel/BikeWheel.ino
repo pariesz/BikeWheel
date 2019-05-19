@@ -99,8 +99,10 @@ void loop(void) {
                 nyan_cat->render(sensors.angle, sensors.rotation_rate); break;
             case 9:
                 poo->render(sensors.angle, sensors.rotation_rate); break;
+            case 10:
+                Programs::velocity(sensors.angle, sensors.rotation_rate); break;
             default:
-                prog = sensors.rotation_rate < 0 ? 9 : 0; 
+                prog = sensors.rotation_rate < 0 ? 10 : 0; 
                 start(); 
                 break;
         }

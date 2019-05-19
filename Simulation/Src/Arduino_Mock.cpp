@@ -1,5 +1,9 @@
 #pragma once
+#pragma warning(disable:4996)
+
 #include <chrono>
+#include <string.h>
+#include <stdlib.h>
 #include "Arduino_Mock.h"
 
 uint32_t millis() {
@@ -16,4 +20,11 @@ uint32_t micros() {
     auto ns = now.time_since_epoch();
     auto us = duration_cast<microseconds>(ns);
     return us.count();
+}
+
+char *dtostrf(double val, int width, unsigned int prec, char *sout) {
+    char fmt[20];
+    sprintf_s(fmt, "%%%d.%df", width, prec);
+    sprintf(sout, fmt, val);
+    return sout;
 }

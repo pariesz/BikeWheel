@@ -5,7 +5,6 @@
 #include "Arduino_Mock.h"
 #endif
 
-
 #include "Helpers.h"
 
 namespace Programs {
@@ -15,4 +14,5 @@ namespace Programs {
     void radioactive(uint16_t zero_angle) OPTIMIZE;
     void rainbow_text(uint16_t zero_angle, uint8_t label_len, const char *label) OPTIMIZE;
     void masa_critica(uint16_t zero_angle) OPTIMIZE;
+    void velocity(uint16_t zero_angle, int32_t rotation_rate) OPTIMIZE;
 };

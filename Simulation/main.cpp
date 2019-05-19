@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <math.h>
+#include <shared.h>
 #include "Graphics.h"
 #include "SensorData.h"
 #include "Bmp.h"
@@ -12,7 +13,6 @@
 #include "Image_IndexedColor.h"
 #include "Image_Grayscale.h"
 #include "Leds_Export.h"
-#include "Shared.h"
 
 bool on = true;
 
@@ -43,9 +43,10 @@ void loop() {
     //Programs::kaleidoscope(angle);
     //Programs::umbrella(angle);
     //Programs::radioactive(angle);
+    Programs::velocity(angle, sensors.rotation_rate);
     //image->render(angle, sensors.rotation_rate);
     //hamster.render(angle, sensors.rotation_rate);
-    poo.render(angle, sensors.rotation_rate);
+    //poo.render(angle, sensors.rotation_rate);
 
     Leds::leds.show(sensors.angle);
     //Sleep(100);
@@ -81,27 +82,27 @@ int main() {
 
     // ROCKET
     //std::string imageName("rocket");
-    //BMP bmp("Images/" + imageName + ".bmp");
+    //BMP bmp("../Images/" + imageName + ".bmp");
     //Image_Pixels pixels(bmp, Leds::min_dist);
     //uint32_t colors[] = { 0x000000, 0xFF0000, 0x0000FF, 0xFFFFFF };
     //image = new Image_IndexedColor(pixels, colors, 4);
 
     // SPACE
     //std::string imageName("space");
-    //BMP bmp("Images/" + imageName + ".bmp");
+    //BMP bmp("../Images/" + imageName + ".bmp");
     //Image_Pixels pixels(bmp, Leds::min_dist);
     //image = new Image_6BitColor(pixels);
 
     // FIST
     //std::string imageName("fist");
-    //BMP bmp("Images/" + imageName + ".bmp");
+    //BMP bmp("../Images/" + imageName + ".bmp");
     //Image_Pixels pixels(bmp, Leds::min_dist);
     //uint32_t colors[] = { 0x000000, 0xFF0000 };
     //image = new Image_IndexedColor(pixels, colors, 2);
 
     // HAMSTER
     //std::string imageName("roll2");
-    //BMP bmp("Images/" + imageName + ".bmp");
+    //BMP bmp("../Images/" + imageName + ".bmp");
     //Image_Pixels pixels(bmp, Leds::min_dist);
     //uint32_t colors[] = { 
     //    0x000000,
@@ -113,7 +114,7 @@ int main() {
 
     // NYAN CAT
     //std::string imageName("NyanCat1");
-    //BMP bmp("Images/" + imageName + ".bmp");
+    //BMP bmp("../Images/" + imageName + ".bmp");
     //Image_Pixels pixels(bmp, Leds::min_dist);
     //uint32_t colors[] = {
     //    0x000000, 0x888888, 0xFFFFFF,
@@ -131,7 +132,7 @@ int main() {
 
     // POO
     //std::string imageName("Poo");
-    //BMP bmp("Images/" + imageName + ".bmp");
+    //BMP bmp("../Images/" + imageName + ".bmp");
     //Image_Pixels pixels(bmp, Leds::min_dist);
     //uint32_t colors[] = { 
     //    0x000000, 0x999999, 0xFFFFFF,
