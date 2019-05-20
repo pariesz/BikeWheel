@@ -15,7 +15,7 @@
 #include "Programs/MasaCritica.h"
 #include "Programs/NyanCat.h"
 #include "Programs/Radioactive.h"
-#include "Programs/RainbowText.h"
+#include "Programs/ExplodingText.h"
 #include "Programs/Spiral.h"
 #include "Programs/Velocity.h"
 #include "Images/Fist.h"

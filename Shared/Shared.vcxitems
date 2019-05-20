@@ -47,7 +47,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Logging.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Program.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Radioactive.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\RainbowText.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\ExplodingText.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Spiral.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\TestSegments.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Velocity.h" />

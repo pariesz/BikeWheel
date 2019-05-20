@@ -18,7 +18,8 @@ bool on = true;
 
 WheelSensors sensors;
 Image_Base *image = nullptr;
-Velocity program;
+//ExplodingText program(37, "- BCN - Critical Mass - Masa Critica");
+Hamster program;
 
 void loop() {
     if (!SensorData::update()) {
@@ -30,9 +31,9 @@ void loop() {
 
     sensors.update();
 
-    program.render(sensors.angle, sensors.rotation_rate);
+    program.render(sensors.get_angle(), sensors.get_rotation_rate());
     
-    Leds::leds.show(sensors.angle);
+    Leds::leds.show(sensors.get_angle());
 }
 
 

@@ -29,6 +29,14 @@ WheelSensors::WheelSensors()
     , mpu(MPU6050(MPU6050_DEFAULT_ADDRESS)) {
 }
 
+uint16_t WheelSensors::get_angle() {
+    return angle;
+}
+
+int32_t WheelSensors::get_rotation_rate() {
+    return rotation_rate;
+}
+
 void WheelSensors::setup() {
 #ifndef SIMULATION
     /* Switch to 400KHz I2C */
@@ -64,10 +72,10 @@ void WheelSensors::setup() {
     mpu.getAcceleration(&acc[0], &acc[1], &acc[2]);
     
 #if REVERSE_Z == 1    
-    acc[2] = ~acc[2];
+    acc[2] = -acc[2];
 #endif
 #if REVERSE_X == 1
-    acc[0] = ~acc[0];
+    acc[0] = -acc[0];
 #endif
     
     angle = get_acc_angle(acc);
@@ -84,13 +92,6 @@ void WheelSensors::update() {
     // read sensor data
     int16_t acc[3], gyro[3];
     mpu.getMotion6(&acc[0], &acc[1], &acc[2], &gyro[0], &gyro[1], &gyro[2]);
-
-#if REVERSE_Z == 1    
-    acc[2] = ~acc[2];
-#endif
-#if REVERSE_X == 1
-    acc[0] = ~acc[0];
-#endif
 
     // validate data
     if (acc[0] == 0 && acc[2] == 0) {
@@ -116,13 +117,18 @@ void WheelSensors::update() {
 #endif
 */
 
+#if REVERSE_Z == 1    
+    acc[2] = -acc[2];
+#endif
+
+#if REVERSE_X == 1
+    acc[0] = -acc[0];
+    gyro[1] = -gyro[1];
+#endif
+
     // gyro is signed int16 at a scale of +-2000deg/s : +-32768
     // so to convert: gyro_y * (2000 / 360) * 2
-#if REVERSE_X == 1
-    rotation_rate = gyro[1] * -11.1111111f;
-#else
     rotation_rate = gyro[1] * 11.1111111f;
-#endif
 
     uint16_t rotation_rate_angle = get_rotation_rate_angle(us_diff); 
     
@@ -173,7 +179,7 @@ inline uint16_t WheelSensors::get_acc_angle(int16_t* acc) {
     // so we subtract to correct
     float x = TWO_PI * abs(rotation_rate) / (float)0xFFFF;
     
-    uint16_t centrifugal_acceleration = (MPU_RADIUS * sq(x) * 0.417959);
+    int16_t centrifugal_acceleration = (MPU_RADIUS * sq(x) * 0.417959);
 
     // Possible overflow, but we shouldn't be approaching those accelerations
     // offset 90 degrees so 0 is up

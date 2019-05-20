@@ -8,8 +8,8 @@
 class Hamster : public Program {
 
 private:
-    Image* frame1 = nullptr;
-    Image* frame2 = nullptr;
+    Image* frame1 = new HamsterRun1;
+    Image* frame2 = new HamsterRun2;
     uint8_t index = -1;
 
 private:
@@ -17,10 +17,7 @@ private:
         index = (uint8_t)new_index;
 
         delete frame1;
-        frame1 = nullptr;
-
         delete frame2;
-        frame2 = nullptr;
 
         switch (index) {
             case 0:
@@ -63,7 +60,7 @@ public:
         switch (index) {
             case 0:
             case 1:
-            case 2: // off
+            case 2:
             case 3:
             case 4: 
             case 5: // <12kmh
@@ -116,9 +113,6 @@ public:
 
     ~Hamster() {
         delete frame1;
-        frame1 = nullptr;
-
         delete frame2;
-        frame2 = nullptr;
     }
 };

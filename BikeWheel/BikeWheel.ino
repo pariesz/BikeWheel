@@ -14,6 +14,7 @@
 #include <shared.h>
 
 // settings
+bool on = 0;
 uint8_t program_index = 0;
 Program* program = new Color(Colors::black);
 WheelSensors sensors;
@@ -30,49 +31,53 @@ void setup(void) {
     Leds::setup();
 }
 
-Program* get_next_program(void) {
-    if (sensors.rotation_rate < 0) {
-        --program_index;
-    } else {
-        ++program_index;
-    }
-
+Program* get_program(void) {
     switch (program_index) {
-        case 1:  return new Spiral;
-        case 2:  return new LaPandora;
-        case 3:  return new MasaCritica;
-        case 4:  return new Kaleidoscope;
-        case 5:  return new Radioactive;
-        case 6:  return new Fist;
-        case 7:  return new RainbowText(37, "- BCN - Critical Mass - Masa Critica");
-        case 8:  return new NyanCat;
-        case 9:  return new Poo;
-        case 10: return new Velocity;
-        case 11: return new Hamster;
+        case 0: return new Spiral;
+        case 1: return new LaPandora;
+        case 2: return new MasaCritica;
+        case 3: return new Kaleidoscope;
+        case 4: return new Radioactive;
+        case 5: return new Fist;
+        case 6: return new ExplodingText(37, "- BCN - Critical Mass - Masa Critica");
+        case 7: return new NyanCat;
+        case 8: return new Poo;
+        case 9: return new Velocity;
+        case 10: return new Hamster;
     }
 
     // loop back around
-    program_index = sensors.rotation_rate < 0 ? 11 : 1;
-    return get_next_program();
+    program_index = sensors.get_rotation_rate() < 0 ? 10 : 0;
+    return get_program();
 }
 
 void loop(void) {
     sensors.update();
 
-    if (program_index) {
-        if (abs(sensors.rotation_rate) < 60000) {
+    int32_t rotation_rate = sensors.get_rotation_rate();
+
+    if (on) {
+        if (abs(rotation_rate) < 60000) {
             // too slow
             delete program;
-            program_index = 0;
             program = new Color(Colors::black);
+            on = false;
         }
     } else {
-        if (abs(sensors.rotation_rate) > 80000) {
+        if (abs(rotation_rate) > 80000) {
             delete program;
-            program = get_next_program();
+            
+            if (rotation_rate < 0) {
+                --program_index;
+            } else {
+                ++program_index;
+            }
+
+            program = get_program();
+            on = true;
         }
     }
 
-    program->render(sensors.angle, sensors.rotation_rate);
+    program->render(sensors.get_angle(), rotation_rate);
     Leds::leds.show();
 }

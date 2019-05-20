@@ -97,9 +97,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Kaleidoscope.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\RainbowText.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\TestSegments.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -131,6 +128,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Program.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\peter\Documents\Arduino\BikeWheel\Shared\Programs\ExplodingText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
