@@ -13,4 +13,5 @@ public:
     void Initialise();
     uint32_t get_led_color(uint8_t index, uint16_t angle) __attribute__((optimize("O3")));
     void render(uint16_t zero_angle, int32_t rotation_rate) __attribute__((optimize("O3")));
+    virtual ~Image() = default;
 };

@@ -11,6 +11,8 @@
    To stop flicker at the threashold we add a buffer zone.
    Turn on at ~360 deg/ms and off at ~450 deg/s.
 */
+
+#define LOGGING 0
 #include <shared.h>
 
 // settings
@@ -31,24 +33,26 @@ void setup(void) {
     Leds::setup();
 }
 
-Program* get_program(void) {
+Program* start_program(void) {
+    log_val("program", program_index);
+
     switch (program_index) {
-        case 0: return new Spiral;
-        case 1: return new LaPandora;
-        case 2: return new MasaCritica;
-        case 3: return new Kaleidoscope;
-        case 4: return new Radioactive;
-        case 5: return new Fist;
-        case 6: return new ExplodingText(37, "- BCN - Critical Mass - Masa Critica");
-        case 7: return new NyanCat;
-        case 8: return new Poo;
-        case 9: return new Velocity;
+        case 0:  return new Spiral;
+        case 1:  return new LaPandora;
+        case 2:  return new MasaCritica;
+        case 3:  return new Kaleidoscope;
+        case 4:  return new Radioactive;
+        case 5:  return new Fist;
+        case 6:  return new ExplodingText(37, "- BCN - Critical Mass - Masa Critica");
+        case 7:  return new NyanCat;
+        case 8:  return new Poo;
+        case 9:  return new Velocity;
         case 10: return new Hamster;
     }
 
     // loop back around
     program_index = sensors.get_rotation_rate() < 0 ? 10 : 0;
-    return get_program();
+    return start_program();
 }
 
 void loop(void) {
@@ -65,15 +69,16 @@ void loop(void) {
         }
     } else {
         if (abs(rotation_rate) > 80000) {
-            delete program;
-            
             if (rotation_rate < 0) {
                 --program_index;
             } else {
                 ++program_index;
             }
 
-            program = get_program();
+            log_val("program", program_index);
+
+            delete program;
+            program = start_program();
             on = true;
         }
     }

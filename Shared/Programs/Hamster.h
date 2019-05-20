@@ -8,34 +8,21 @@
 class Hamster : public Program {
 
 private:
+    uint8_t speed = 0;
     Image* frame1 = new HamsterRun1;
     Image* frame2 = new HamsterRun2;
-    uint8_t index = -1;
 
 private:
-    void update_index(uint16_t new_index) {
-        index = (uint8_t)new_index;
-
+    void update_frames() {
         delete frame1;
         delete frame2;
 
-        switch (index) {
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-                frame1 = new HamsterRun1;
-                frame2 = new HamsterRun2;
-                break;
-
-            default:
-                frame1 = new HamsterRoll1;
-                frame2 = new HamsterRoll2;
-                break;
+        if (speed <= 7) {
+            frame1 = new HamsterRun1;
+            frame2 = new HamsterRun2;
+        } else {
+            frame1 = new HamsterRoll1;
+            frame2 = new HamsterRoll2;
         }
     }
 
@@ -51,13 +38,14 @@ public:
 
         //rate <<= 1; // DEBUGING
         
-        if (rate >> 14 != index) {
-            update_index(rate >> 14);
+        if (rate >> 14 != speed) {
+            speed = rate >> 14;
+            update_frames();
         }
 
         bool frame = 0;
 
-        switch (index) {
+        switch (speed) {
             case 0:
             case 1:
             case 2:
@@ -111,7 +99,7 @@ public:
         }
     }
 
-    ~Hamster() {
+    virtual ~Hamster() {
         delete frame1;
         delete frame2;
     }

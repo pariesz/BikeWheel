@@ -130,7 +130,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Program.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\peter\Documents\Arduino\BikeWheel\Shared\Programs\ExplodingText.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\ExplodingText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

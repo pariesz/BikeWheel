@@ -4,13 +4,13 @@
 class ExplodingText : public Program {
 
 private:
-    uint8_t label_len;
+    uint8_t label_length;
     const char *label;
 
 public:
     ExplodingText(uint8_t label_length, const char *label)
         : label(label)
-        , label_len(label_length) {
+        , label_length(label_length) {
     }
 
     void render(uint16_t zero_angle, int32_t rotation_rate) {
@@ -36,15 +36,15 @@ public:
 
             uint16_t angle = zero_angle + Leds::get_angle(i);
 
-            uint16_t x = ((uint32_t)angle * (label_len << FONT_WIDTH_SHIFT)) >> 16;
+            uint16_t x = ((uint32_t)angle * (label_length << FONT_WIDTH_SHIFT)) >> 16;
 
             uint8_t ch_x = x & (FONT_WIDTH - 1);
             uint8_t ch_y = y - y_offset;
             uint8_t ch_num = x >> FONT_WIDTH_SHIFT;
 
             // repeat the word
-            if (ch_num >= label_len) {
-                ch_num %= label_len;
+            if (ch_num >= label_length) {
+                ch_num %= label_length;
             }
 
             uint8_t ch = label[ch_num];

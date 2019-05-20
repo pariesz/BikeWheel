@@ -143,7 +143,6 @@ void WheelSensors::update() {
     static uint16_t prev_acc_angle = acc_angle;
 
     if (prev_acc_angle == acc_angle) {
-        log_val("MPU6050 STUCK: ", acc_angle);
         angle = rotation_rate_angle;
         return;
     }
