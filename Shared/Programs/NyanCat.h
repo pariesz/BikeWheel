@@ -1,12 +1,14 @@
 #pragma once
+#include "../Images/NyanCat1.h"
+#include "../Images/NyanCat2.h"
+#include "../Program.h"
 
-#include "NyanCat1.h"
-#include "NyanCat2.h"
+class NyanCat : public Program {
 
-class NyanCat {
 private:
     NyanCat1 frame1;
     NyanCat2 frame2;
+
 public:
     void render(uint16_t zero_angle, int32_t rotation_rate) {
         if (millis() & (1 << 9)) {

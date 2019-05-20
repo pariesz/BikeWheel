@@ -1,7 +1,7 @@
 #pragma once
 #include "../Image.h"
 
-namespace finger_data {
+namespace FingerData {
 	const uint16_t arcs[] PROGMEM {
 		  0x0000, 0x1A65, 0x1C06, 0x1CC2, 0x2596, 0x2665, 0x2736, 0x2804, 0x2B33, 0x2F30, 0x3003, 0x3260, 0x34C3, 0x3804, 0x3990, 0xE005, 0xE0C2, 0xEB34, 0xEC00
 		, 0x0000, 0x1523, 0x15E4, 0x1695, 0x1816, 0x18C2, 0x1D26, 0x1DE5, 0x1EA4, 0x2183, 0x23B0, 0xDFE6, 0xE0A2, 0xEA15, 0xEAD3, 0xEB90
@@ -49,14 +49,14 @@ namespace finger_data {
 	}; // 60 bytes
 }
 
-class finger : public Image {
+class Finger : public Image {
 protected:
 	inline uint16_t get_arc(uint16_t i) override {
-		return pgm_read_word(&finger_data::arcs[i]);
+		return pgm_read_word(&FingerData::arcs[i]);
 	}
 
 	inline uint16_t get_row_end(uint8_t row_index) override {
-		return pgm_read_word(&finger_data::row_ends[row_index]);
+		return pgm_read_word(&FingerData::row_ends[row_index]);
 	}
 
 protected:
@@ -68,11 +68,11 @@ protected:
 	}
 
 	inline uint32_t get_color(uint16_t arc) override {
-		return pgm_read_dword(&finger_data::colors[arc & color_mask]);
+		return pgm_read_dword(&FingerData::colors[arc & color_mask]);
 	}
 
 public:
-    finger() {
+    Finger() {
         Image::Initialise();
     }
 };

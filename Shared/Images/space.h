@@ -7,7 +7,7 @@
 
 #include "../Image.h"
 
-namespace space_data {
+namespace SpaceData {
 	const uint16_t arcs[] PROGMEM {
 		  0x0000
 		, 0x0000
@@ -56,14 +56,14 @@ namespace space_data {
 	}; // 72 bytes
 }
 
-class space : public Image {
+class Space : public Image {
 protected:
 	inline uint16_t get_arc(uint16_t i) override {
-		return pgm_read_word(&space_data::arcs[i]);
+		return pgm_read_word(&SpaceData::arcs[i]);
 	}
 
 	inline uint16_t get_row_end(uint8_t row_index) override {
-		return pgm_read_word(&space_data::row_ends[row_index]);
+		return pgm_read_word(&SpaceData::row_ends[row_index]);
 	}
 
 protected:
@@ -76,7 +76,7 @@ protected:
 	}
 
 public:
-    space() {
+    Space() {
         Image::Initialise();
     }
 };

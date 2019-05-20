@@ -13,7 +13,7 @@ public:
 };
 
 namespace SensorData {
-    void init();
+    void setup();
     bool update();
     DataLine get();
 };

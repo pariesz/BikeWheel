@@ -71,7 +71,7 @@ namespace SensorData {
         loaded = true;
     }
 
-    void init() {
+    void setup() {
 #if SENSOR_DATA == 1
         load_csv();
         start = high_resolution_clock::now();

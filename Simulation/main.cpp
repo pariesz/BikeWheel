@@ -18,10 +18,7 @@ bool on = true;
 
 WheelSensors sensors;
 Image_Base *image = nullptr;
-LaPandora la_pandora;
-Hamster hamster;
-NyanCat nyan_cat;
-Poo poo;
+Velocity program;
 
 void loop() {
     if (!SensorData::update()) {
@@ -31,25 +28,11 @@ void loop() {
         sensors.setup();
     }
 
-    sensors.loop();
+    sensors.update();
 
-    uint16_t angle = sensors.angle;
-
-    //Logging::test_segments(angle, SensorData::get().hall);
-    //Programs::spiral(angle);
-    //Programs::rainbow(angle);
-    //Programs::masa_critica(angle);
-    //Programs::rainbow_text(angle, 37, "- BCN - Critical Mass - Masa Critica");
-    //Programs::kaleidoscope(angle);
-    //Programs::umbrella(angle);
-    //Programs::radioactive(angle);
-    Programs::velocity(angle, sensors.rotation_rate);
-    //image->render(angle, sensors.rotation_rate);
-    //hamster.render(angle, sensors.rotation_rate);
-    //poo.render(angle, sensors.rotation_rate);
-
+    program.render(sensors.angle, sensors.rotation_rate);
+    
     Leds::leds.show(sensors.angle);
-    //Sleep(100);
 }
 
 
@@ -149,8 +132,7 @@ int main() {
     //image->export_code(std::string("../Shared/Images/").append(imageName).append(".h"), imageName);
     //return 0;
 
-    //la_pandora.initialize();
-    SensorData::init();
+    SensorData::setup();
     sensors.setup();
 
     if (!Graphics::init()) {

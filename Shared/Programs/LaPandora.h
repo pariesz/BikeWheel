@@ -1,12 +1,13 @@
 #pragma once
-#include "space.h"
-#include "rocket.h"
+#include "../Images/Space.h"
+#include "../Images/Rocket.h"
+#include "../Program.h"
 
-class LaPandora {
+class LaPandora : public Program {
 
 private:
-    space space_img;
-    rocket rocket_img;
+    Space space;
+    Rocket rocket;
 
 public:
     void render(uint16_t zero_angle, int32_t rotation_rate) {
@@ -17,11 +18,11 @@ public:
         for (uint8_t i = 0; i < NUM_PIXELS; i++) {
             uint16_t led_angle = Leds::get_angle(i);
             uint16_t angle = zero_angle + led_angle;
-            uint32_t color = rocket_img.get_led_color(i, reverse ? ~angle : angle);
+            uint32_t color = rocket.get_led_color(i, reverse ? ~angle : angle);
 
             if (color == 0) {
                 angle = space_angle + led_angle;
-                color = space_img.get_led_color(i, reverse ? ~angle : angle);
+                color = space.get_led_color(i, reverse ? ~angle : angle);
             }
 
             Leds::set_color(i, color);

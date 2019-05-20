@@ -2,7 +2,6 @@
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
 #endif
-#include "Helpers.h"
 
 class HallSensor {
 private:
@@ -14,5 +13,5 @@ public:
 public:
     HallSensor();
     void setup();
-    void loop(bool reverse, uint32_t us, uint32_t us_diff) OPTIMIZE;
+    void loop(bool reverse, uint32_t us, uint32_t us_diff) __attribute__((optimize("O3")));
 };

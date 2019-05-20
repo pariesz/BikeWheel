@@ -7,7 +7,7 @@
 
 #include "../Image.h"
 
-namespace MrSplat_data {
+namespace MrSplatData {
 	const uint16_t arcs[] PROGMEM {
 		  0x0000, 0x1331, 0x2998, 0xE401, 0xE4CC, 0xE599
 		, 0x0000, 0x1811, 0x3C88, 0x3F71, 0x402C, 0xD151, 0xFB9C
@@ -59,11 +59,11 @@ namespace MrSplat_data {
 class MrSplat : public Image {
 protected:
 	inline uint16_t get_arc(uint16_t i) override {
-		return pgm_read_word(&MrSplat_data::arcs[i]);
+		return pgm_read_word(&MrSplatData::arcs[i]);
 	}
 
 	inline uint16_t get_row_end(uint8_t row_index) override {
-		return pgm_read_word(&MrSplat_data::row_ends[row_index]);
+		return pgm_read_word(&MrSplatData::row_ends[row_index]);
 	}
 
 protected:
@@ -75,7 +75,7 @@ protected:
 	}
 
 	inline uint32_t get_color(uint16_t arc) override {
-		return pgm_read_dword(&MrSplat_data::colors[arc & color_mask]);
+		return pgm_read_dword(&MrSplatData::colors[arc & color_mask]);
 	}
 
 

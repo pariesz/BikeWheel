@@ -7,7 +7,7 @@
 
 #include "../Image.h"
 
-namespace Poo_data {
+namespace PooData {
 	const uint16_t arcs[] PROGMEM {
 		  0x0004, 0x3260, 0x3F34, 0xA0C5, 0xA730, 0xB264
 		, 0x0004, 0x2181, 0x30D4, 0x3191, 0x3250, 0x3D44, 0xA2A5, 0xA930, 0xB2B4, 0xCC31, 0xD152, 0xDAC1, 0xDFE4, 0xEE75, 0xFA24
@@ -64,11 +64,11 @@ namespace Poo_data {
 class Poo : public Image {
 protected:
 	inline uint16_t get_arc(uint16_t i) override {
-		return pgm_read_word(&Poo_data::arcs[i]);
+		return pgm_read_word(&PooData::arcs[i]);
 	}
 
 	inline uint16_t get_row_end(uint8_t row_index) override {
-		return pgm_read_word(&Poo_data::row_ends[row_index]);
+		return pgm_read_word(&PooData::row_ends[row_index]);
 	}
 
 protected:
@@ -80,7 +80,7 @@ protected:
 	}
 
 	inline uint32_t get_color(uint16_t arc) override {
-		return pgm_read_dword(&(Poo_data::colors[arc & color_mask]));
+		return pgm_read_dword(&(PooData::colors[arc & color_mask]));
 	}
 
 public:

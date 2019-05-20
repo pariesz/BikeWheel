@@ -81,7 +81,7 @@ public:
         , color_mask(1)
         , angle_mask(0) {
 
-        color_mask = (1 << ((uint8_t)log2(num_colors)) + 1) - 1;
+        color_mask = (1 << (((uint8_t)log2(num_colors)) + 1)) - 1;
         angle_mask = ~color_mask;
         
         vector<uint16_t> rows[PIXELS_PER_STRIP];

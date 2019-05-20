@@ -1,14 +1,15 @@
 #pragma once
 #if defined(ARDUINO) && ARDUINO >= 100
-#include <avr/pgmspace.h>
+    #include <avr/pgmspace.h>
 #else
-#include "Arduino_Mock.h"
+    #include "Arduino_Mock.h"
 #endif
+
 #include "Colors.h"
 
 namespace Colors {
+    const uint8_t black = 0;
     const uint32_t white = 0xFFFFFF;
-    const uint32_t black = 0x000000;
     const uint32_t red = 0xFF0000;
     const uint32_t green = 0x00FF00;
     const uint32_t blue = 0x0000FF;

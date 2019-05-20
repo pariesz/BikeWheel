@@ -1,16 +1,7 @@
 #pragma once
+#include "Program.h"
 
-// used by implementations
-#if defined(ARDUINO) && ARDUINO >= 100
-#include <avr/pgmspace.h>
-#else
-#include "Arduino_Mock.h"
-#endif
-
-#include "Leds.h"
-#include "Helpers.h"
-
-class Image {
+class Image : public Program {
 private:
     uint16_t iterators[NUM_PIXELS];
 protected:
@@ -20,6 +11,6 @@ protected:
     virtual inline uint32_t get_color(uint16_t arc) = 0;
 public:
     void Initialise();
-    uint32_t get_led_color(uint8_t index, uint16_t angle) OPTIMIZE;
-    void render(uint16_t zero_angle, int32_t rotation_rate) OPTIMIZE;
+    uint32_t get_led_color(uint8_t index, uint16_t angle) __attribute__((optimize("O3")));
+    void render(uint16_t zero_angle, int32_t rotation_rate) __attribute__((optimize("O3")));
 };

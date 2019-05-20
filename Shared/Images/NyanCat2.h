@@ -7,7 +7,7 @@
 
 #include "../Image.h"
 
-namespace NyanCat2_data {
+namespace NyanCat2Data {
 	const uint16_t arcs[] PROGMEM {
 		  0x000C, 0x0C02, 0x199C, 0x326D, 0x3730, 0x459D, 0x4C0C, 0x766D, 0x88CC
 		, 0x000C, 0x1182, 0x169C, 0x30D0, 0x4ECD, 0x549C, 0x6CAD, 0x74B0, 0x8A9D, 0x929C
@@ -65,11 +65,11 @@ namespace NyanCat2_data {
 class NyanCat2 : public Image {
 protected:
 	inline uint16_t get_arc(uint16_t i) override {
-		return pgm_read_word(&NyanCat2_data::arcs[i]);
+		return pgm_read_word(&NyanCat2Data::arcs[i]);
 	}
 
 	inline uint16_t get_row_end(uint8_t row_index) override {
-		return pgm_read_word(&NyanCat2_data::row_ends[row_index]);
+		return pgm_read_word(&NyanCat2Data::row_ends[row_index]);
 	}
 
 protected:
@@ -81,7 +81,7 @@ protected:
 	}
 
 	inline uint32_t get_color(uint16_t arc) override {
-		return pgm_read_dword(&(NyanCat2_data::colors[arc & color_mask]));
+		return pgm_read_dword(&(NyanCat2Data::colors[arc & color_mask]));
 	}
 
 public:

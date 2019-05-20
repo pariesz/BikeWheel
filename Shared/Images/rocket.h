@@ -7,7 +7,7 @@
 
 #include "../Image.h"
 
-namespace rocket_data {
+namespace RocketData {
 	const uint16_t arcs[] PROGMEM {
 		  0x0000
 		, 0x0000, 0x1469, 0x2818
@@ -60,14 +60,14 @@ namespace rocket_data {
 	}; // 16 bytes
 }
 
-class rocket : public Image {
+class Rocket : public Image {
 protected:
 	inline uint16_t get_arc(uint16_t i) override {
-		return pgm_read_word(&rocket_data::arcs[i]);
+		return pgm_read_word(&RocketData::arcs[i]);
 	}
 
 	inline uint16_t get_row_end(uint8_t row_index) override {
-		return pgm_read_word(&rocket_data::row_ends[row_index]);
+		return pgm_read_word(&RocketData::row_ends[row_index]);
 	}
 
 protected:
@@ -79,11 +79,11 @@ protected:
 	}
 
 	inline uint32_t get_color(uint16_t arc) override {
-		return pgm_read_dword(&(rocket_data::colors[arc & color_mask]));
+		return pgm_read_dword(&(RocketData::colors[arc & color_mask]));
 	}
 
 public:
-    rocket() {
+    Rocket() {
         Image::Initialise();
     }
 };

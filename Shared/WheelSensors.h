@@ -6,8 +6,6 @@
 #include "MPU6050_Mock.h"
 #endif
 
-#include "Helpers.h"
-
 class WheelSensors {
 public:
     uint16_t angle;
@@ -20,9 +18,9 @@ private:
 public:
     WheelSensors();
     void setup();
-    void loop() OPTIMIZE;
+    void update() __attribute__((optimize("O3")));
 
 private:
-    inline uint16_t get_rotation_rate_angle(uint32_t time_diff) OPTIMIZE;
-    inline uint16_t get_acc_angle(int16_t* acc) OPTIMIZE;
+    inline uint16_t get_rotation_rate_angle(uint32_t time_diff) __attribute__((optimize("O3")));
+    inline uint16_t get_acc_angle(int16_t* acc) __attribute__((optimize("O3")));
 };

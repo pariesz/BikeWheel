@@ -7,7 +7,7 @@
 
 #include "../Image.h"
 
-namespace run2_data {
+namespace HamsterRun2Data {
 	const uint16_t arcs[] PROGMEM {
 		  0x0000
 		, 0x0000
@@ -60,14 +60,14 @@ namespace run2_data {
 	}; // 20 bytes
 }
 
-class run2 : public Image {
+class HamsterRun2 : public Image {
 protected:
 	inline uint16_t get_arc(uint16_t i) override {
-		return pgm_read_word(&run2_data::arcs[i]);
+		return pgm_read_word(&HamsterRun2Data::arcs[i]);
 	}
 
 	inline uint16_t get_row_end(uint8_t row_index) override {
-		return pgm_read_word(&run2_data::row_ends[row_index]);
+		return pgm_read_word(&HamsterRun2Data::row_ends[row_index]);
 	}
 
 protected:
@@ -79,11 +79,11 @@ protected:
 	}
 
 	inline uint32_t get_color(uint16_t arc) override {
-		return pgm_read_dword(&(run2_data::colors[arc & color_mask]));
+		return pgm_read_dword(&(HamsterRun2Data::colors[arc & color_mask]));
 	}
 
 public:
-    run2() {
+    HamsterRun2() {
         Image::Initialise();
     }
 };

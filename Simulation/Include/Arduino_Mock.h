@@ -1,4 +1,5 @@
 #pragma once
+#include <math.h>
 #include <iostream>
 
 inline char pgm_read_byte(const char *ptr) {
@@ -19,6 +20,8 @@ uint32_t millis();
 uint32_t micros();
 
 char *dtostrf(double val, int width, unsigned int prec, char *sout);
+
+#define __attribute__(...)
 
 #define PROGMEM
 #define F(str) str

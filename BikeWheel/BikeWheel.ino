@@ -13,19 +13,10 @@
 */
 #include <shared.h>
 
-// upside down
-WheelSensors sensors;
-
 // settings
-bool on = 0;
-uint8_t prog = 0;
-
-// images
-fist* fist_img = nullptr;
-Hamster* hamster = nullptr;
-LaPandora* la_pandora = nullptr;
-NyanCat* nyan_cat = nullptr;
-Poo* poo = nullptr;
+uint8_t program_index = 0;
+Program* program = new Color(Colors::black);
+WheelSensors sensors;
 
 void setup(void) {
 
@@ -39,90 +30,49 @@ void setup(void) {
     Leds::setup();
 }
 
-void stop(void) {
-    on = 0;
-
-    delete la_pandora;
-    la_pandora = nullptr;
-
-    delete fist_img;
-    fist_img = nullptr;
-
-    delete hamster;
-    hamster = nullptr;
-
-    delete nyan_cat;
-    nyan_cat = nullptr;
-
-    delete poo;
-    poo = nullptr;
-}
-
-void start(void) {
-    on = 1;
-
-    switch (prog) {
-        case 1: la_pandora = new LaPandora; break;
-        case 5: fist_img = new fist; break;
-        case 7: hamster = new Hamster; break;
-        case 8: nyan_cat = new NyanCat; break;
-        case 9: poo = new Poo; break;
+Program* get_next_program(void) {
+    if (sensors.rotation_rate < 0) {
+        --program_index;
+    } else {
+        ++program_index;
     }
+
+    switch (program_index) {
+        case 1:  return new Spiral;
+        case 2:  return new LaPandora;
+        case 3:  return new MasaCritica;
+        case 4:  return new Kaleidoscope;
+        case 5:  return new Radioactive;
+        case 6:  return new Fist;
+        case 7:  return new RainbowText(37, "- BCN - Critical Mass - Masa Critica");
+        case 8:  return new NyanCat;
+        case 9:  return new Poo;
+        case 10: return new Velocity;
+        case 11: return new Hamster;
+    }
+
+    // loop back around
+    program_index = sensors.rotation_rate < 0 ? 11 : 1;
+    return get_next_program();
 }
 
 void loop(void) {
-    sensors.loop();
+    sensors.update();
 
-//    Logging::test_segments(sensors.angle, sensors.hall_sensor.value);
-//    Leds::leds.show();
-//    return;
-
-    if (on) {
-        switch(prog) {
-            case 0:
-                Programs::spiral(sensors.angle); break;
-            case 1:
-                la_pandora->render(sensors.angle, sensors.rotation_rate); break;
-            case 2:
-                Programs::masa_critica(sensors.angle); break;
-            case 3:
-                Programs::kaleidoscope(sensors.angle); break;
-            case 4:
-                Programs::radioactive(sensors.angle); break;
-            case 5:
-                fist_img->render(sensors.angle, sensors.rotation_rate); break;
-            case 6:
-                Programs::rainbow_text(sensors.angle, 37, "- BCN - Critical Mass - Masa Critica"); break;
-            case 7:
-                hamster->render(sensors.angle, sensors.rotation_rate); break;
-            case 8:
-                nyan_cat->render(sensors.angle, sensors.rotation_rate); break;
-            case 9:
-                poo->render(sensors.angle, sensors.rotation_rate); break;
-            case 10:
-                Programs::velocity(sensors.angle, sensors.rotation_rate); break;
-            default:
-                prog = sensors.rotation_rate < 0 ? 10 : 0; 
-                start(); 
-                break;
-        }
-        
+    if (program_index) {
         if (abs(sensors.rotation_rate) < 60000) {
-            stop();
+            // too slow
+            delete program;
+            program_index = 0;
+            program = new Color(Colors::black);
         }
     } else {
-        Programs::set_color(Colors::black);
-
         if (abs(sensors.rotation_rate) > 80000) {
-            if (sensors.rotation_rate < 0) {
-                prog--;
-            } else {
-                prog++;
-            }
-
-            start();
+            delete program;
+            program = get_next_program();
         }
     }
 
+    program->render(sensors.angle, sensors.rotation_rate);
     Leds::leds.show();
 }

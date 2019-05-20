@@ -1,10 +1,12 @@
 #pragma once
-#include "run1.h"
-#include "run2.h"
-#include "roll1.h"
-#include "roll2.h"
+#include "../Images/HamsterRun1.h"
+#include "../Images/HamsterRun2.h"
+#include "../Images/HamsterRoll1.h"
+#include "../Images/HamsterRoll2.h"
+#include "../Program.h"
 
-class Hamster {
+class Hamster : public Program {
+
 private:
     Image* frame1 = nullptr;
     Image* frame2 = nullptr;
@@ -29,13 +31,13 @@ private:
             case 5:
             case 6:
             case 7:
-                frame1 = new run1;
-                frame2 = new run2;
+                frame1 = new HamsterRun1;
+                frame2 = new HamsterRun2;
                 break;
 
             default:
-                frame1 = new roll1;
-                frame2 = new roll2;
+                frame1 = new HamsterRoll1;
+                frame2 = new HamsterRoll2;
                 break;
         }
     }

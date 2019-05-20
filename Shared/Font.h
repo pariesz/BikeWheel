@@ -10,6 +10,10 @@
 #include "Arduino_Mock.h"
 #endif
 
+#define FONT_HEIGHT 8
+#define FONT_WIDTH 8
+#define FONT_WIDTH_SHIFT 3
+
 const uint8_t fontdata_8x8[] PROGMEM = {
 
     /* 0 0x00 '^@' */

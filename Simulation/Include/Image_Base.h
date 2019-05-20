@@ -134,7 +134,7 @@ public:
                << endl
                << "#include \"../Image.h\"" << endl
                << endl
-               << "namespace " << ns.c_str() << "_data {" << endl;
+               << "namespace " << ns.c_str() << "Data {" << endl;
 
         export_data(stream);
 
@@ -150,7 +150,7 @@ public:
             << "\t\tImage::Initialise();" << endl
             << "\t}" << endl;
 
-        export_class(stream, ns + "_data");
+        export_class(stream, ns + "Data");
 
         stream << "};" << endl;
         stream.close();

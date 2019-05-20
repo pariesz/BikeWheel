@@ -6,7 +6,7 @@
 
 #include "../Image.h"
 
-namespace fist_data {
+namespace FistData {
 	const uint16_t arcs[] PROGMEM {
 		  0x0000, 0x1F31, 0x28CC, 0x3665, 0x8E64, 0x9C01, 0xBB30, 0xC999, 0xF264
 		, 0x0000, 0x25ED, 0x2990, 0x353D, 0x8EF0, 0x9C15, 0xB9F8, 0xCAC1, 0xF224
@@ -59,14 +59,14 @@ namespace fist_data {
 	}; // 8 bytes
 }
 
-class fist : public Image {
+class Fist : public Image {
 protected:
 	inline uint16_t get_arc(uint16_t i) override {
-		return pgm_read_word(&fist_data::arcs[i]);
+		return pgm_read_word(&FistData::arcs[i]);
 	}
 
 	inline uint16_t get_row_end(uint8_t row_index) override {
-		return pgm_read_word(&fist_data::row_ends[row_index]);
+		return pgm_read_word(&FistData::row_ends[row_index]);
 	}
 
 protected:
@@ -78,11 +78,11 @@ protected:
 	}
 
 	inline uint32_t get_color(uint16_t arc) override {
-		return pgm_read_dword(&(fist_data::colors[arc & color_mask]));
+		return pgm_read_dword(&(FistData::colors[arc & color_mask]));
 	}
 
 public:
-    fist() {
+    Fist() {
         Image::Initialise();
     }
 };

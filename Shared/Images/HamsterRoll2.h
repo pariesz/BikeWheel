@@ -7,7 +7,7 @@
 
 #include "../Image.h"
 
-namespace roll2_data {
+namespace HamsterRoll2Data {
 	const uint16_t arcs[] PROGMEM {
 		  0x0001, 0x0B30, 0xE0C9
 		, 0x0001, 0x0F50, 0xDCF9
@@ -60,14 +60,14 @@ namespace roll2_data {
 	}; // 20 bytes
 }
 
-class roll2 : public Image {
+class HamsterRoll2 : public Image {
 protected:
 	inline uint16_t get_arc(uint16_t i) override {
-		return pgm_read_word(&roll2_data::arcs[i]);
+		return pgm_read_word(&HamsterRoll2Data::arcs[i]);
 	}
 
 	inline uint16_t get_row_end(uint8_t row_index) override {
-		return pgm_read_word(&roll2_data::row_ends[row_index]);
+		return pgm_read_word(&HamsterRoll2Data::row_ends[row_index]);
 	}
 
 protected:
@@ -79,11 +79,11 @@ protected:
 	}
 
 	inline uint32_t get_color(uint16_t arc) override {
-		return pgm_read_dword(&(roll2_data::colors[arc & color_mask]));
+		return pgm_read_dword(&(HamsterRoll2Data::colors[arc & color_mask]));
 	}
 
 public:
-    roll2() {
+    HamsterRoll2() {
         Image::Initialise();
     }
 };

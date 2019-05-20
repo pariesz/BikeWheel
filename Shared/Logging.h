@@ -1,5 +1,8 @@
 #pragma once
+
+#ifndef LOGGING
 #define LOGGING 0
+#endif
 
 #if LOGGING == 1
 
@@ -21,8 +24,18 @@
 #define log_fps Logging::log_fps_impl();
 
 namespace Logging {
-    inline void log_fps_impl();
-    void test_segments(uint16_t zero_angle, bool hallVal);
+    inline void log_fps_impl() {
+        static unsigned int fps = 0;
+        static unsigned long fps_millis = millis();
+
+        if (millis() - fps_millis > 1000) {
+            log_val("fps", fps);
+            fps_millis = millis();
+            fps = 0;
+        }
+
+        fps++;
+    }
 }
 
 #else

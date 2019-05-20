@@ -1,29 +1,9 @@
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
-#else
-#include "Arduino_Mock.h"
-#endif
+#pragma once
+#include "../Program.h"
 
-#include "Colors.h"
-#include "Leds.h"
-#include "Logging.h"
-
-#if LOGGING == 1
-namespace Logging {
-    inline void log_fps_impl() {
-        static unsigned int fps = 0;
-        static unsigned long fps_millis = millis();
-
-        if (millis() - fps_millis > 1000) {
-            log_val("fps", fps);
-            fps_millis = millis();
-            fps = 0;
-        }
-
-        fps++;
-    }
-
-    void test_segments(uint16_t zero_angle, bool hallVal) {
+class TestSegments : public Program {
+public:
+    void render(uint16_t zero_angle, int32_t rotation_rate) {
         using namespace Colors;
         using namespace Leds;
 
@@ -38,10 +18,10 @@ namespace Logging {
                 set_color(i, black);
                 continue;
             }
-            if (hallVal == LOW) {
-                set_color(i, white);
-                continue;
-            }
+            //if (hallVal == LOW) {
+            //    set_color(i, white);
+            //    continue;
+            //}
 
             uint16_t angle = zero_angle + get_angle(i);
 
@@ -53,5 +33,4 @@ namespace Logging {
             }
         }
     }
-}
-#endif
+};

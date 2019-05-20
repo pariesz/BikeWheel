@@ -7,7 +7,7 @@
 
 #include "../Image.h"
 
-namespace gore1_data {
+namespace HamsterGore1Data {
 	const uint16_t arcs[] PROGMEM {
 		  0x0000
 		, 0x0000
@@ -60,14 +60,14 @@ namespace gore1_data {
 	}; // 20 bytes
 }
 
-class gore1 : public Image {
+class HamsterGore1 : public Image {
 protected:
 	inline uint16_t get_arc(uint16_t i) override {
-		return pgm_read_word(&gore1_data::arcs[i]);
+		return pgm_read_word(&HamsterGore1Data::arcs[i]);
 	}
 
 	inline uint16_t get_row_end(uint8_t row_index) override {
-		return pgm_read_word(&gore1_data::row_ends[row_index]);
+		return pgm_read_word(&HamsterGore1Data::row_ends[row_index]);
 	}
 
 protected:
@@ -79,11 +79,11 @@ protected:
 	}
 
 	inline uint32_t get_color(uint16_t arc) override {
-		return pgm_read_dword(&(gore1_data::colors[arc & color_mask]));
+		return pgm_read_dword(&(HamsterGore1Data::colors[arc & color_mask]));
 	}
 
 public:
-    gore1() {
+    HamsterGore1() {
         Image::Initialise();
     }
 };
