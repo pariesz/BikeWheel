@@ -50,7 +50,7 @@ public:
         ms_prev = ms;
 
         // update stars
-        update_index((ms >> 9) & NUM_STARS);
+        update_index((ms >> 9) & 0xF);
 
         for (uint8_t i = 0; i < NUM_STARS; i++) {
             Star* star = &stars[i];
