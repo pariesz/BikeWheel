@@ -39,19 +39,20 @@ Program* start_program(void) {
     switch (program_index) {
         case 0:  return new Spiral;
         case 1:  return new LaPandora;
-        case 2:  return new MasaCritica;
+        case 2:  return new MasaCritica(random(0, 0xFF));
         case 3:  return new Kaleidoscope;
         case 4:  return new Radioactive;
-        case 5:  return new Fist;
+        case 5:  return new Fist(random(0, 0xFF));
         case 6:  return new ExplodingText(37, "- BCN - Critical Mass - Masa Critica");
         case 7:  return new NyanCat;
         case 8:  return new Poo;
         case 9:  return new Velocity;
         case 10: return new Hamster;
+        case 11: return new ShootingStars(random(0, 0xFF));
     }
 
     // loop back around
-    program_index = sensors.get_rotation_rate() < 0 ? 10 : 0;
+    program_index = sensors.get_rotation_rate() < 0 ? 11 : 0;
     return start_program();
 }
 

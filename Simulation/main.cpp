@@ -19,7 +19,7 @@ bool on = true;
 WheelSensors sensors;
 Image_Base *image = nullptr;
 //ExplodingText program(37, "- BCN - Critical Mass - Masa Critica");
-Hamster program;
+ShootingStars program(random(0, 0xFF));
 
 void loop() {
     if (!SensorData::update()) {

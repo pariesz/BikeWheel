@@ -22,6 +22,13 @@ uint32_t micros() {
     return us.count();
 }
 
+uint32_t random(uint32_t lower, uint32_t upper) {
+    int range = (upper - lower + 1);
+    int rand = (std::rand() % range);
+    if (range > RAND_MAX) rand *= range / RAND_MAX;
+    return rand + lower;
+}
+
 char *dtostrf(double val, int width, unsigned int prec, char *sout) {
     char fmt[20];
     sprintf_s(fmt, "%%%d.%df", width, prec);

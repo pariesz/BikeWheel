@@ -19,6 +19,8 @@ uint32_t millis();
 
 uint32_t micros();
 
+uint32_t random(uint32_t lower, uint32_t upper);
+
 char *dtostrf(double val, int width, unsigned int prec, char *sout);
 
 #define __attribute__(...)

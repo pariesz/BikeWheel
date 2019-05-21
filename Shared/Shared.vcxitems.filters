@@ -133,5 +133,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\ExplodingText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\ShootingStars.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

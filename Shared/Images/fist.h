@@ -53,13 +53,13 @@ namespace FistData {
 		0x0139, 0x0140, 0x0145, 0x0148, 0x014B, 0x014E, 0x0151, 0x0154, 
 		0x018D, 0x018E, 0x018F, 0x0190
 	}; // 72 bytes
-
-	const uint32_t colors[] PROGMEM {		
-		0x00000000, 0x00FF0000
-	}; // 8 bytes
 }
 
 class Fist : public Image {
+
+private:
+    uint32_t color;
+
 protected:
 	inline uint16_t get_arc(uint16_t i) override {
 		return pgm_read_word(&FistData::arcs[i]);
@@ -78,11 +78,14 @@ protected:
 	}
 
 	inline uint32_t get_color(uint16_t arc) override {
-		return pgm_read_dword(&(FistData::colors[arc & color_mask]));
+        switch (arc & color_mask) {
+            case 0: return 0;
+            default: return color;
+        }
 	}
 
 public:
-    Fist() {
+    Fist(uint8_t hue) : color(Colors::HslToRgb(hue, 0xFF, 0xFF)) {
         Image::Initialise();
     }
 };

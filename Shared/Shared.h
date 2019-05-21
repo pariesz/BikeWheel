@@ -18,5 +18,6 @@
 #include "Programs/ExplodingText.h"
 #include "Programs/Spiral.h"
 #include "Programs/Velocity.h"
+#include "Programs/ShootingStars.h"
 #include "Images/Fist.h"
 #include "Images/Poo.h"
