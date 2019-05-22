@@ -12,8 +12,9 @@
 #include "Logging.h"
 #include "WheelSensors.h"
 
-
-#define MPU_RADIUS 25 // distance in mm, required to calculate and offset centrifugal acceleration
+// MPU sensors distance from wheel center in in mm
+// required to calculate and offset centrifugal acceleration
+#define MPU_RADIUS 25 
 
 // Expected orientation of MPU6050
 //      +z
@@ -166,10 +167,12 @@ inline uint16_t WheelSensors::get_rotation_rate_angle(uint32_t time_diff) {
 inline uint16_t WheelSensors::get_acc_angle(int16_t* acc) {
     // Centrifugal Acceleration: a = v^2 / r 
     // rs = rotations per second 
-    //    = rotation_rate / 0xFFFF
-    //  v = circumference (2PI * MPU_RADIUS) * rot
-    //  a = (2PI * MPU_RADIUS * rs)^2 / MPU_RADIUS
-    //    = MPU_RADIUS * (2PI * rs)^2
+    //    = abs(rotation_rate) / 0xFFFF
+    //  v = circumference * rs
+    //    = TWO_PI * MPU_RADIUS * rs
+    //  a = v^2 / MPU_RADIUS
+    //    = (TWO_PI * MPU_RADIUS * rs)^2 / MPU_RADIUS
+    //    = (TWO_PI * abs(rotation_rate) / 0xFFFF)^2 * MPU_RADIUS
 
     // Acceleromter full-range (±0x8000) is set to ±8g
     // a(mpu) = (a * 0x8000) / (9.8ms2 * 1000mm * 8g) = a * 0.417959
