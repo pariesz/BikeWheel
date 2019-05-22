@@ -19,5 +19,6 @@
 #include "Programs/Spiral.h"
 #include "Programs/Velocity.h"
 #include "Programs/ShootingStars.h"
+#include "Programs/Rays.h"
 #include "Images/Fist.h"
 #include "Images/Poo.h"

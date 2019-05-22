@@ -5,9 +5,9 @@ class Velocity : public Program {
 
 public:
     void render(uint16_t zero_angle, int32_t rotation_rate) {
-        const uint8_t number_len = 2; // ##
+        const uint8_t number_len = 2;  // ##
         const uint8_t decimal_len = 6; // .# KMH
-        char number[6]; // ##.# + one extra for NUL
+        char number[6];                // ##.# + one extra for NUL
         char decimal[] = ".0 KMH";
 
         // c (wheel circumference) for 29in rim * 2.1 tire = 2288mm
@@ -16,7 +16,7 @@ public:
         // v = rotation_rate * (60 * 60 * 2288) / (1 << 16) * 1000 * 1000
         float v = abs(rotation_rate) / 7956.48795648795f;
 
-        // 5 char width, 1 decimal precision
+        // ##.# (4 char width, 1 decimal precision)
         dtostrf(v, 4, 1, number);
 
         // Move the decimal digit
@@ -59,7 +59,6 @@ public:
                 
             } else {
                 // render decimal from 45deg to 135deg (8ch per 90deg)
-
                 // offset 8px down
                 if (y < FONT_HEIGHT) {
                     Leds::set_color(i, Colors::black);

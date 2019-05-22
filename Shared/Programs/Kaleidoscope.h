@@ -10,15 +10,14 @@ public:
         uint16_t ms = millis();
         zero_angle -= ms;
 
-        uint8_t angle_shift = (ms >> 9) & 0xF;
+        uint8_t angle_shift = 4 + ((ms >> 9) & 0x7);
         if (angle_shift > 8) {
-            angle_shift ^= 0xF;
+            angle_shift = 12 - angle_shift;
         }
-        angle_shift += 1;
 
-        uint8_t segment_shift = (ms >> 10) & 0xF;
+        uint8_t segment_shift = 4 + ((ms >> 9) & 0x7);
         if (segment_shift > 8) {
-            segment_shift ^= 0xF;
+            segment_shift = 12 - segment_shift;
         }
 
         for (int i = 0; i < NUM_PIXELS; i++) {
@@ -40,6 +39,7 @@ public:
             } else {
                 segment_angle = (1 << 12) - segment_angle;
             }
+
             if ((segment_angle >> angle_shift) > inverse_dist) {
                 Leds::set_color(i, black);
                 continue;

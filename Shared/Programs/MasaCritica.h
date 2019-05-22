@@ -3,21 +3,26 @@
 
 class MasaCritica : public Program {
 private:
+    const char* label = " MASA CRITICA";
+    const uint8_t label_len = 13;
+    const uint8_t min_y = ((FONT_HEIGHT << 1) - 1);
+
+    uint8_t hue;
     uint32_t color;
     
 public:
     MasaCritica()
-        : color(0xFF0000) {
-    }
-
-    MasaCritica(uint8_t hue) 
-        : color(Colors::HslToRgb(hue, 0xFF, 0xFF))  {
+        : hue(random(0, 0xFF))
+        , color(Colors::HslToRgb(hue, 0xFF, 0xFF)) {
     }
 
     void render(uint16_t zero_angle, int32_t rotation_rate) {
-        const char* label = " MASA CRITICA";
-        const uint8_t label_len = 13;
-        const uint8_t min_y = ((FONT_HEIGHT << 1) - 1);
+        static uint32_t ms = millis();
+
+        if (millis() - ms > 200) {
+            ms = millis();
+            color = Colors::HslToRgb(++hue, 0xFF, 0xFF);
+        }
 
         zero_angle += (1 << 14); // rotate -90 degrees
 
@@ -32,7 +37,6 @@ public:
             uint16_t x = ((uint32_t)angle * (label_len << FONT_WIDTH_SHIFT)) >> 16;
 
             uint8_t ch_x = x & (FONT_WIDTH - 1);
-
             uint8_t ch_num = x >> FONT_WIDTH_SHIFT;
 
             char ch = label[ch_num];

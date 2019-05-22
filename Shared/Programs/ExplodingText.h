@@ -4,6 +4,7 @@
 class ExplodingText : public Program {
 
 private:
+    uint8_t hue = random(0, 0xFF);
     uint8_t label_length;
     const char *label;
 
@@ -16,14 +17,20 @@ public:
     void render(uint16_t zero_angle, int32_t rotation_rate) {
         const uint32_t ms = millis();
 
+        const int16_t brightness = ((ms >> 7 & 0x3F) << 4) - 350;
+
+        if (brightness <= 0) {
+            hue = random(0, 0xFF);
+            return;
+        }
+
         const int8_t y_offset = 64 - (ms >> 7 & 0x3F) - FONT_HEIGHT;
 
         const uint8_t y_min = FONT_HEIGHT + y_offset - 1;
 
-        // transition colors based off time
-        uint32_t color = Colors::HslToRgb(ms >> 5, 255, 255);
+        uint32_t color = Colors::HslToRgb(hue, 255, min(0xFF, brightness));
 
-        zero_angle -= ms << 2;
+        zero_angle -= ms << 1;
 
         for (int i = 0, y = PIXELS_PER_STRIP - 1; i < NUM_PIXELS; i++, y--) {
             if (y < 0) {
@@ -47,7 +54,7 @@ public:
                 ch_num %= label_length;
             }
 
-            uint8_t ch = label[ch_num];
+            char ch = label[ch_num];
 
             if (((pgm_read_byte(&(fontdata_8x8[(uint16_t)ch * FONT_HEIGHT + ch_y])) >> ((FONT_WIDTH - 1) - ch_x)) & 1)) {
                 Leds::set_color(i, color);

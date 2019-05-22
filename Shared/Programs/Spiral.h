@@ -6,8 +6,8 @@ class Spiral : public Program {
 public:
     void render(uint16_t zero_angle, int32_t rotation_rate) {
         uint32_t ms = millis();
-        uint16_t spiral_angle = zero_angle + (ms << 4);
-        uint16_t color_angle = zero_angle - (ms << 3);
+        uint16_t spiral_angle = zero_angle + (ms << 5);
+        uint16_t color_angle = zero_angle - (ms << 1);
 
         for (uint8_t i = 0; i < NUM_PIXELS; i++) {
             uint16_t pos = spiral_angle + Leds::get_angle(i) - ((uint16_t)Leds::get_distance(i) << 9);

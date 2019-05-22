@@ -40,9 +40,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Images\finger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Images\fist.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Images\MrSplat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -134,6 +131,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\ShootingStars.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\Fist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Images\fist_bak.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Rays.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

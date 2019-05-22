@@ -18,8 +18,7 @@ bool on = true;
 
 WheelSensors sensors;
 Image_Base *image = nullptr;
-//ExplodingText program(37, "- BCN - Critical Mass - Masa Critica");
-ShootingStars program(random(0, 0xFF));
+Velocity program;
 
 void loop() {
     if (!SensorData::update()) {
@@ -78,7 +77,7 @@ int main() {
     //image = new Image_6BitColor(pixels);
 
     // FIST
-    //std::string imageName("fist");
+    //std::string imageName("Fist");
     //BMP bmp("../Images/" + imageName + ".bmp");
     //Image_Pixels pixels(bmp, Leds::min_dist);
     //uint32_t colors[] = { 0x000000, 0xFF0000 };
