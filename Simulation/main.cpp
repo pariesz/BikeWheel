@@ -18,7 +18,7 @@ bool on = true;
 
 WheelSensors sensors;
 Image_Base *image = nullptr;
-Velocity program;
+Portal program;
 
 void loop() {
     if (!SensorData::update()) {

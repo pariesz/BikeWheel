@@ -7,6 +7,7 @@
 #define RAY_MIN_WIDTH 0x1FF
 #define RAY_COLOR_VARIATION 0x2F
 #define RAY_BIRTH_RATE 10 // number of frames between creating new rays
+#define RAY_EXPANSION 30
 
 class Rays : public Program {
 
@@ -60,6 +61,8 @@ public:
                 } else if (ray->start_y < PIXELS_PER_STRIP) {
                     ray->start_y++;
                 }
+                ray->start_angle -= RAY_EXPANSION;
+                ray->end_angle += RAY_EXPANSION;
             }
         }
 

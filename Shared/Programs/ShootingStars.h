@@ -21,8 +21,6 @@ private:
     uint8_t color_offset = random(0, 0xFF);
 
 public:
-
-
     inline uint32_t get_color(Star &star, uint16_t fade) {
         return fade >= 0xFF ? 0 : Colors::HslToRgb(star.hue, 0xFF, 0xFF - fade);
     }
