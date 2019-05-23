@@ -1,6 +1,7 @@
 #include "MPU6050_Mock.h"
 #include "Arduino_Mock.h"
 
+#if !defined(ARDUINO)
 static int16_t _acc_x  = 0;
 static int16_t _acc_y  = 0;
 static int16_t _acc_z  = 0;
@@ -33,3 +34,4 @@ void MPU6050::getAcceleration(int16_t* x, int16_t* y, int16_t* z) {
     *y = _acc_y;
     *z = _acc_z;
 }
+#endif

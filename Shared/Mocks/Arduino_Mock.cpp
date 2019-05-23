@@ -1,10 +1,11 @@
 #pragma once
 #pragma warning(disable:4996)
+#include "Arduino_Mock.h"
 
+#if !defined(ARDUINO)
 #include <chrono>
 #include <string.h>
 #include <stdlib.h>
-#include "Arduino_Mock.h"
 
 uint32_t millis() {
     using namespace std::chrono;
@@ -45,3 +46,4 @@ void digitalWrite(uint8_t index, uint8_t value) {
 uint8_t digitalRead(uint8_t index) {
     return digitalPins[index];
 }
+#endif

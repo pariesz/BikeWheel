@@ -1,9 +1,9 @@
 #pragma once
+#include "Arduino_Mock.h"
+
 #if defined(ARDUINO) && ARDUINO >= 100
     #include <MPU6050.h>
 #else
-#include "Arduino_Mock.h"
-
 #define MPU6050_DEFAULT_ADDRESS 0
 
 class MPU6050 {

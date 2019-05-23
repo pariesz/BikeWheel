@@ -1,8 +1,6 @@
 #include "Adafruit_DotStar_Mock.h"
-#include "Arduino_Mock.h"
-#include "Graphics.h"
-#include "Leds.h"
 
+#if !defined(ARDUINO)
 uint8_t* Adafruit_DotStar::vertices;
 
 Adafruit_DotStar::Adafruit_DotStar(uint16_t num_pixels, uint8_t mode) {
@@ -42,3 +40,4 @@ void Adafruit_DotStar::show(uint16_t angle) {
 Adafruit_DotStar::~Adafruit_DotStar() {
     delete vertices;
 }
+#endif
