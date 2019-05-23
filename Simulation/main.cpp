@@ -74,7 +74,7 @@ int main() {
     //std::string imageName({name});
     //BMP bmp("../Images/" + imageName + ".bmp");
     //Image_Pixels pixels(bmp, Leds::min_dist);
-    //image = new Image_IndexedColor(pixels, {colors}, 3);
+    //image = new Image_IndexedColor(pixels, Image_Colors::{colors}, 3);
     //image = new Image_Grayscale(pixels);
     //image = new Image_6BitColor(pixels);
 
