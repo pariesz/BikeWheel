@@ -19,7 +19,7 @@
 MockData data_source;
 Mpu mpu;
 Image_Base *image = nullptr;
-MainProgram program;
+ShootingStars program;
 
 // Simulate the Arduino loop() and setup() functions
 void loop() {

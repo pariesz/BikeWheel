@@ -1,20 +1,22 @@
 #pragma once
 #include "Program.h"
 
-#define LINE_FRAME_MS 200
+#define LINE_FRAME_MS 100
 #define LINE_MIN_WIDTH 0x1FFF
 #define LINE_MAX_WIDTH 0x2FFF
 #define LINE_COLOR_CHANGE_RATE 3
-#define LINE_ROTATION_RATE(ms) ms << 2
+#define LINE_ROTATION_RATE(ms) ((ms) << 2)
 
 class Line {
     private:
         uint16_t start_angle = random(0, 0xFFFF);
         uint16_t end_angle = start_angle + random(LINE_MIN_WIDTH, LINE_MAX_WIDTH);
-        uint32_t color = 0;
+        uint32_t color;
 
     public:
-        Line() { }
+        Line() 
+            : color(0) { 
+        }
 
         Line(uint8_t hue) 
             : color(Colors::HslToRgb(hue, 0xFF, 0xFF)) {
@@ -42,16 +44,18 @@ class Line {
 class Portal : public Program {
     private:
         Line lines[LEDS_PER_STRIP];
-        uint8_t index = 0;
-        uint8_t color_offset = random(0, 0xFF);
 
     public:
         void render(uint16_t zero_angle, int32_t rotation_rate) {
-            uint32_t ms = millis();
-            zero_angle -= LINE_ROTATION_RATE(ms);
+            // setup
+            static uint8_t index = 0;
+            static uint8_t color_offset = random(0, 0xFF);
 
             // timing
+            uint32_t ms = millis();
             static uint32_t ms_prev = ms;
+
+            zero_angle -= LINE_ROTATION_RATE(ms);
 
             // create new stars
             if (ms - ms_prev > LINE_FRAME_MS) {

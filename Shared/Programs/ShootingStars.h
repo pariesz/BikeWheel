@@ -1,58 +1,75 @@
 #pragma once
 #include "Program.h"
 
-#define STAR_COUNT 16
-#define STAR_BIRTH_INDEX(ms) (((ms) >> 9) & 0xF) // bitmask needs to be same size as STAR_COUNT
 #define STAR_GROWTH_RATE(ms_diff) ((ms_diff) << 3)
 #define STAR_FADE(length) (length) >> 7
-#define STAR_COLOR_CHANGE_RATE 3
+#define STAR_HUE_CHANGE_RATE 3
+#define STAR_LIFETIME 15
+#define STAR_MAX_LENGTH 0x7FFF
+#define STAR_TIME(ms) (((ms) >> 8) & 0xFFFF)
 
 class Star {
     private:
+        uint16_t created;
         uint16_t start_angle = random(0, 0xFFFF);
         uint16_t length = 0;
-        uint8_t y = random(0, LEDS_PER_STRIP - 1);
         uint8_t hue = 0;
 
         inline uint32_t get_color(uint16_t length) {
             uint8_t fade = STAR_FADE(length);
-            return fade >= 0xFF ? 0 : Colors::HslToRgb(hue, 0xFF, 0xFF - fade);
+            if (fade >= 0xFF) {
+                return 0;
+            } else if (fade > 0x7F) {
+                return Colors::HslToRgb(hue, 0xFF, 0xFF - (fade << 1));
+            } else if(fade < 0x3F) {
+                return Colors::HslToRgb(hue, fade << 2, 0xFF);
+            } else {
+                return Colors::HslToRgb(hue, 0xFF, 0xFF);
+            }
         }
 
     public:
         Star() 
-            : y(0xFF) {
+            : created(0) {
         }
 
-        Star(uint8_t hue) 
-            : hue(hue) {
+        Star(uint8_t hue, uint16_t time) 
+            : hue(hue)
+            , created(time) {
         }
 
         void update(uint8_t ms) {
-            length += STAR_GROWTH_RATE(ms);
+            if (length > STAR_MAX_LENGTH) {
+                start_angle += STAR_GROWTH_RATE(ms);;
+            } else {
+                length += STAR_GROWTH_RATE(ms);
+            }
         }
 
-        bool show(uint8_t y, uint16_t angle, uint32_t &out_color) {
-            if (this->y == y) {
-                uint32_t end_angle = start_angle + (uint32_t)length;
+        inline bool isDead(uint16_t seconds) {
+            return seconds - created > STAR_LIFETIME;
+        }
 
-                if (end_angle > 0xFFFF) {
-                    // overflow
-                    if (angle > start_angle) {
-                        out_color = get_color(end_angle - angle);
-                        return true;
+        bool show(uint16_t angle, uint32_t &out_color) {
+            uint32_t end_angle = start_angle + (uint32_t)length;
 
-                    } else if (angle < (uint16_t)end_angle) {
-                        out_color = get_color((uint16_t)end_angle - angle);
-                        return true;
-                    }
-                } else {
-                    if (angle > start_angle && angle < end_angle) {
-                        out_color = get_color(end_angle - angle);
-                        return true;
-                    }
+            if (end_angle > 0xFFFF) {
+                // overflow
+                if (angle > start_angle) {
+                    out_color = get_color(end_angle - angle);
+                    return true;
+
+                } else if (angle < (uint16_t)end_angle) {
+                    out_color = get_color((uint16_t)end_angle - angle);
+                    return true;
+                }
+            } else {
+                if (angle > start_angle && angle < end_angle) {
+                    out_color = get_color(end_angle - angle);
+                    return true;
                 }
             }
+
             return false;
         }
 };
@@ -60,25 +77,37 @@ class Star {
 class ShootingStars : public Program {
 
 private:
-    Star stars[STAR_COUNT];
+    Star stars[LEDS_PER_STRIP];
     uint8_t index = 0;
-    uint8_t color_offset = random(0, 0xFF);
+    uint8_t hue = random(0, 0xFF);
 
 public:
     void render(uint16_t zero_angle, int32_t rotation_rate) {
         // timing
         uint32_t ms = millis();
+        uint16_t time = STAR_TIME(ms);
+        static uint16_t time_prev = time;
+
+        // create new stars
+        if (time - time_prev) {
+            time_prev = time;
+
+            while (true) {
+                uint8_t create_index = random(0, LEDS_PER_STRIP - 1);
+
+                if (stars[create_index].isDead(time)) {
+                    stars[create_index] = Star(hue += STAR_HUE_CHANGE_RATE, time);
+                    break;
+                }
+            }
+        }
+
+        // update existing stars
         static uint32_t ms_prev = ms;
         uint8_t ms_diff = ms - ms_prev;
         ms_prev = ms;
 
-        // create new stars
-        if (index != STAR_BIRTH_INDEX(ms)) {
-            stars[index = STAR_BIRTH_INDEX(ms)] = Star(color_offset += STAR_COLOR_CHANGE_RATE);
-        }
-
-        // update existing stars
-        for (uint8_t i = 0; i < STAR_COUNT; i++) {
+        for (uint8_t i = 0; i < LEDS_PER_STRIP; i++) {
             stars[i].update(ms_diff);
         }
 
@@ -86,21 +115,16 @@ public:
         for (uint8_t i = 0, y = 0; i < LEDS_COUNT; i++, y++) {
             if (y == LEDS_PER_STRIP) y = 0;
 
-            uint8_t render_index = index;
-            uint16_t angle = zero_angle + Leds::get_angle(i);
+            Star* star = &stars[y];
+
+            if (star->isDead(time)) {
+                Leds::set_color(i, 0);
+                continue;
+            }
+            
             uint32_t color = 0;
 
-            do {
-                if (stars[render_index].show(y, angle, color)) {
-                    break;
-                }
-                // update from index backward so the new stars are on-top.
-                if (--render_index == 0xFF) {
-                    render_index = STAR_COUNT - 1;
-                }
-            } while (render_index != index);
-
-            Leds::set_color(i, color);
+            Leds::set_color(i, star->show(zero_angle + Leds::get_angle(i), color) ? color : 0);
         }
     }
 };

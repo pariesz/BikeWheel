@@ -1,6 +1,6 @@
 #include "MockData.h"
 
-int16_t MockData::gyro_y = -4000;
+int16_t MockData::gyro_y = -8000;
 
 bool MockData::try_get_next(DataLine &dl) {
     static int us_prev = micros();
