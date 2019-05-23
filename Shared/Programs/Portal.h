@@ -9,15 +9,15 @@
 
 class Line {
     private:
-        uint16_t start_angle = 0;
-        uint16_t end_angle = 0;
+        uint16_t start_angle = random(0, 0xFFFF);
+        uint16_t end_angle = start_angle + random(LINE_MIN_WIDTH, LINE_MAX_WIDTH);
         uint32_t color = 0;
 
     public:
-        void reset(uint8_t hue) {
-            start_angle = random(0, 0xFFFF);
-            end_angle = start_angle + random(LINE_MIN_WIDTH, LINE_MAX_WIDTH);
-            color = Colors::HslToRgb(hue, 0xFF, 0xFF);
+        Line() { }
+
+        Line(uint8_t hue) 
+            : color(Colors::HslToRgb(hue, 0xFF, 0xFF)) {
         }
 
         bool show(uint16_t angle) {
@@ -61,7 +61,7 @@ class Portal : public Program {
                     index = 0;
                 }
 
-                lines[index].reset(color_offset += LINE_COLOR_CHANGE_RATE);
+                lines[index] = Line(color_offset += LINE_COLOR_CHANGE_RATE);
             }
 
             // update leds

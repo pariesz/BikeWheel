@@ -9,9 +9,9 @@
 
 class Star {
     private:
-        uint16_t start_angle = 0;
+        uint16_t start_angle = random(0, 0xFFFF);
         uint16_t length = 0;
-        uint8_t y = 0xFF;
+        uint8_t y = random(0, LEDS_PER_STRIP - 1);
         uint8_t hue = 0;
 
         inline uint32_t get_color(uint16_t length) {
@@ -20,11 +20,12 @@ class Star {
         }
 
     public:
-        void reset(uint8_t hue) {
-            start_angle = random(0, 0xFFFF);
-            this->hue = hue;
-            y = random(0, LEDS_PER_STRIP - 1);
-            length = 0;
+        Star() 
+            : y(0xFF) {
+        }
+
+        Star(uint8_t hue) 
+            : hue(hue) {
         }
 
         void update(uint8_t ms) {
@@ -73,7 +74,7 @@ public:
 
         // create new stars
         if (index != STAR_BIRTH_INDEX(ms)) {
-            stars[index = STAR_BIRTH_INDEX(ms)].reset(color_offset += STAR_COLOR_CHANGE_RATE);
+            stars[index = STAR_BIRTH_INDEX(ms)] = Star(color_offset += STAR_COLOR_CHANGE_RATE);
         }
 
         // update existing stars

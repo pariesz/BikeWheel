@@ -51,6 +51,13 @@ private:
     }
 
 public:
+    MainProgram() { }
+
+    MainProgram(uint8_t index)
+        : index(index)
+        , on(1) {
+    }
+
     void render(uint16_t zero_angle, int32_t rotation_rate) {
         if (on) {
             if (abs(rotation_rate) < 60000) {

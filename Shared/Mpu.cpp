@@ -1,6 +1,4 @@
-﻿#pragma once
-
-#if defined(ARDUINO) && ARDUINO >= 100
+﻿#if defined(ARDUINO) && ARDUINO >= 100
     #include <I2Cdev.h>
     #include <Wire.h>
 #endif

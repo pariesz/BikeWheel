@@ -14,28 +14,18 @@
 class Ray {
 
     private:
-        uint16_t start_angle = 0;
-        uint16_t end_angle = 0;
-
+        uint16_t start_angle = random(0, 0xFFFF);
+        uint16_t end_angle = start_angle + random(RAY_MIN_WIDTH, RAY_MAX_WIDTH);
         uint8_t end_y = 0;
         uint8_t start_y = 0;
-    
-        uint8_t hue = 0;
-        uint8_t brightness = 0;
+        uint8_t hue = random(0, 0xFF);
+        uint8_t brightness = 0xFF;
         uint8_t saturation = 0;
-    
-        uint32_t color = 0;
+        uint32_t color = Colors::HslToRgb(hue, saturation, brightness);
 
     public:
-        void reset() {
-            start_angle = random(0, 0xFFFF);
-            end_angle = start_angle + random(RAY_MIN_WIDTH, RAY_MAX_WIDTH);
-            end_y = 0;
-            start_y = 0;
-            hue = random(0, 0xFF);
-            brightness = 0xFF;
-            saturation = 0x00;
-            color = Colors::HslToRgb(hue, saturation, brightness);
+        void set_brightness(uint8_t value) {
+            brightness = value;
         }
 
         void update() {
@@ -91,6 +81,12 @@ class Rays : public Program {
         Ray rays[RAY_COUNT];
 
     public:
+        Rays() {
+            for (uint8_t i = 0; i < RAY_COUNT; i++) {
+                rays[i].set_brightness(0);
+            }
+        }
+
         void render(uint16_t zero_angle, int32_t rotation_rate) {
             static uint32_t ms_prev = millis();
             static uint8_t created_index = 0;
@@ -108,7 +104,7 @@ class Rays : public Program {
                         created_index = 0;
                     }
 
-                    rays[created_index].reset();
+                    rays[created_index] = Ray();
                 }
 
                 // update existing rays

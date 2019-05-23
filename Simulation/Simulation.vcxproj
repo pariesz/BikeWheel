@@ -124,6 +124,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Include\MockData.cpp" />
     <ClCompile Include="Src\Leds_Export.cpp" />
     <ClCompile Include="Src\Export.cpp" />
     <ClCompile Include="glad.c" />

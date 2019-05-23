@@ -16,7 +16,7 @@
 #include "Leds_Export.h"
 
 //OutputData data_source("output.csv");
-MockData data_source(0);
+MockData data_source;
 Mpu mpu;
 Image_Base *image = nullptr;
 MainProgram program;

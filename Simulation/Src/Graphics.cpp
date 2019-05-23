@@ -5,6 +5,8 @@
 #include "Shader.h"
 #include "FrameBuffer.h"
 #include "Leds.h"
+#include "MockData.h"
+#include "Logging.h"
 
 #define GRAPHICS_WIDTH 600
 #define GRAPHICS_HEIGHT 600
@@ -35,6 +37,25 @@ namespace Graphics {
         }
     }
 
+    //@param[in] window The window that received the event.
+    //@param[in] key The[keyboard key](@ref keys) that was pressed or released.
+    //@param[in] scancode The system - specific scancode of the key.
+    //@param[in] action `GLFW_PRESS`, `GLFW_RELEASE` or `GLFW_REPEAT`.
+    //@param[in] mods Bit field describing which[modifier keys](@ref mods) were
+    void keyCallback(GLFWwindow* window, int key, int scancode, int ation, int mods) {
+        switch (key) {
+            case GLFW_KEY_LEFT:
+                MockData::gyro_y += 100;
+                std::cout << "gyro_y:" << MockData::gyro_y << std::endl;
+                break;
+
+            case GLFW_KEY_RIGHT:
+                MockData::gyro_y -= 100;
+                std::cout << "gyro_y:" << MockData::gyro_y << std::endl;
+                break;
+        }
+    }
+
     bool init() {
         // glfw: initialize and configure
         // ------------------------------
@@ -60,6 +81,7 @@ namespace Graphics {
         }
         glfwMakeContextCurrent(window);
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+        glfwSetKeyCallback(window, keyCallback);
 
         // glad: load all OpenGL function pointers
         // ---------------------------------------
