@@ -25,9 +25,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Image.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Images\finger.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Images\Fist.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Images\fist_bak.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Images\HamsterGore1.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Images\HamsterGore2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Mocks\Adafruit_DotStar_Mock.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Mocks\Arduino_Mock.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Mocks\MPU6050_Mock.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Color.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Hamster.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Kaleidoscope.h" />
@@ -55,13 +57,17 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Spiral.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\TestSegments.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Velocity.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WheelSensors.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Mpu.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Colors.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)HallSensor.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Image.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Leds.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)WheelSensors.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Logging.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Mocks\Adafruit_DotStar_Mock.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Mocks\Arduino_Mock.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Mocks\MPU6050_Mock.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Mpu.cpp" />
   </ItemGroup>
 </Project>

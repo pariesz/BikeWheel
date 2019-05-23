@@ -3,14 +3,14 @@
 #include "./Image.h"
 
 void Image::Initialise() {
-    for (int i = 0; i < NUM_PIXELS; i++) {
-        uint8_t row_index = i % PIXELS_PER_STRIP;
+    for (int i = 0; i < LEDS_COUNT; i++) {
+        uint8_t row_index = i % LEDS_PER_STRIP;
         iterators[i] = get_row_end(row_index);
     }
 }
 
 uint32_t Image::get_led_color(uint8_t index, uint16_t angle) {
-    uint8_t row_index = index % PIXELS_PER_STRIP;
+    uint8_t row_index = index % LEDS_PER_STRIP;
     uint16_t end = get_row_end(row_index);
     uint16_t start = row_index == 0 ? 0 : get_row_end(row_index - 1) + 1;
     uint16_t i = iterators[index];
@@ -43,7 +43,7 @@ uint32_t Image::get_led_color(uint8_t index, uint16_t angle) {
 }
 
 void Image::render(uint16_t zero_angle, int32_t rotation_rate) {
-    for (uint8_t i = 0; i < NUM_PIXELS; i++) {
+    for (uint8_t i = 0; i < LEDS_COUNT; i++) {
         uint16_t angle = zero_angle + Leds::get_angle(i);
         Leds::set_color(i, get_led_color(i, rotation_rate < 0 ? ~angle : angle));
     }

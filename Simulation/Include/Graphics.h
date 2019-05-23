@@ -3,7 +3,7 @@
 #include "Leds.h"
 
 namespace Graphics {
-    extern float vertices[NUM_PIXELS * 5];
+    extern float vertices[LEDS_COUNT * 5];
     bool init();
     void clear();
     bool render();

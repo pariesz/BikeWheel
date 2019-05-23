@@ -1,4 +1,9 @@
 #pragma once
+
+#if defined(ARDUINO) && ARDUINO >= 100
+    #include "arduino.h"
+    #include <avr/pgmspace.h>
+#else
 #include <math.h>
 #include <iostream>
 
@@ -14,6 +19,16 @@ inline uint16_t pgm_read_word(const uint16_t *ptr) {
 inline uint32_t pgm_read_dword(const uint32_t *ptr) {
     return *ptr;
 }
+
+inline void pinMode(uint8_t, uint8_t) { };
+
+void digitalWrite(uint8_t index, uint8_t value);
+
+uint8_t digitalRead(uint8_t index);
+
+//inline int analogRead(uint8_t);
+//inline void analogReference(uint8_t mode);
+//inline void analogWrite(uint8_t, int);
 
 uint32_t millis();
 
@@ -97,3 +112,4 @@ char *dtostrf(double val, int width, unsigned int prec, char *sout);
 #define TIMER5A 16
 #define TIMER5B 17
 #define TIMER5C 18
+#endif

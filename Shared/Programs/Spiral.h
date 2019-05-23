@@ -9,7 +9,7 @@ public:
         uint16_t spiral_angle = zero_angle + (ms << 5);
         uint16_t color_angle = zero_angle - (ms << 1);
 
-        for (uint8_t i = 0; i < NUM_PIXELS; i++) {
+        for (uint8_t i = 0; i < LEDS_COUNT; i++) {
             uint16_t pos = spiral_angle + Leds::get_angle(i) - ((uint16_t)Leds::get_distance(i) << 9);
 
             uint8_t brightness = pos >> 6;

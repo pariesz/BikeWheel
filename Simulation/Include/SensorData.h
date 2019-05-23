@@ -12,8 +12,6 @@ public:
     short gyro_z;
 };
 
-namespace SensorData {
-    void setup();
-    bool update();
-    DataLine get();
+class SensorData {
+    virtual bool try_get_next(DataLine &dl) = 0;
 };

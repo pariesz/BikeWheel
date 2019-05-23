@@ -14,7 +14,7 @@ public:
 public:
     const int get_resolution(const int row) {
         // base the resolution of the arcs circumferance
-        uint8_t pos = min_radius + (((float)row / PIXELS_PER_STRIP) * (255 - min_radius));
+        uint8_t pos = min_radius + (((float)row / LEDS_PER_STRIP) * (255 - min_radius));
         return  pos * 2 * PI;
     }
 
@@ -26,7 +26,7 @@ public:
         int strip_lenth = max_dist - min_dist;
 
         // initialize vectors
-        for (int i = 0; i < PIXELS_PER_STRIP; i++) {
+        for (int i = 0; i < LEDS_PER_STRIP; i++) {
             auto rowVec = new vector<vector<int>*>;
             arcs->push_back(rowVec);
 
@@ -50,7 +50,7 @@ public:
                     continue;
                 }
 
-                unsigned int row = round(((float)(dist - min_dist) / strip_lenth) * (PIXELS_PER_STRIP - 1));
+                unsigned int row = round(((float)(dist - min_dist) / strip_lenth) * (LEDS_PER_STRIP - 1));
 
                 float radians = atan2(cx, cy);
                 float angle = (radians / PI) / 2;
@@ -77,7 +77,7 @@ public:
     }
 
     ~Image_Pixels() {
-        for (int i = 0; i < PIXELS_PER_STRIP; i++) {
+        for (int i = 0; i < LEDS_PER_STRIP; i++) {
             int res = get_resolution(i);
 
             auto row = arcs->at(i);

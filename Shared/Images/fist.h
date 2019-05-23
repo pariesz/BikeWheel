@@ -1,10 +1,4 @@
 #pragma once
-#if defined(ARDUINO) && ARDUINO >= 100
-#include <avr/pgmspace.h>
-#else
-#include "Arduino_Mock.h"
-#endif
-
 #include "../Image.h"
 
 namespace FistData {

@@ -1,10 +1,6 @@
 #pragma once
-
-#if defined(ARDUINO) && ARDUINO >= 100
-    #include "arduino.h"
-#endif
-
-#include "WheelSensors.h"
+#include "Mpu.h"
+#include "HallSensor.h"
 #include "Leds.h"
 #include "Logging.h"
 #include "Colors.h"

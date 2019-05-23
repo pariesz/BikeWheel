@@ -1,17 +1,18 @@
 #pragma once
+#include "Mocks/Arduino_Mock.h"
+
+#define COLOR_BLACK 0
+#define COLOR_BLUE 0xFF
+#define COLOR_GREEN 0xFF00
+#define COLOR_AQUA 0x9999
+#define COLOR_RED 0xFF0000
+#define COLOR_PURPLE 0xCC0066
+#define COLOR_ORANGE 0xCC6600
+#define COLOR_CYAN 0x6600CC
+#define COLOR_YELLOW 0x999900
+#define COLOR_WHITE 0xFFFFFF
 
 namespace Colors {
-    extern const uint8_t black;
-    extern const uint32_t white ;
-    extern const uint32_t red   ;
-    extern const uint32_t green ;
-    extern const uint32_t blue  ;
-    extern const uint32_t purple;
-    extern const uint32_t orange;
-    extern const uint32_t aqua  ;
-    extern const uint32_t cyan  ;
-    extern const uint32_t yellow;
-
     // convert hue, saturation and brightness ( HSB/HSV ) to RGB
     // The dim_curve is used only on brightness/value and on saturation (inverted).
     // This looks the most natural.

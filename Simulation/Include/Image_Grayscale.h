@@ -52,9 +52,9 @@ protected:
 
 public:
     Image_Grayscale(Image_Pixels& arc_pixels) {
-        vector<uint16_t> rows[PIXELS_PER_STRIP];
+        vector<uint16_t> rows[LEDS_PER_STRIP];
 
-        for (int i = 0; i < PIXELS_PER_STRIP; i++) {
+        for (int i = 0; i < LEDS_PER_STRIP; i++) {
             int res = arc_pixels.get_resolution(i);
 
             auto pixel_row = arc_pixels.arcs->at(i);

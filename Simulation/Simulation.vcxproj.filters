@@ -33,18 +33,6 @@
     <ClCompile Include="Src\Graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\SensorData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\MPU6050_Mock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Adafruit_DotStar_Mock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Arduino_Mock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Leds_Export.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -86,13 +74,13 @@
     <ClInclude Include="Include\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Arduino_Mock.h">
+    <ClInclude Include="Include\Image_Colors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Adafruit_DotStar_Mock.h">
+    <ClInclude Include="Include\OutputData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\MPU6050_Mock.h">
+    <ClInclude Include="Include\MockData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

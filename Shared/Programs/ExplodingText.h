@@ -32,12 +32,12 @@ public:
 
         zero_angle -= ms << 1;
 
-        for (int i = 0, y = PIXELS_PER_STRIP - 1; i < NUM_PIXELS; i++, y--) {
+        for (int i = 0, y = LEDS_PER_STRIP - 1; i < LEDS_COUNT; i++, y--) {
             if (y < 0) {
-                y = PIXELS_PER_STRIP - 1;
+                y = LEDS_PER_STRIP - 1;
             }
             if (y < y_offset || y > y_min) {
-                Leds::set_color(i, Colors::black);
+                Leds::set_color(i, COLOR_BLACK);
                 continue;
             }
 
@@ -59,7 +59,7 @@ public:
             if (((pgm_read_byte(&(fontdata_8x8[(uint16_t)ch * FONT_HEIGHT + ch_y])) >> ((FONT_WIDTH - 1) - ch_x)) & 1)) {
                 Leds::set_color(i, color);
             } else {
-                Leds::set_color(i, Colors::black);
+                Leds::set_color(i, COLOR_BLACK);
             }
         }
     }

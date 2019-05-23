@@ -1,13 +1,7 @@
 #pragma once
 
 // used by implementations
-#if defined(ARDUINO) && ARDUINO >= 100
-    #include "arduino.h"
-    #include <avr/pgmspace.h>
-#else
-    #include "Arduino_Mock.h"
-#endif
-
+#include "Mocks/Arduino_Mock.h"
 #include "Leds.h"
 #include "Colors.h"
 #include "Font.h"

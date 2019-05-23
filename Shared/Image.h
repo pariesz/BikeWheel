@@ -3,7 +3,7 @@
 
 class Image : public Program {
 private:
-    uint16_t iterators[NUM_PIXELS];
+    uint16_t iterators[LEDS_COUNT];
 protected:
     virtual inline uint16_t get_arc(uint16_t i) = 0;
     virtual inline uint16_t get_row_end(uint8_t row_index) = 0;

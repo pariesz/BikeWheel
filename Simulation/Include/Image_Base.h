@@ -13,7 +13,7 @@ class Image_Base : public Image {
 
 private:
     uint16_t* arcs;
-    uint16_t row_ends[PIXELS_PER_STRIP];
+    uint16_t row_ends[LEDS_PER_STRIP];
 
 protected:
     virtual uint16_t get_angle(uint16_t arc) = 0;
@@ -32,7 +32,7 @@ protected:
         stream << "\tconst uint16_t arcs[] PROGMEM {" << endl;
 
         int k = 0;
-        for (int i = 0; i < PIXELS_PER_STRIP; i++) {
+        for (int i = 0; i < LEDS_PER_STRIP; i++) {
             stream << "\t\t";
 
             for (; k <= row_ends[i]; k++) {
@@ -45,7 +45,7 @@ protected:
         stream << "\t}; // " << (k * 2) << " bytes" << endl;
 
         stream << endl;
-        Export::write_int16_array(stream, "row_ends", row_ends, PIXELS_PER_STRIP);
+        Export::write_int16_array(stream, "row_ends", row_ends, LEDS_PER_STRIP);
     }
 
     virtual void export_class(std::ofstream& stream, const std::string& data_ns) {
@@ -92,7 +92,7 @@ protected:
     void Initialize(vector<uint16_t>* rows) {
         int size = 0;
 
-        for (int i = 0; i < PIXELS_PER_STRIP; i++) {
+        for (int i = 0; i < LEDS_PER_STRIP; i++) {
             vector<uint16_t> row = rows[i];
 
             for (auto arc = row.begin(); arc != row.end(); arc++) {
@@ -103,7 +103,7 @@ protected:
         arcs = new uint16_t[size];
 
         int k = -1;
-        for (int i = 0; i < PIXELS_PER_STRIP; i++) {
+        for (int i = 0; i < LEDS_PER_STRIP; i++) {
             vector<uint16_t> row = rows[i];
 
             for (auto arc = row.begin(); arc != row.end(); arc++) {
@@ -126,12 +126,6 @@ public:
 
         stream.open(filename);
         stream << "#pragma once" << endl
-               << "#if defined(ARDUINO) && ARDUINO >= 100" << endl
-               << "#include <avr/pgmspace.h>" << endl
-               << "#else" << endl
-               << "#include \"Arduino_Mock.h\"" << endl
-               << "#endif" << endl
-               << endl
                << "#include \"../Image.h\"" << endl
                << endl
                << "namespace " << ns.c_str() << "Data {" << endl;

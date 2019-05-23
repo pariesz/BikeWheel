@@ -35,3 +35,13 @@ char *dtostrf(double val, int width, unsigned int prec, char *sout) {
     sprintf(sout, fmt, val);
     return sout;
 }
+
+static uint8_t digitalPins[12];
+
+void digitalWrite(uint8_t index, uint8_t value) {
+    digitalPins[index] = value;
+}
+
+uint8_t digitalRead(uint8_t index) {
+    return digitalPins[index];
+}

@@ -9,7 +9,7 @@
 using namespace std;
 
 namespace Graphics {
-    float vertices[NUM_PIXELS * 5];
+    float vertices[LEDS_COUNT * 5];
 
     // settings
     const unsigned int  SCR_WIDTH = 600, SCR_HEIGHT = 600;
@@ -114,7 +114,7 @@ namespace Graphics {
     }
 
     void updateVertices(uint16_t angle) {
-        for (int i = 0; i < NUM_PIXELS; i++) {
+        for (int i = 0; i < LEDS_COUNT; i++) {
             int addr = i * 5;
             int vert = i * 3;
             auto rads = radians(Leds::get_angle(i) + angle);

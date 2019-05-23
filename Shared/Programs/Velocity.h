@@ -27,12 +27,12 @@ public:
 
         uint32_t color = Colors::HslToRgb(v * 20, 255, 255);
 
-        for (int i = 0, y = PIXELS_PER_STRIP - 1; i < NUM_PIXELS; i++, y--) {
+        for (int i = 0, y = LEDS_PER_STRIP - 1; i < LEDS_COUNT; i++, y--) {
             if (y < 0) {
-                y = PIXELS_PER_STRIP - 1;
+                y = LEDS_PER_STRIP - 1;
             }
             if (y > (FONT_HEIGHT << 1) - 1) {
-                Leds::set_color(i, Colors::black);
+                Leds::set_color(i, COLOR_BLACK);
                 continue;
             }
 
@@ -40,7 +40,7 @@ public:
 
             // clear after the fisrt 135deg
             if (angle > 0x6000) {
-                Leds::set_color(i, Colors::black);
+                Leds::set_color(i, COLOR_BLACK);
                 continue;
             }
 
@@ -61,7 +61,7 @@ public:
                 // render decimal from 45deg to 135deg (8ch per 90deg)
                 // offset 8px down
                 if (y < FONT_HEIGHT) {
-                    Leds::set_color(i, Colors::black);
+                    Leds::set_color(i, COLOR_BLACK);
                     continue;
                 }
 
@@ -71,12 +71,12 @@ public:
                 char ch = decimal[ch_num];
 
                 if (((pgm_read_byte(&(fontdata_8x8[(uint16_t)ch * FONT_HEIGHT + y - FONT_HEIGHT])) >> ((FONT_WIDTH - 1) - ch_x)) & 1)) {
-                    Leds::set_color(i, ch_num < 2 ? color : Colors::white);
+                    Leds::set_color(i, ch_num < 2 ? color : COLOR_WHITE);
                     continue;
                 }
             }
 
-            Leds::set_color(i, Colors::black);
+            Leds::set_color(i, COLOR_BLACK);
         }
     }
 };

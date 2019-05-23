@@ -1,4 +1,8 @@
 #pragma once
+
+#if defined(ARDUINO) && ARDUINO >= 100
+    #include <Adafruit_DotStar.h>
+#else
 #include "Arduino_Mock.h"
 
 #define DOTSTAR_BGR 0
@@ -18,4 +22,5 @@ class Adafruit_DotStar {
 
         ~Adafruit_DotStar();
 };
+#endif
 

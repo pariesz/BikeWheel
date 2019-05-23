@@ -12,7 +12,7 @@ public:
     }
 
     void render(uint16_t zero_angle, int32_t rotation_rate) {
-        for (uint16_t i = 0; i < NUM_PIXELS; i++) {
+        for (uint16_t i = 0; i < LEDS_COUNT; i++) {
             Leds::set_color(i, color);
         }
     }

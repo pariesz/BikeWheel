@@ -26,9 +26,9 @@ public:
 
         zero_angle += (1 << 14); // rotate -90 degrees
 
-        for (int i = 0, y = PIXELS_PER_STRIP - 1; i < NUM_PIXELS; i++, y--) {
+        for (int i = 0, y = LEDS_PER_STRIP - 1; i < LEDS_COUNT; i++, y--) {
             if (y > min_y) {
-                Leds::set_color(i, Colors::black);
+                Leds::set_color(i, COLOR_BLACK);
                 continue;
             }
 
@@ -42,13 +42,13 @@ public:
             char ch = label[ch_num];
 
             if (((pgm_read_byte(&(fontdata_8x8[(uint16_t)ch * FONT_HEIGHT + (y >> 1)])) >> ((FONT_WIDTH - 1) - ch_x)) & 1)) {
-                Leds::set_color(i, ch_num > 5 ? Colors::white : color);
+                Leds::set_color(i, ch_num > 5 ? COLOR_WHITE : color);
             } else {
-                Leds::set_color(i, Colors::black);
+                Leds::set_color(i, COLOR_BLACK);
             }
 
             if (y == 0) {
-                y = PIXELS_PER_STRIP;
+                y = LEDS_PER_STRIP;
             }
         }
     }

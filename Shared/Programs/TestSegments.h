@@ -7,7 +7,7 @@ public:
         using namespace Colors;
         using namespace Leds;
 
-        for (uint8_t i = 0; i < NUM_PIXELS; i++) {
+        for (uint8_t i = 0; i < LEDS_COUNT; i++) {
             int num = i + 1;
 
             if (num <= 34) {

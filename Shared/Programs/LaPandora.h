@@ -15,7 +15,7 @@ public:
 
         uint16_t space_angle = zero_angle - (millis() << 2);
 
-        for (uint8_t i = 0; i < NUM_PIXELS; i++) {
+        for (uint8_t i = 0; i < LEDS_COUNT; i++) {
             uint16_t led_angle = Leds::get_angle(i);
             uint16_t angle = zero_angle + led_angle;
             uint32_t color = rocket.get_led_color(i, reverse ? ~angle : angle);

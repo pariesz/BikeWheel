@@ -84,9 +84,9 @@ public:
         color_mask = (1 << (((uint8_t)log2(num_colors)) + 1)) - 1;
         angle_mask = ~color_mask;
         
-        vector<uint16_t> rows[PIXELS_PER_STRIP];
+        vector<uint16_t> rows[LEDS_PER_STRIP];
 
-        for (int i = 0; i < PIXELS_PER_STRIP; i++) {
+        for (int i = 0; i < LEDS_PER_STRIP; i++) {
             int res = arc_pixels.get_resolution(i);
 
             int edge_threshold = ((1 << 16) / res) * 3;
