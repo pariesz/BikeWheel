@@ -5,6 +5,11 @@
 #else
 #include "Arduino_Mock.h"
 
+#define DOTSTAR_RGB 0
+#define DOTSTAR_RBG 0
+#define DOTSTAR_GRB 0
+#define DOTSTAR_GBR 0
+#define DOTSTAR_BRG 0
 #define DOTSTAR_BGR 0
 
 class Adafruit_DotStar {

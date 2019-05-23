@@ -6,13 +6,13 @@
 #include "FrameBuffer.h"
 #include "Leds.h"
 
-using namespace std;
+#define GRAPHICS_WIDTH 600
+#define GRAPHICS_HEIGHT 600
 
 namespace Graphics {
-    float vertices[LEDS_COUNT * 5];
+    using namespace std;
 
-    // settings
-    const unsigned int  SCR_WIDTH = 600, SCR_HEIGHT = 600;
+    float vertices[LEDS_COUNT * 5];
 
     static GLFWwindow* window;
     static GLuint ledsVAO, ledsVBO;
@@ -51,7 +51,7 @@ namespace Graphics {
 
     // glfw window creation
     // --------------------
-        window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Bike Wheel Simulation", NULL, NULL);
+        window = glfwCreateWindow(GRAPHICS_WIDTH, GRAPHICS_HEIGHT, "Bike Wheel Simulation", NULL, NULL);
 
         if (window == NULL) {
             std::cout << "Failed to create GLFW window" << std::endl;
@@ -93,8 +93,8 @@ namespace Graphics {
 
         // screen quad VAO
         screen_shader = new Shader("Shaders/screen.vs", "Shaders/screen.fs");
-        screen_frame = new FrameBuffer(SCR_WIDTH, SCR_HEIGHT);
-        accum_frame = new FrameBuffer(SCR_WIDTH, SCR_HEIGHT);
+        screen_frame = new FrameBuffer(GRAPHICS_WIDTH, GRAPHICS_HEIGHT);
+        accum_frame = new FrameBuffer(GRAPHICS_WIDTH, GRAPHICS_HEIGHT);
         
         return true;
     }
@@ -102,26 +102,22 @@ namespace Graphics {
     void clear() {
         delete screen_frame;
         delete accum_frame;
-        screen_frame = new FrameBuffer(SCR_WIDTH, SCR_HEIGHT);
-        accum_frame = new FrameBuffer(SCR_WIDTH, SCR_HEIGHT);
+        screen_frame = new FrameBuffer(GRAPHICS_WIDTH, GRAPHICS_HEIGHT);
+        accum_frame = new FrameBuffer(GRAPHICS_WIDTH, GRAPHICS_HEIGHT);
         glClearColor(0.0, 0.0, 0.0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers(window);
-    }
-
-    inline float radians(uint16_t angle) {
-        return  (angle / (float)65535) * 2 * PI;
     }
 
     void updateVertices(uint16_t angle) {
         for (int i = 0; i < LEDS_COUNT; i++) {
             int addr = i * 5;
             int vert = i * 3;
-            auto rads = radians(Leds::get_angle(i) + angle);
+            double radians = ((Leds::get_angle(i) + angle) / (float)0xFFFF) * TWO_PI;
 
             // cos and sin are reversed as angle is 0 on y-axis
-            vertices[addr + 0] = Leds::get_distance(i) * (float)sin(rads) / (float)255; // x
-            vertices[addr + 1] = Leds::get_distance(i) * (float)cos(rads) / (float)255; // y
+            vertices[addr + 0] = Leds::get_distance(i) * (float)sin(radians) / (float)255; // x
+            vertices[addr + 1] = Leds::get_distance(i) * (float)cos(radians) / (float)255; // y
 
             vertices[addr + 2] = Adafruit_DotStar::vertices[vert + 0] / (float)255; // r
             vertices[addr + 3] = Adafruit_DotStar::vertices[vert + 1] / (float)255; // g

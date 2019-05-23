@@ -35,6 +35,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Kaleidoscope.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\LaPandora.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Images\MrSplat.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\MainProgram.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\MasaCritica.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\NyanCat.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Images\NyanCat1.h" />
