@@ -10,10 +10,9 @@ public:
         char number[6];                // ##.# + one extra for NUL
         char decimal[] = ".0 KMH";
 
-        // c (wheel circumference) for 29in rim * 2.1 tire = 2288mm
+        // c (wheel circumference) for 29in rim + 2.1in tire = 2288mm
         // v = rotation_rate * c
-        // kmh (conversion) = 60sec * 60min * v / int16_max * 1000mm * 1000m
-        // v = rotation_rate * (60 * 60 * 2288) / (1 << 16) * 1000 * 1000
+        // v(kmh) = (rotation_rate / 0xFFFF) * 2288mm * 60sec * 60min / (1000mm * 1000m)
         float v = abs(rotation_rate) / 7956.48795648795f;
 
         // ##.# (4 char width, 1 decimal precision)
