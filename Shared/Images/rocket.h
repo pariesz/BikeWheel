@@ -73,7 +73,13 @@ protected:
 	}
 
 	inline uint32_t get_color(uint16_t arc) override {
-		return pgm_read_dword(&(RocketData::colors[arc & color_mask]));
+        uint8_t index = arc & color_mask;
+
+        if (index == 2 && millis() >> 9 & 0b1) {
+            return 0xFFFF;
+        }
+
+		return pgm_read_dword(&(RocketData::colors[index]));
 	}
 
 public:

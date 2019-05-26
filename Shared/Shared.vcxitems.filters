@@ -166,5 +166,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\MainProgram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Specs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

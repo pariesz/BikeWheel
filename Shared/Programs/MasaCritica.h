@@ -7,6 +7,7 @@ private:
     const uint8_t label_len = 13;
     const uint8_t min_y = ((FONT_HEIGHT << 1) - 1);
 
+    uint32_t ms_prev = millis();
     uint8_t hue;
     uint32_t color;
     
@@ -17,10 +18,8 @@ public:
     }
 
     void render(uint16_t zero_angle, int32_t rotation_rate) {
-        static uint32_t ms = millis();
-
-        if (millis() - ms > 200) {
-            ms = millis();
+        if (millis() - ms_prev > 200) {
+            ms_prev = millis();
             color = Colors::HslToRgb(++hue, 0xFF, 0xFF);
         }
 

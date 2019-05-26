@@ -137,8 +137,8 @@ void Mpu::update() {
     gyro[1] = -gyro[1];
 #endif
 
-    // gyro is signed int16 at a scale of +-2000deg/s : +-32768
-    // so to convert: gyro_y * (2000 / 360) * 2
+    // gyro is signed int16 (±0x8000) at a scale of ±2000deg/s
+    // so to convert uint16 angle: gyro_y * (2000 / 360) * 2
     rotation_rate = gyro[1] * 11.1111111f;
 
     uint16_t rotation_rate_angle = get_rotation_rate_angle(us_diff); 

@@ -55,6 +55,8 @@ class Fist : public Image {
 private:
     uint8_t hue;
     uint32_t color;
+    uint32_t ms_prev = millis();
+
 public:
 	Fist()
         : hue(random(0, 0xFF))
@@ -63,10 +65,8 @@ public:
 	}
 
     void render(uint16_t zero_angle, int32_t rotation_rate) override {
-        static uint32_t ms = millis();
-
-        if (millis() - ms > 200) {
-            ms = millis();
+        if (millis() - ms_prev > 200) {
+            ms_prev = millis();
             color = Colors::HslToRgb(++hue, 0xFF, 0xFF);
         }
 

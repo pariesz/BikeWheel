@@ -10,6 +10,7 @@
 #include "OutputData.h"
 #include "MockData.h"
 #include "Bmp.h"
+#include "Image_Colors.h"
 #include "Image_6BitColor.h"
 #include "Image_IndexedColor.h"
 #include "Image_Grayscale.h"
@@ -19,7 +20,7 @@
 MockData data_source;
 Mpu mpu;
 Image_Base *image = nullptr;
-Portal program;
+LaPandora program;
 
 // Simulate the Arduino loop() and setup() functions
 void loop() {
@@ -46,10 +47,10 @@ int main() {
     //Leds_Export::export_code("../BikeWheel/Leds.cpp", led_positions);
 
     // IMAGES
-    //std::string imageName({name});
+    //std::string imageName("Space");
     //BMP bmp("../Images/" + imageName + ".bmp");
     //Image_Pixels pixels(bmp, Leds::min_dist);
-    //image = new Image_IndexedColor(pixels, Image_Colors::{colors}, 3);
+    //image = new Image_IndexedColor(pixels, Image_Colors::space);
     //image = new Image_Grayscale(pixels);
     //image = new Image_6BitColor(pixels);
 

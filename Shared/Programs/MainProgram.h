@@ -11,12 +11,16 @@
 #include "NyanCat.h"
 #include "Radioactive.h"
 #include "ExplodingText.h"
+#include "Kaleidoscope.h"
 #include "Spiral.h"
 #include "Velocity.h"
 #include "ShootingStars.h"
 #include "Portal.h"
 #include "Rays.h"
+#include "Specs.h"
 
+#include "../Images/MrSplat.h"
+#include "../Images/finger.h"
 #include "../Images/Fist.h"
 #include "../Images/Poo.h"
 

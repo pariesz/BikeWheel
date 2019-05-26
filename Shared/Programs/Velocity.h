@@ -1,13 +1,14 @@
 #pragma once
 #include "../Program.h"
 
+#define VELOCITY_NUMBER_LEN 2 // ##
+#define VELOCITY_DECIMAL_LEN 6 // .# KMH
+
 class Velocity : public Program {
 
 public:
     void render(uint16_t zero_angle, int32_t rotation_rate) {
-        const uint8_t number_len = 2;  // ##
-        const uint8_t decimal_len = 6; // .# KMH
-        char number[6];                // ##.# + one extra for NUL
+        char number[6]; // ##.# + one extra for NUL
         char decimal[] = ".0 KMH";
 
         // c (wheel circumference) for 29in rim + 2.1in tire = 2288mm
@@ -45,7 +46,7 @@ public:
 
             if (angle < 0x2000) {
                 // render number in first 45deg (2ch per 45deg)
-                uint16_t x = ((uint32_t)angle * (number_len << FONT_WIDTH_SHIFT)) >> 13;
+                uint16_t x = ((uint32_t)angle * (VELOCITY_NUMBER_LEN << FONT_WIDTH_SHIFT)) >> 13;
                 uint8_t ch_x = x & (FONT_WIDTH - 1);
                 uint8_t ch_num = x >> FONT_WIDTH_SHIFT;
                 char ch = number[ch_num];
@@ -64,7 +65,7 @@ public:
                     continue;
                 }
 
-                uint16_t x = (((uint32_t)angle - 0x2000) * (decimal_len << FONT_WIDTH_SHIFT)) >> 14;
+                uint16_t x = (((uint32_t)angle - 0x2000) * (VELOCITY_DECIMAL_LEN << FONT_WIDTH_SHIFT)) >> 14;
                 uint8_t ch_x = x & (FONT_WIDTH - 1);
                 uint8_t ch_num = x >> FONT_WIDTH_SHIFT;
                 char ch = decimal[ch_num];

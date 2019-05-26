@@ -5,8 +5,6 @@ class Kaleidoscope : public Program {
 
 public:
     void render(uint16_t zero_angle, int32_t rotation_rate) {
-        using namespace Colors;
-
         uint16_t ms = millis();
         zero_angle -= ms;
 

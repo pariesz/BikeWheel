@@ -48,10 +48,6 @@ namespace HamsterRoll1Data {
 		0x00BD, 0x00C4, 0x00CB, 0x00D2, 0x00DB, 0x00E2, 0x00E9, 0x00F1, 
 		0x00F6, 0x00F9, 0x00FC, 0x00FF
 	}; // 72 bytes
-
-	const uint32_t colors[] PROGMEM {		
-		0x00000000, 0x00FFCC00, 0x00FF5555, 0x00FFFFFF, 0xCCCCCCCC
-	}; // 20 bytes
 }
 
 class HamsterRoll1 : public Image {
@@ -73,7 +69,7 @@ protected:
 	}
 
 	inline uint32_t get_color(uint16_t arc) override {
-		return pgm_read_dword(&(HamsterRoll1Data::colors[arc & color_mask]));
+		return pgm_read_dword(&(HamsterRun1Data::colors[arc & color_mask]));
 	}
 
 public:

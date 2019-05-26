@@ -1,22 +1,24 @@
 #pragma once
 #include "Program.h"
 
-#define STAR_GROWTH_RATE(ms_diff) ((ms_diff) << 3)
-#define STAR_FADE(length) (length) >> 7
-#define STAR_HUE_CHANGE_RATE 3
-#define STAR_LIFETIME 15
+#define STAR_GROWTH_RATE 250
+#define STAR_FADE(length) ((length) >> 7)
+#define STAR_HUE_CHANGE_RATE 3 // increment hue x every birth
+#define STAR_LIFETIME 120 // stars will live for x frames
+#define STAR_BIRTH_RATE 8 // a start is born every x frames
 #define STAR_MAX_LENGTH 0x7FFF
-#define STAR_TIME(ms) (((ms) >> 8) & 0xFFFF)
+#define STAR_FRAME(ms) (((ms) >> 5) & 0xFFFF) // 32 frames sec
 
 class Star {
     private:
-        uint16_t created;
         uint16_t start_angle = random(0, 0xFFFF);
         uint16_t length = 0;
-        uint8_t hue = 0;
+        uint16_t created_frame;
+        uint8_t hue;
 
         inline uint32_t get_color(uint16_t length) {
             uint8_t fade = STAR_FADE(length);
+
             if (fade >= 0xFF) {
                 return 0;
             } else if (fade > 0x7F) {
@@ -29,28 +31,29 @@ class Star {
         }
 
     public:
-        Star() 
-            : created(0) {
+        Star()
+            : hue(0)
+            , created_frame(STAR_FRAME(millis()) - (STAR_LIFETIME + 1)) {
         }
 
-        Star(uint8_t hue, uint16_t time) 
+        Star(uint8_t hue, uint16_t frame) 
             : hue(hue)
-            , created(time) {
+            , created_frame(frame) {
         }
 
-        void update(uint8_t ms) {
+        inline void update() {
             if (length > STAR_MAX_LENGTH) {
-                start_angle += STAR_GROWTH_RATE(ms);;
+                start_angle += STAR_GROWTH_RATE;
             } else {
-                length += STAR_GROWTH_RATE(ms);
+                length += STAR_GROWTH_RATE;
             }
         }
 
-        inline bool isDead(uint16_t seconds) {
-            return seconds - created > STAR_LIFETIME;
+        inline bool isDead(uint16_t frame) {
+            return frame - created_frame > STAR_LIFETIME;
         }
 
-        bool show(uint16_t angle, uint32_t &out_color) {
+        inline bool show(uint16_t angle, uint32_t &out_color) {
             uint32_t end_angle = start_angle + (uint32_t)length;
 
             if (end_angle > 0xFFFF) {
@@ -80,35 +83,40 @@ private:
     Star stars[LEDS_PER_STRIP];
     uint8_t index = 0;
     uint8_t hue = random(0, 0xFF);
+    uint16_t frame_prev = STAR_FRAME(millis());
+    uint16_t birth_prev = frame_prev;
 
 public:
     void render(uint16_t zero_angle, int32_t rotation_rate) {
         // timing
         uint32_t ms = millis();
-        uint16_t time = STAR_TIME(ms);
-        static uint16_t time_prev = time;
+        uint16_t frame = STAR_FRAME(ms);
 
         // create new stars
-        if (time - time_prev) {
-            time_prev = time;
+        if (frame != frame_prev) {
+            frame_prev = frame;
 
-            while (true) {
-                uint8_t create_index = random(0, LEDS_PER_STRIP - 1);
+            // update existing star
+            for (uint8_t i = 0; i < LEDS_PER_STRIP; i++) {
+                stars[i].update();
+            }
 
-                if (stars[create_index].isDead(time)) {
-                    stars[create_index] = Star(hue += STAR_HUE_CHANGE_RATE, time);
-                    break;
+            if (abs(frame - birth_prev) > STAR_BIRTH_RATE) {
+                birth_prev = frame;
+
+                while (true) {
+                    uint8_t create_index = random(0, LEDS_PER_STRIP - 1);
+
+                    if (stars[create_index].isDead(frame)) {
+                        stars[create_index] = Star(hue += STAR_HUE_CHANGE_RATE, frame);
+                        break;
+                    }
+
+                    // recalculate frame so the termination condition 
+                    // will always eventally pass
+                    frame = STAR_FRAME(ms);
                 }
             }
-        }
-
-        // update existing stars
-        static uint32_t ms_prev = ms;
-        uint8_t ms_diff = ms - ms_prev;
-        ms_prev = ms;
-
-        for (uint8_t i = 0; i < LEDS_PER_STRIP; i++) {
-            stars[i].update(ms_diff);
         }
 
         // update leds
@@ -117,7 +125,7 @@ public:
 
             Star* star = &stars[y];
 
-            if (star->isDead(time)) {
+            if (star->isDead(frame)) {
                 Leds::set_color(i, 0);
                 continue;
             }

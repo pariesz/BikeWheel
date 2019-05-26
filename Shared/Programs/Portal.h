@@ -44,16 +44,14 @@ class Line {
 class Portal : public Program {
     private:
         Line lines[LEDS_PER_STRIP];
+        uint8_t index = 0;
+        uint8_t color_offset = random(0, 0xFF);
+        uint32_t ms_prev = millis();
 
     public:
         void render(uint16_t zero_angle, int32_t rotation_rate) {
-            // setup
-            static uint8_t index = 0;
-            static uint8_t color_offset = random(0, 0xFF);
-
             // timing
             uint32_t ms = millis();
-            static uint32_t ms_prev = ms;
 
             zero_angle -= LINE_ROTATION_RATE(ms);
 
