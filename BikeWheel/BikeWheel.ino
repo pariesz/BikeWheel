@@ -26,14 +26,20 @@ void setup(void) {
 #endif
 
     // Get offsets calibrated using ../MPU6050 Calibration/MPU6050Calibration.ino
-    // acc x, acc y, acc z, gyro x, gyro y, gyro z
-    int16_t mpu_offsets[] = { -1288, 979, 1242, 39, -17, 164 };
+    int16_t mpu_offsets[] = { 
+        -1288, 979, 1242, // accl x, y, z
+           39, -17,  164  // gyro x, y, z
+    };
+
     mpu.setup(mpu_offsets);
+
     Leds::setup();
 }
 
 void loop(void) {
     mpu.update();
+    
     program.render(mpu.get_angle(), mpu.get_rotation_rate());
+    
     Leds::leds.show();
 }
