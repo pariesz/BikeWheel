@@ -8,30 +8,36 @@ class NyanCat : public Program {
 private:
     NyanCat1 frame1;
     NyanCat2 frame2;
+    Image* frame = &frame1;
+    uint8_t star_index = 0xFF;
 
 public:
-    void render(uint16_t zero_angle, int32_t rotation_rate) {
-        uint8_t star_index = random(0, LEDS_COUNT - 1);
+    inline uint32_t gray(uint8_t b) {
+        return b << 16 | b << 8 | b;
+    }
 
-        Image* frame = millis() & (1 << 9) ? (Image*)&frame1 : &frame2;
+    void update(uint16_t frame_count, int32_t rotation_rate) override {
+        frame = (frame_count & 0x10) ? (Image*)&frame1 : &frame2;
+        frame->update(frame_count, ~rotation_rate);
+    }
 
-        for (uint8_t i = 0; i < LEDS_COUNT; i++) {
-            uint16_t angle = zero_angle + Leds::get_angle(i);
+    inline void render_star(uint16_t zero_angle) {
+        uint8_t index = random(0, LEDS_COUNT - 1);
+        
+        uint16_t angle = zero_angle + Leds::get_angle(index);
+        
+        double radians = (angle / (float)0xFFFF) * TWO_PI;
 
-            uint32_t color = frame->get_led_color(i, rotation_rate < 0 ? ~angle : angle);
+        int16_t y = Leds::get_distance(index) * cos(radians);
 
-            if (i == star_index && color == 0) {
-                double radians = (angle / (float)0xFFFF) * TWO_PI;
-
-                int16_t y = Leds::get_distance(i) * cos(radians);
-
-                // don't add stars over the cats body
-                if (y < -0x70 || y > 0x80) {
-                    color = COLOR_WHITE;
-                }
-            }
-
-            Leds::set_color(i, color);
+        // don't add stars over the cats body
+        if (y < -0x70 || y > 0x80) {
+            Leds::set_color(index, gray(random(0, 0xFF)));
         }
+    }
+
+    void render(uint16_t zero_angle) {
+        frame->render(zero_angle);
+        render_star(zero_angle);
     }
 };

@@ -113,21 +113,6 @@ void Mpu::update() {
         return;
     }
 
-/*
-#ifndef SIMULATION
-    // CALIBRATION
-    Serial.print("acc(");
-    Serial.print(acc[MPU_X_INDEX]);
-    Serial.print("\t, ");
-    Serial.print(acc[MPU_Y_INDEX]);
-    Serial.print("\t, ");
-    Serial.print(acc[MPU_Z_INDEX]);
-    Serial.println(")");
-    delay(100);
-    return;
-#endif
-*/
-
 #if MPU_Z_REVERSE == 1    
     acc[2] = -acc[2];
 #endif
@@ -136,6 +121,18 @@ void Mpu::update() {
     acc[0] = -acc[0];
     gyro[1] = -gyro[1];
 #endif
+
+
+    // CALIBRATION
+    //Serial.print("acc(");
+    //Serial.print(acc[0]);
+    //Serial.print("\t, ");
+    //Serial.print(acc[1]);
+    //Serial.print("\t, ");
+    //Serial.print(acc[2]);
+    //Serial.println(")");
+    //delay(100);
+    //return;
 
     // gyro is signed int16 (±0x8000) at a scale of ±2000deg/s
     // so to convert uint16 angle: gyro_y * (2000 / 360) * 2
@@ -147,7 +144,7 @@ void Mpu::update() {
 
     // DEBUGGING
     //angle = rotation_rate_angle;
-    //angle = acc_angle;
+    //angle = acc_angle; 
     //return;
 
     // Validation: MPU6050 sometimes sticks on a value
@@ -189,13 +186,13 @@ inline uint16_t Mpu::get_acc_angle(int16_t* acc) {
     // Acceleromter full-range (±0x8000) is set to ±8g
     // a(mpu) = (a * 0x8000) / (9.8ms2 * 1000mm * 8g) = a * 0.417959
     
+    float x = TWO_PI * abs(rotation_rate) / (float)0xFFFF;
+
     // acts on the z-axis in the positive direction
     // so we subtract to correct
-    float x = TWO_PI * abs(rotation_rate) / (float)0xFFFF;
-    
-    int16_t centrifugal_acceleration = (MPU_Z_POSITION * sq(x) * 0.417959);
+    acc[2] -= (MPU_Z_POSITION * sq(x) * 0.417959);
 
     // Possible overflow, but we shouldn't be approaching those accelerations
-    // offset 90 degrees so 0 is up
-    return 0x4000 + ((atan2(acc[2] - centrifugal_acceleration, acc[0]) * (0x8000 / (float)PI)));
+    // set 0 degreees in the up position for easier reference.
+    return atan2(acc[0], -acc[2]) * (0x8000 / (float)PI);
 }

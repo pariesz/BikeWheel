@@ -5,12 +5,13 @@
 #define VELOCITY_DECIMAL_LEN 6 // .# KMH
 
 class Velocity : public Program {
+private:
+    char number[6]; // ##.# + one extra for NUL
+    char decimal[7] = ".0 KMH";
+    uint32_t color;
 
 public:
-    void render(uint16_t zero_angle, int32_t rotation_rate) {
-        char number[6]; // ##.# + one extra for NUL
-        char decimal[] = ".0 KMH";
-
+    void update(uint16_t frame_count, int32_t rotation_rate) override {
         // c (wheel circumference) for 29in rim + 2.1in tire = 2288mm
         // v = rotation_rate * c
         // v(kmh) = (rotation_rate / 0xFFFF) * 2288mm * 60sec * 60min / (1000mm * 1000m)
@@ -22,17 +23,20 @@ public:
         // Move the decimal digit
         decimal[1] = number[3];
 
-        // rotate image
-        zero_angle += 0x3000;
+        color = Adafruit_DotStar::ColorHSV(v * 5120, 255, 255);
+    }
 
-        uint32_t color = Colors::HslToRgb(v * 20, 255, 255);
+    void render(uint16_t zero_angle) {
+        // rotate image
+        zero_angle += 0x800;
+
+        Leds::clear();
 
         for (int i = 0, y = LEDS_PER_STRIP - 1; i < LEDS_COUNT; i++, y--) {
             if (y < 0) {
                 y = LEDS_PER_STRIP - 1;
             }
             if (y > (FONT_HEIGHT << 1) - 1) {
-                Leds::set_color(i, COLOR_BLACK);
                 continue;
             }
 
@@ -40,7 +44,6 @@ public:
 
             // clear after the fisrt 135deg
             if (angle > 0x6000) {
-                Leds::set_color(i, COLOR_BLACK);
                 continue;
             }
 
@@ -53,17 +56,12 @@ public:
 
                 if (((pgm_read_byte(&(fontdata_8x8[(uint16_t)ch * FONT_HEIGHT + (y >> 1)])) >> ((FONT_WIDTH - 1) - ch_x)) & 1)) {
                     Leds::set_color(i, color);
-                    continue;
                 }
 
                 
-            } else {
+            } else if (y >= FONT_HEIGHT) {
                 // render decimal from 45deg to 135deg (8ch per 90deg)
-                // offset 8px down
-                if (y < FONT_HEIGHT) {
-                    Leds::set_color(i, COLOR_BLACK);
-                    continue;
-                }
+                // offset 8px down\
 
                 uint16_t x = (((uint32_t)angle - 0x2000) * (VELOCITY_DECIMAL_LEN << FONT_WIDTH_SHIFT)) >> 14;
                 uint8_t ch_x = x & (FONT_WIDTH - 1);
@@ -72,11 +70,8 @@ public:
 
                 if (((pgm_read_byte(&(fontdata_8x8[(uint16_t)ch * FONT_HEIGHT + y - FONT_HEIGHT])) >> ((FONT_WIDTH - 1) - ch_x)) & 1)) {
                     Leds::set_color(i, ch_num < 2 ? color : COLOR_WHITE);
-                    continue;
                 }
             }
-
-            Leds::set_color(i, COLOR_BLACK);
         }
     }
 };

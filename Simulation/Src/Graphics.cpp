@@ -7,9 +7,11 @@
 #include "Leds.h"
 #include "MockData.h"
 #include "Logging.h"
+#include "BitmapFontClass.h"
 
 #define GRAPHICS_WIDTH 600
 #define GRAPHICS_HEIGHT 600
+#define KMH(gyro) ((gyro) * ((2000 / 360.0f) / (float)0x8000) * 2288 * 60 * 60 / (1000 * 1000.0f))
 
 namespace Graphics {
     using namespace std;
@@ -20,6 +22,8 @@ namespace Graphics {
     static GLuint ledsVAO, ledsVBO;
     static Shader *ledsShader, *screen_shader;
     static FrameBuffer *screen_frame, *accum_frame;
+
+    CBitmapFont Font;
 
     // glfw: whenever the window size changed (by OS or user resize) this callback function executes
     // ---------------------------------------------------------------------------------------------
@@ -45,13 +49,13 @@ namespace Graphics {
     void keyCallback(GLFWwindow* window, int key, int scancode, int ation, int mods) {
         switch (key) {
             case GLFW_KEY_LEFT:
-                MockData::gyro_y += 100;
-                std::cout << "gyro_y:" << MockData::gyro_y << std::endl;
+                MockData::gyro_y -= 100;
+                std::cout << KMH(MockData::gyro_y) << " kmh" << std::endl;
                 break;
 
             case GLFW_KEY_RIGHT:
-                MockData::gyro_y -= 100;
-                std::cout << "gyro_y:" << MockData::gyro_y << std::endl;
+                MockData::gyro_y += 100;
+                std::cout << KMH(MockData::gyro_y) << " kmh" << std::endl;
                 break;
         }
     }
@@ -95,6 +99,12 @@ namespace Graphics {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
+        if (!Font.Load("Font.bff")) {
+            std::cout << "Failed to load Font.bff" << std::endl;
+            return false;
+        }
+
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
         ledsShader = new Shader("Shaders/leds.vs", "Shaders/leds.fs");
@@ -132,18 +142,21 @@ namespace Graphics {
     }
 
     void updateVertices(uint16_t angle) {
+        uint8_t* pixels = Leds::leds.getPixels();
+
         for (int i = 0; i < LEDS_COUNT; i++) {
             int addr = i * 5;
-            int vert = i * 3;
+            int pixl = i * 3;
             double radians = ((Leds::get_angle(i) + angle) / (float)0xFFFF) * TWO_PI;
 
             // cos and sin are reversed as angle is 0 on y-axis
             vertices[addr + 0] = Leds::get_distance(i) * (float)sin(radians) / (float)255; // x
             vertices[addr + 1] = Leds::get_distance(i) * (float)cos(radians) / (float)255; // y
 
-            vertices[addr + 2] = Adafruit_DotStar::vertices[vert + 0] / (float)255; // r
-            vertices[addr + 3] = Adafruit_DotStar::vertices[vert + 1] / (float)255; // g
-            vertices[addr + 4] = Adafruit_DotStar::vertices[vert + 2] / (float)255; // b
+            // pixels are in DOTSTAR_BGR order
+            vertices[addr + 2] = pixels[pixl + 2] / (float)255; // r
+            vertices[addr + 3] = pixels[pixl + 1] / (float)255; // g
+            vertices[addr + 4] = pixels[pixl + 0] / (float)255; // b
         }
     }
 

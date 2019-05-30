@@ -1,11 +1,11 @@
 #pragma once
 #include "Program.h"
 
-#define LINE_FRAME_MS 100
+#define LINE_FRAME_SKIP 3
 #define LINE_MIN_WIDTH 0x1FFF
 #define LINE_MAX_WIDTH 0x2FFF
-#define LINE_COLOR_CHANGE_RATE 3
-#define LINE_ROTATION_RATE(ms) ((ms) << 2)
+#define LINE_COLOR_CHANGE_RATE 765
+#define LINE_ROTATION_RATE 100
 
 class Line {
     private:
@@ -18,8 +18,8 @@ class Line {
             : color(0) { 
         }
 
-        Line(uint8_t hue) 
-            : color(Colors::HslToRgb(hue, 0xFF, 0xFF)) {
+        Line(uint16_t hue) 
+            : color(Adafruit_DotStar::ColorHSV(hue)) {
         }
 
         bool show(uint16_t angle) {
@@ -45,26 +45,27 @@ class Portal : public Program {
     private:
         Line lines[LEDS_PER_STRIP];
         uint8_t index = 0;
-        uint8_t color_offset = random(0, 0xFF);
+        uint16_t color_offset = random(0, 0xFFFF);
+        uint16_t angle_offset = 0;
         uint32_t ms_prev = millis();
 
     public:
-        void render(uint16_t zero_angle, int32_t rotation_rate) {
-            // timing
-            uint32_t ms = millis();
-
-            zero_angle -= LINE_ROTATION_RATE(ms);
+        void update(uint16_t frame_count, int32_t rotation_rate) override {
+            angle_offset += LINE_ROTATION_RATE;
 
             // create new stars
-            if (ms - ms_prev > LINE_FRAME_MS) {
-                ms_prev = ms;
-            
+            if (frame_count % LINE_FRAME_SKIP == 0) {
                 if (++index == LEDS_PER_STRIP) {
                     index = 0;
                 }
-
                 lines[index] = Line(color_offset += LINE_COLOR_CHANGE_RATE);
             }
+        }
+
+        void render(uint16_t zero_angle) {
+            zero_angle += angle_offset;
+
+            Leds::clear();
 
             // update leds
             for (uint8_t i = 0, y = 0; i < LEDS_COUNT; i++, y++) {
@@ -78,7 +79,9 @@ class Portal : public Program {
 
                 Line line = lines[i_star];
 
-                Leds::set_color(i, line.show(zero_angle + Leds::get_angle(i)) ? line.get_color() : 0);
+                if (line.show(zero_angle + Leds::get_angle(i))) {
+                    Leds::set_color(i, line.get_color());
+                }
             }
         }
 };

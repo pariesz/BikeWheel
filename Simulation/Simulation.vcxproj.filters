@@ -39,6 +39,9 @@
     <ClCompile Include="Src\MockData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\BitmapFontClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Bmp.h">
@@ -86,6 +89,12 @@
     <ClInclude Include="Include\MockData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BitmapFontClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="output.csv" />
@@ -101,5 +110,6 @@
     <None Include="Shaders\screen.vs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Font.bff" />
   </ItemGroup>
 </Project>

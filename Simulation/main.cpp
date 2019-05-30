@@ -15,17 +15,31 @@
 #include "Image_IndexedColor.h"
 #include "Image_Grayscale.h"
 #include "Leds_Export.h"
+#include "Timer.h"
 
 //OutputData data_source("output.csv");
 MockData data_source;
 Mpu mpu;
 Image_Base *image = nullptr;
-LaPandora program;
+//ExplodingText program(37, "- BCN - Critical Mass - Masa Critica");
+MainProgram program(1);
+uint16_t frame_count;
+
+inline uint16_t get_frame_count() {
+    return (millis() >> 5) & 0xFFFF; // 32 frames sec
+}
 
 // Simulate the Arduino loop() and setup() functions
 void loop() {
     mpu.update();
-    program.render(mpu.get_angle(), mpu.get_rotation_rate());
+
+    if (frame_count != get_frame_count()) {
+        frame_count = get_frame_count();
+        program.update(frame_count, mpu.get_rotation_rate());
+    }
+
+    program.render(mpu.get_angle());
+
     Leds::leds.show();
 }
 
@@ -33,6 +47,21 @@ void setup() {
     int16_t mpu_offsets[] = { 0, 0, 0, 0, 0, 0 };
     mpu.setup(mpu_offsets);
     Leds::setup();
+}
+
+void update_sensors() {
+    DataLine dl;
+
+    if (!data_source.try_get_next(dl)) {
+        // Reset
+        Graphics::clear();
+        mpu = Mpu();
+        setup();
+    }
+
+    MPU6050::setMotion6(dl.acc_x, dl.acc_y, dl.acc_z, dl.gyro_x, dl.gyro_y, dl.gyro_z);
+
+    digitalWrite(HALL_PIN, dl.hall);
 }
 
 int main() {
@@ -47,10 +76,10 @@ int main() {
     //Leds_Export::export_code("../BikeWheel/Leds.cpp", led_positions);
 
     // IMAGES
-    //std::string imageName("Space");
+    //std::string imageName("Rocket");
     //BMP bmp("../Images/" + imageName + ".bmp");
     //Image_Pixels pixels(bmp, Leds::min_dist);
-    //image = new Image_IndexedColor(pixels, Image_Colors::space);
+    //image = new Image_IndexedColor(pixels, Image_Colors::rocket);
     //image = new Image_Grayscale(pixels);
     //image = new Image_6BitColor(pixels);
 
@@ -62,25 +91,19 @@ int main() {
         return -1;
     }
 
+    update_sensors();
+
     // Arduino setup function
     setup();
 
     do {
         // Simulate sensor data
-        DataLine dl;
-
-        if (!data_source.try_get_next(dl)) {
-            // Reset
-            Graphics::clear();
-            mpu = Mpu();
-            setup();
-        }
-
-        MPU6050::setMotion6(dl.acc_x, dl.acc_y, dl.acc_z, dl.gyro_x, dl.gyro_y, dl.gyro_z);
-        digitalWrite(HALL_PIN, dl.hall);
+        update_sensors();
 
         // Arduino loop function
+        Timer::start();
         loop();
+        Timer::end();
 
         // Update graphics
         Graphics::updateVertices(mpu.get_angle());

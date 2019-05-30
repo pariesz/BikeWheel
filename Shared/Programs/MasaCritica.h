@@ -7,23 +7,21 @@ private:
     const uint8_t label_len = 13;
     const uint8_t min_y = ((FONT_HEIGHT << 1) - 1);
 
-    uint32_t ms_prev = millis();
-    uint8_t hue;
+    uint16_t hue;
     uint32_t color;
     
 public:
     MasaCritica()
-        : hue(random(0, 0xFF))
-        , color(Colors::HslToRgb(hue, 0xFF, 0xFF)) {
+        : hue(random(0, 0xFFFF))
+        , color(Adafruit_DotStar::ColorHSV(hue, 0xFF, 0xFF)) {
     }
 
-    void render(uint16_t zero_angle, int32_t rotation_rate) {
-        if (millis() - ms_prev > 200) {
-            ms_prev = millis();
-            color = Colors::HslToRgb(++hue, 0xFF, 0xFF);
-        }
+    void update(uint16_t frame_count, int32_t rotation_rate) override {
+        color = Adafruit_DotStar::ColorHSV(hue += 42);
+    }
 
-        zero_angle += (1 << 14); // rotate -90 degrees
+    void render(uint16_t zero_angle) {
+        zero_angle += 0x4000; // rotate -90 degrees
 
         for (int i = 0, y = LEDS_PER_STRIP - 1; i < LEDS_COUNT; i++, y--) {
             if (y > min_y) {

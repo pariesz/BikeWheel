@@ -50,8 +50,14 @@ namespace PooData {
 	}; // 72 bytes
 
 	const uint32_t colors[] PROGMEM {		
-		0x00000000, 0x00999999, 0x00FFFFFF, 0x003B1800, 0x00803300, 0x00FF7F2A, 
-		0x00FF0000, 0x00660000
+		0x000000,
+        0x999999,
+        0xFFFFFF,
+        0x3B1800,
+        0x803300,
+        0xFF7F2A, 
+		0xFF0000,
+        0x660000
 	}; // 32 bytes
 }
 

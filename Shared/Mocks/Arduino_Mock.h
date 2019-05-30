@@ -5,7 +5,8 @@
     #include <avr/pgmspace.h>
 #else
 #include <math.h>
-#include <iostream>
+#include <windows.h>
+#include "Serial_Mock.h"
 
 inline char pgm_read_byte(const char *ptr) {
     return *ptr;
@@ -18,6 +19,9 @@ inline uint16_t pgm_read_word(const uint16_t *ptr) {
 }
 inline uint32_t pgm_read_dword(const uint32_t *ptr) {
     return *ptr;
+}
+inline void delay(int ms) {
+    Sleep(ms);
 }
 
 inline void pinMode(uint8_t, uint8_t) { };

@@ -3,7 +3,7 @@
 
 class TestSegments : public Program {
 public:
-    void render(uint16_t zero_angle, int32_t rotation_rate) {
+    void render(uint16_t zero_angle) {
         for (uint8_t i = 0; i < LEDS_COUNT; i++) {
             int num = i + 1;
 

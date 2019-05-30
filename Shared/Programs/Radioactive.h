@@ -4,7 +4,7 @@
 class Radioactive : public Program {
 
 public:
-    void render(uint16_t zero_angle, int32_t rotation_rate) {
+    void render(uint16_t zero_angle) {
         for (int i = 0; i < LEDS_COUNT; i++) {
             if (Leds::get_distance(i) < Leds::min_dist + 20 || Leds::get_distance(i) > 235) {
                 Leds::set_color(i, COLOR_YELLOW);

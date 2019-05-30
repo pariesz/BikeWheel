@@ -124,6 +124,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\BitmapFontClass.cpp" />
     <ClCompile Include="Src\MockData.cpp" />
     <ClCompile Include="Src\Leds_Export.cpp" />
     <ClCompile Include="Src\Export.cpp" />
@@ -132,6 +133,7 @@
     <ClCompile Include="Src\Graphics.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BitmapFontClass.h" />
     <ClInclude Include="Include\Bmp.h" />
     <ClInclude Include="Include\Export.h" />
     <ClInclude Include="Include\FrameBuffer.h" />
@@ -147,8 +149,10 @@
     <ClInclude Include="Include\OutputData.h" />
     <ClInclude Include="Include\SensorData.h" />
     <ClInclude Include="Include\Shader.h" />
+    <ClInclude Include="Include\Timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Font.bff" />
     <None Include="Shaders\screen.fs" />
     <None Include="Shaders\screen.vs" />
     <None Include="Shaders\leds.fs" />

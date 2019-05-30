@@ -53,24 +53,18 @@ namespace FistData {
 class Fist : public Image {
 
 private:
-    uint8_t hue;
+    uint16_t hue;
     uint32_t color;
-    uint32_t ms_prev = millis();
 
 public:
 	Fist()
-        : hue(random(0, 0xFF))
-        , color(Colors::HslToRgb(hue, 0xFF, 0xFF)) {
+        : hue(random(0, 0xFFFF))
+        , color(Adafruit_DotStar::ColorHSV(hue)) {
         Image::Initialise();
 	}
-
-    void render(uint16_t zero_angle, int32_t rotation_rate) override {
-        if (millis() - ms_prev > 200) {
-            ms_prev = millis();
-            color = Colors::HslToRgb(++hue, 0xFF, 0xFF);
-        }
-
-        Image::render(zero_angle, rotation_rate);
+    
+    void update(uint16_t frame_count, int32_t rotation_rate) override {
+        color = Adafruit_DotStar::ColorHSV(hue + 42);
     };
 protected:
 	inline uint16_t get_arc(uint16_t i) override {

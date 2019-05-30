@@ -5,7 +5,7 @@
 class FrameBuffer
 {
 public:
-    GLuint VAO, VBO, FBO, textureColorbuffer;
+    GLuint VAO, VBO, FBO, textureColorBuffer;
 
     FrameBuffer(const unsigned int width, const unsigned int height) {
         using namespace std;
@@ -39,12 +39,12 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
         // create a color attachment texture
-        glGenTextures(1, &textureColorbuffer);
-        glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+        glGenTextures(1, &textureColorBuffer);
+        glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer, 0);
 
         // create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
         unsigned int rbo;
@@ -65,7 +65,7 @@ public:
         glBindVertexArray(VAO);
 
         // use the color attachment texture as the texture of the quad plane
-        glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+        glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 

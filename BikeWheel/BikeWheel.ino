@@ -15,8 +15,13 @@
 #define LOGGING 0
 #include <shared.h>
 
+inline uint16_t get_frame_count() {
+    return (millis() >> 5) & 0xFFFF;
+}
+
 Mpu mpu;
 MainProgram program;
+uint16_t frame_count = get_frame_count();
 
 void setup(void) {
 #if LOGGING == 1
@@ -39,7 +44,12 @@ void setup(void) {
 void loop(void) {
     mpu.update();
     
-    program.render(mpu.get_angle(), mpu.get_rotation_rate());
+    if (frame_count != get_frame_count()) {
+        frame_count = get_frame_count();
+        program.update(frame_count, mpu.get_rotation_rate());
+    }
+
+    program.render(mpu.get_angle());
     
     Leds::leds.show();
 }
