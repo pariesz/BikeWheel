@@ -169,5 +169,8 @@
     <ClInclude Include="C:\Users\peter\Documents\Arduino\BikeWheel\Shared\Mocks\Serial_Mock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Transition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

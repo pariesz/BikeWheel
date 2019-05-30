@@ -57,6 +57,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Specs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Spiral.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\TestSegments.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Transition.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Velocity.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Mpu.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Mocks\Serial_Mock.h" />
