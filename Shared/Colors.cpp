@@ -1,24 +1,7 @@
 #pragma once
-#if defined(ARDUINO) && ARDUINO >= 100
-    #include <avr/pgmspace.h>
-#else
-    #include "Arduino_Mock.h"
-#endif
-
 #include "Colors.h"
 
 namespace Colors {
-    const uint8_t black = 0;
-    const uint32_t white = 0xFFFFFF;
-    const uint32_t red = 0xFF0000;
-    const uint32_t green = 0x00FF00;
-    const uint32_t blue = 0x0000FF;
-    const uint32_t purple = 0xCC0066;
-    const uint32_t orange = 0xCC6600;
-    const uint32_t aqua = 0x009999;
-    const uint32_t cyan = 0x6600CC;
-    const uint32_t yellow = 0x999900;
-
     // dim_curve 'lookup table' to compensate for the nonlinearity of human vision.
     // Used in the getRGB function on saturation and brightness to make 'dimming' look more natural.
     // Exponential function used to create values below :

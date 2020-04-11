@@ -9,8 +9,11 @@ class Hamster : public Program {
 
 private:
     uint8_t speed = 0;
+    uint16_t angle_offset;
+
     Image* frame1 = new HamsterRun1;
     Image* frame2 = new HamsterRun2;
+    Image* frame = nullptr;
 
 private:
     void update_frames() {
@@ -27,76 +30,74 @@ private:
     }
 
 public:
-    void render(uint16_t zero_angle, int32_t rotation_rate) {
-        // Images are in reverse.
-        // hamster should be running against bike!
-        rotation_rate = -rotation_rate;
-
+    void update(uint16_t frame_count, int32_t rotation_rate) override {
         uint32_t ms = millis();
 
         uint32_t rate = abs(rotation_rate);
 
         //rate <<= 1; // DEBUGING
-        
+
         if (rate >> 14 != speed) {
             speed = rate >> 14;
             update_frames();
         }
 
-        bool frame = 0;
+        bool frame_select = 0;
 
         switch (speed) {
             case 0:
             case 1:
             case 2:
             case 3:
-            case 4: 
+            case 4:
             case 5: // <12kmh
-                frame = ms & (1 << 10);
+                angle_offset = 0;
+                frame_select = ms & (1 << 10);
                 break;
 
             case 6: { // 12-14kmh
-                    uint16_t loop = ms & 0x7FF;
+                uint16_t loop = ms & 0x7FF;
 
-                    if (loop & 0x400) {
-                        loop ^= 0x7FF;
-                    }
-
-                    zero_angle += (loop << 3) - 0x1000;
-                    frame = ms & (1 << 9);
+                if (loop & 0x400) {
+                    loop ^= 0x7FF;
                 }
-                break;
+
+                angle_offset = (loop << 3) - 0x1000;
+                frame_select = ms & (1 << 9);
+            }
+                    break;
 
             case 7: { // 14-16kmh
-                    uint16_t loop = ms & 0x7FF;
+                uint16_t loop = ms & 0x7FF;
 
-                    if (loop & 0x400) {
-                        loop ^= 0x7FF;
-                    }
-
-                    zero_angle += (loop << 4) - 0x2000;
-
-                    frame = ms & (1 << 8);
+                if (loop & 0x400) {
+                    loop ^= 0x7FF;
                 }
-                break;
-            
+
+                angle_offset = (loop << 4) - 0x2000;
+
+                frame_select = ms & (1 << 8);
+            }
+                    break;
+
             case 8:
             case 9: // 16-20kmh
-                zero_angle += ms << 5;
-                frame = ms & (1 << 9);
+                angle_offset = ms << 5;
+                frame_select = ms & (1 << 9);
                 break;
-            
+
             default: // >20kmh
-                zero_angle += ms << 6;
-                frame = ms & (1 << 8);
+                angle_offset = ms << 6;
+                frame_select = ms & (1 << 8);
                 break;
         }
 
-        if (frame) {
-            frame1->render(zero_angle, rotation_rate);
-        } else {
-            frame2->render(zero_angle, rotation_rate);
-        }
+        frame = frame_select ? frame1 : frame2;
+        frame->update(frame_count, ~rotation_rate);
+    }
+
+    inline void render(uint16_t zero_angle) {
+        frame->render(zero_angle + angle_offset);
     }
 
     virtual ~Hamster() {

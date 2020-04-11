@@ -1,10 +1,4 @@
 #pragma once
-#ifdef SIMULATION
-#include "Arduino_Mock.h"
-#else
-#include <avr/pgmspace.h>
-#endif
-
 #include "../Image.h"
 
 namespace HamsterRoll2Data {
@@ -54,10 +48,6 @@ namespace HamsterRoll2Data {
 		0x00B3, 0x00BF, 0x00C7, 0x00CF, 0x00DA, 0x00E5, 0x00EE, 0x00F9, 
 		0x0102, 0x010A, 0x0111, 0x0112
 	}; // 72 bytes
-
-	const uint32_t colors[] PROGMEM {		
-		0x00000000, 0x00FFCC00, 0x00FF5555, 0x00FFFFFF, 0xCCCCCCCC
-	}; // 20 bytes
 }
 
 class HamsterRoll2 : public Image {
@@ -79,7 +69,7 @@ protected:
 	}
 
 	inline uint32_t get_color(uint16_t arc) override {
-		return pgm_read_dword(&(HamsterRoll2Data::colors[arc & color_mask]));
+		return pgm_read_dword(&(HamsterRun1Data::colors[arc & color_mask]));
 	}
 
 public:

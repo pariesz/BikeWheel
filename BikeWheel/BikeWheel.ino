@@ -15,74 +15,41 @@
 #define LOGGING 0
 #include <shared.h>
 
-// settings
-bool on = 0;
-uint8_t program_index = 0;
-Program* program = new Color(Colors::black);
-WheelSensors sensors;
+inline uint16_t get_frame_count() {
+    return (millis() >> 5) & 0xFFFF;
+}
+
+Mpu mpu;
+MainProgram program;
+uint16_t frame_count = get_frame_count();
 
 void setup(void) {
-
 #if LOGGING == 1
     Serial.begin(9600);
     while (!Serial);
     log_ln("Connected");
 #endif
 
-    sensors.setup();
+    // Get offsets calibrated using ../MPU6050 Calibration/MPU6050Calibration.ino
+    int16_t mpu_offsets[] = { 
+        -1288, 979, 1242, // accl x, y, z
+           39, -17,  164  // gyro x, y, z
+    };
+
+    mpu.setup(mpu_offsets);
+
     Leds::setup();
 }
 
-Program* start_program(void) {
-    log_val("program", program_index);
-
-    switch (program_index) {
-        case 0: return new Spiral;
-        case 1: return new LaPandora;
-        case 2: return new MasaCritica;
-        case 3: return new Fist;
-        case 4: return new ExplodingText(37, "- BCN - Critical Mass - Masa Critica");
-        case 5: return new NyanCat;
-        case 6: return new Poo;
-        case 7: return new Velocity;
-        case 8: return new Hamster;
-        case 9: return new ShootingStars;
-        case 10: return new Rays;
-    }
-
-    // loop back around
-    program_index = sensors.get_rotation_rate() < 0 ? 10 : 0;
-    return start_program();
-}
-
 void loop(void) {
-    sensors.update();
-
-    int32_t rotation_rate = sensors.get_rotation_rate();
-
-    if (on) {
-        if (abs(rotation_rate) < 60000) {
-            // too slow
-            delete program;
-            program = new Color(Colors::black);
-            on = false;
-        }
-    } else {
-        if (abs(rotation_rate) > 80000) {
-            if (rotation_rate < 0) {
-                --program_index;
-            } else {
-                ++program_index;
-            }
-
-            log_val("program", program_index);
-
-            delete program;
-            program = start_program();
-            on = true;
-        }
+    mpu.update();
+    
+    if (frame_count != get_frame_count()) {
+        frame_count = get_frame_count();
+        program.update(frame_count, mpu.get_rotation_rate());
     }
 
-    program->render(sensors.get_angle(), rotation_rate);
+    program.render(mpu.get_angle());
+    
     Leds::leds.show();
 }

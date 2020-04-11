@@ -7,139 +7,106 @@
 #include <math.h>
 #include <shared.h>
 #include "Graphics.h"
-#include "SensorData.h"
+#include "OutputData.h"
+#include "MockData.h"
 #include "Bmp.h"
+#include "Image_Colors.h"
 #include "Image_6BitColor.h"
 #include "Image_IndexedColor.h"
 #include "Image_Grayscale.h"
 #include "Leds_Export.h"
+#include "Timer.h"
 
-bool on = true;
-
-WheelSensors sensors;
+//OutputData data_source("output.csv");
+MockData data_source;
+Mpu mpu;
 Image_Base *image = nullptr;
-Portal program;
+//ExplodingText program(37, "- BCN - Critical Mass - Masa Critica");
+MainProgram program(1);
+uint16_t frame_count;
 
-void loop() {
-    if (!SensorData::update()) {
-        // reset sensors and graphics
-        Graphics::clear();
-        sensors = WheelSensors();
-        sensors.setup();
-    }
-
-    sensors.update();
-
-    program.render(sensors.get_angle(), sensors.get_rotation_rate());
-    
-    Leds::leds.show(sensors.get_angle());
+inline uint16_t get_frame_count() {
+    return (millis() >> 5) & 0xFFFF; // 32 frames sec
 }
 
+// Simulate the Arduino loop() and setup() functions
+void loop() {
+    mpu.update();
 
-void export_leds() {
-    float led_positions[4][NUM_PIXEL_STRIPS] = {
-        {
-           59,   9,
-          262, 140
-        },
-        {
-            9,  -59,
-          140, -262
-        },
-        {
-            -59,  -9,
-           -262,-140
-        },
-        {
-             -9,  59,
-           -140, 262
-        }
-    };
-    
-    Leds_Export::export_code("../BikeWheel/Leds.cpp", led_positions);
+    if (frame_count != get_frame_count()) {
+        frame_count = get_frame_count();
+        program.update(frame_count, mpu.get_rotation_rate());
+    }
+
+    program.render(mpu.get_angle());
+
+    Leds::leds.show();
+}
+
+void setup() {
+    int16_t mpu_offsets[] = { 0, 0, 0, 0, 0, 0 };
+    mpu.setup(mpu_offsets);
+    Leds::setup();
+}
+
+void update_sensors() {
+    DataLine dl;
+
+    if (!data_source.try_get_next(dl)) {
+        // Reset
+        Graphics::clear();
+        mpu = Mpu();
+        setup();
+    }
+
+    MPU6050::setMotion6(dl.acc_x, dl.acc_y, dl.acc_z, dl.gyro_x, dl.gyro_y, dl.gyro_z);
+
+    digitalWrite(HALL_PIN, dl.hall);
 }
 
 int main() {
-    //export_leds();
-    //return 0;
+    // LED EXPORT
+    //float led_positions[4][NUM_PIXEL_STRIPS] = {
+    //    // x0,  y0,   x1,   y1
+    //    {  59,   9,  262,  140 },
+    //    {   9, -59,  140, -262 },
+    //    { -59,  -9, -262, -140 },
+    //    {  -9,  59, -140,  262 }
+    //};
+    //Leds_Export::export_code("../BikeWheel/Leds.cpp", led_positions);
 
-    // ROCKET
-    //std::string imageName("rocket");
+    // IMAGES
+    //std::string imageName("Rocket");
     //BMP bmp("../Images/" + imageName + ".bmp");
     //Image_Pixels pixels(bmp, Leds::min_dist);
-    //uint32_t colors[] = { 0x000000, 0xFF0000, 0x0000FF, 0xFFFFFF };
-    //image = new Image_IndexedColor(pixels, colors, 4);
-
-    // SPACE
-    //std::string imageName("space");
-    //BMP bmp("../Images/" + imageName + ".bmp");
-    //Image_Pixels pixels(bmp, Leds::min_dist);
+    //image = new Image_IndexedColor(pixels, Image_Colors::rocket);
+    //image = new Image_Grayscale(pixels);
     //image = new Image_6BitColor(pixels);
 
-    // FIST
-    //std::string imageName("Fist");
-    //BMP bmp("../Images/" + imageName + ".bmp");
-    //Image_Pixels pixels(bmp, Leds::min_dist);
-    //uint32_t colors[] = { 0x000000, 0xFF0000 };
-    //image = new Image_IndexedColor(pixels, colors, 2);
-
-    // HAMSTER
-    //std::string imageName("roll2");
-    //BMP bmp("../Images/" + imageName + ".bmp");
-    //Image_Pixels pixels(bmp, Leds::min_dist);
-    //uint32_t colors[] = { 
-    //    0x000000,
-    //    0xFFCC00,
-    //    0xFF5555,
-    //    0xFFFFFF
-    //};
-    //image = new Image_IndexedColor(pixels, colors, 5);
-
-    // NYAN CAT
-    //std::string imageName("NyanCat1");
-    //BMP bmp("../Images/" + imageName + ".bmp");
-    //Image_Pixels pixels(bmp, Leds::min_dist);
-    //uint32_t colors[] = {
-    //    0x000000, 0x888888, 0xFFFFFF,
-    //    0xff0000, 0x880000,
-    //    0xff8800,
-    //    0xffff00, 0x888800,
-    //    0x00ff00, 0x008800,
-    //    0x00ffff, 0x008888,
-    //    0xff00ff, 0x880088
-    //   
-    //};
-    //image = new Image_IndexedColor(pixels, colors, 14);
-    //image = new Image_6BitColor(pixels);
-
-
-    // POO
-    //std::string imageName("Poo");
-    //BMP bmp("../Images/" + imageName + ".bmp");
-    //Image_Pixels pixels(bmp, Leds::min_dist);
-    //uint32_t colors[] = { 
-    //    0x000000, 0x999999, 0xFFFFFF,
-    //    0x3b1800 ,0x803300, 0xff7f2a, 
-    //    0xff0000, 0x660000
-    //};
-    //image = new Image_IndexedColor(pixels, colors, 8);
-
-    //uint32_t mrSplat_colors[] = { 0x000000, 0x00FFFF, 0xFF9900 };
-    //Image_Base *image = new Image_IndexedColor(pixels, mrSplat_colors, 3);
-
-    //Image_Base *image = new Image_Grayscale(pixels);
-
+    // IMAGE EXPORT
     //image->export_code(std::string("../Shared/Images/").append(imageName).append(".h"), imageName);
     //return 0;
-
-    SensorData::setup();
-    sensors.setup();
 
     if (!Graphics::init()) {
         return -1;
     }
+
+    update_sensors();
+
+    // Arduino setup function
+    setup();
+
     do {
+        // Simulate sensor data
+        update_sensors();
+
+        // Arduino loop function
+        Timer::start();
         loop();
+        Timer::end();
+
+        // Update graphics
+        Graphics::updateVertices(mpu.get_angle());
     } while (Graphics::render());
 
     Graphics::terminate();

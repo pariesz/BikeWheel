@@ -5,19 +5,25 @@
 #include "Shader.h"
 #include "FrameBuffer.h"
 #include "Leds.h"
+#include "MockData.h"
+#include "Logging.h"
+#include "BitmapFontClass.h"
 
-using namespace std;
+#define GRAPHICS_WIDTH 600
+#define GRAPHICS_HEIGHT 600
+#define KMH(gyro) ((gyro) * ((2000 / 360.0f) / (float)0x8000) * 2288 * 60 * 60 / (1000 * 1000.0f))
 
 namespace Graphics {
-    float vertices[NUM_PIXELS * 5];
+    using namespace std;
 
-    // settings
-    const unsigned int  SCR_WIDTH = 600, SCR_HEIGHT = 600;
+    float vertices[LEDS_COUNT * 5];
 
     static GLFWwindow* window;
     static GLuint ledsVAO, ledsVBO;
     static Shader *ledsShader, *screen_shader;
     static FrameBuffer *screen_frame, *accum_frame;
+
+    CBitmapFont Font;
 
     // glfw: whenever the window size changed (by OS or user resize) this callback function executes
     // ---------------------------------------------------------------------------------------------
@@ -32,6 +38,25 @@ namespace Graphics {
     void processInput() {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
+        }
+    }
+
+    //@param[in] window The window that received the event.
+    //@param[in] key The[keyboard key](@ref keys) that was pressed or released.
+    //@param[in] scancode The system - specific scancode of the key.
+    //@param[in] action `GLFW_PRESS`, `GLFW_RELEASE` or `GLFW_REPEAT`.
+    //@param[in] mods Bit field describing which[modifier keys](@ref mods) were
+    void keyCallback(GLFWwindow* window, int key, int scancode, int ation, int mods) {
+        switch (key) {
+            case GLFW_KEY_LEFT:
+                MockData::gyro_y -= 100;
+                std::cout << KMH(MockData::gyro_y) << " kmh" << std::endl;
+                break;
+
+            case GLFW_KEY_RIGHT:
+                MockData::gyro_y += 100;
+                std::cout << KMH(MockData::gyro_y) << " kmh" << std::endl;
+                break;
         }
     }
 
@@ -51,7 +76,7 @@ namespace Graphics {
 
     // glfw window creation
     // --------------------
-        window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Bike Wheel Simulation", NULL, NULL);
+        window = glfwCreateWindow(GRAPHICS_WIDTH, GRAPHICS_HEIGHT, "Bike Wheel Simulation", NULL, NULL);
 
         if (window == NULL) {
             std::cout << "Failed to create GLFW window" << std::endl;
@@ -60,6 +85,7 @@ namespace Graphics {
         }
         glfwMakeContextCurrent(window);
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+        glfwSetKeyCallback(window, keyCallback);
 
         // glad: load all OpenGL function pointers
         // ---------------------------------------
@@ -72,6 +98,12 @@ namespace Graphics {
         glPointSize(5.0);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
+        if (!Font.Load("Font.bff")) {
+            std::cout << "Failed to load Font.bff" << std::endl;
+            return false;
+        }
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
@@ -93,8 +125,8 @@ namespace Graphics {
 
         // screen quad VAO
         screen_shader = new Shader("Shaders/screen.vs", "Shaders/screen.fs");
-        screen_frame = new FrameBuffer(SCR_WIDTH, SCR_HEIGHT);
-        accum_frame = new FrameBuffer(SCR_WIDTH, SCR_HEIGHT);
+        screen_frame = new FrameBuffer(GRAPHICS_WIDTH, GRAPHICS_HEIGHT);
+        accum_frame = new FrameBuffer(GRAPHICS_WIDTH, GRAPHICS_HEIGHT);
         
         return true;
     }
@@ -102,30 +134,29 @@ namespace Graphics {
     void clear() {
         delete screen_frame;
         delete accum_frame;
-        screen_frame = new FrameBuffer(SCR_WIDTH, SCR_HEIGHT);
-        accum_frame = new FrameBuffer(SCR_WIDTH, SCR_HEIGHT);
+        screen_frame = new FrameBuffer(GRAPHICS_WIDTH, GRAPHICS_HEIGHT);
+        accum_frame = new FrameBuffer(GRAPHICS_WIDTH, GRAPHICS_HEIGHT);
         glClearColor(0.0, 0.0, 0.0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers(window);
     }
 
-    inline float radians(uint16_t angle) {
-        return  (angle / (float)65535) * 2 * PI;
-    }
-
     void updateVertices(uint16_t angle) {
-        for (int i = 0; i < NUM_PIXELS; i++) {
+        uint8_t* pixels = Leds::leds.getPixels();
+
+        for (int i = 0; i < LEDS_COUNT; i++) {
             int addr = i * 5;
-            int vert = i * 3;
-            auto rads = radians(Leds::get_angle(i) + angle);
+            int pixl = i * 3;
+            double radians = ((Leds::get_angle(i) + angle) / (float)0xFFFF) * TWO_PI;
 
             // cos and sin are reversed as angle is 0 on y-axis
-            vertices[addr + 0] = Leds::get_distance(i) * (float)sin(rads) / (float)255; // x
-            vertices[addr + 1] = Leds::get_distance(i) * (float)cos(rads) / (float)255; // y
+            vertices[addr + 0] = Leds::get_distance(i) * (float)sin(radians) / (float)255; // x
+            vertices[addr + 1] = Leds::get_distance(i) * (float)cos(radians) / (float)255; // y
 
-            vertices[addr + 2] = Adafruit_DotStar::vertices[vert + 0] / (float)255; // r
-            vertices[addr + 3] = Adafruit_DotStar::vertices[vert + 1] / (float)255; // g
-            vertices[addr + 4] = Adafruit_DotStar::vertices[vert + 2] / (float)255; // b
+            // pixels are in DOTSTAR_BGR order
+            vertices[addr + 2] = pixels[pixl + 2] / (float)255; // r
+            vertices[addr + 3] = pixels[pixl + 1] / (float)255; // g
+            vertices[addr + 4] = pixels[pixl + 0] / (float)255; // b
         }
     }
 

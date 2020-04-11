@@ -1,103 +1,131 @@
 #pragma once
 #include "Program.h"
 
-#define RAY_COUNT 8
-#define RAY_FRAME_RATE 50 // rays move one led every x ms
-#define RAY_MAX_WIDTH 0x8FF
-#define RAY_MIN_WIDTH 0x1FF
+#define RAY_COUNT 4
+#define RAY_MAX_WIDTH 0xFFF
+#define RAY_MIN_WIDTH 0x7FF
 #define RAY_COLOR_VARIATION 0x2F
-#define RAY_BIRTH_RATE 10 // number of frames between creating new rays
-#define RAY_EXPANSION 30
+#define RAY_BIRTH_RATE 20 // number of frames between creating new rays
+#define RAY_EXPANSION -20
+#define RAY_FADE_RATE 10
+
+class Ray {
+
+    private:
+        uint16_t start_angle = random(0, 0xFFFF);
+        uint16_t end_angle = start_angle + random(RAY_MIN_WIDTH, RAY_MAX_WIDTH);
+        uint8_t end_y = 0;
+        uint16_t hue;
+        uint8_t brightness = 0xFF;
+        uint32_t color = Adafruit_DotStar::ColorHSV(hue);
+
+    public:
+        Ray() : hue(0) { }
+
+        Ray(uint16_t hue) : hue(hue) {}
+
+        void set_brightness(uint8_t value) {
+            brightness = value;
+        }
+
+        void set_hue(uint16_t value) {
+            hue = value;
+        }
+
+        void update() {
+            if (end_y < LEDS_PER_STRIP) {
+                end_y++;
+            }
+            
+            brightness -= RAY_FADE_RATE;
+            start_angle -= RAY_EXPANSION;
+            end_angle += RAY_EXPANSION;
+            color = Adafruit_DotStar::ColorHSV(hue, 0xFF, Adafruit_DotStar::gamma8(brightness));
+        }
+
+        bool show(uint8_t y, uint16_t angle, uint32_t &color) {
+            if (end_y >= y) {
+                if (start_angle > end_angle) {
+                    // overflow
+                    if (angle > start_angle || angle < end_angle) {
+                        color = this->color;
+                        return true;
+                    }
+                } else {
+                    if (angle > start_angle && angle < end_angle) {
+                        color = this->color;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+};
 
 class Rays : public Program {
 
-private:
-    struct Ray {
-        uint32_t color = 0;
-        uint16_t start_angle = 0;
-        uint16_t end_angle = 0;
-        uint8_t end_y = 0;
-        uint8_t start_y = 0;
-    };
+    private:
+        Ray rays[RAY_COUNT];
+        uint8_t created_index = 0;
+        uint16_t hue = random(0, 0xFFFF);
 
-    Ray rays[RAY_COUNT];
+    public:
+        Rays() {
+            for (uint8_t i = 0; i < RAY_COUNT; i++) {
+                rays[i].set_brightness(0);
+                rays[i].set_hue(hue);
+            }
+        }
 
-public:
-    void render(uint16_t zero_angle, int32_t rotation_rate) {
-        // timing
-        uint32_t ms = millis();
-        static uint32_t ms_prev = ms;
-        static uint8_t frame_count = 0;
-        static uint8_t index = 0; 
-        static uint8_t color_offset = random(0, 0xFF);
-
-        // update rays
-        if (ms - ms_prev > RAY_FRAME_RATE) {
-            ms_prev = ms;
-
+        void update(uint16_t frame_count, int32_t rotation_rate) override {
             // create new rays
-            if (++frame_count > RAY_BIRTH_RATE) {
-                frame_count = 0;
+            if (frame_count % RAY_BIRTH_RATE == 0) {
 
-                if (++index == RAY_COUNT) {
-                    index = 0;
+                // loop back around
+                if (++created_index == RAY_COUNT) {
+                    created_index = 0;
                 }
 
-                Ray* ray = &rays[index];
-
-                ray->start_angle = random(0, 0xFFFF);
-                ray->end_angle = ray->start_angle + random(RAY_MIN_WIDTH, RAY_MAX_WIDTH);
-                ray->color = Colors::HslToRgb(random(0, RAY_COLOR_VARIATION) + (color_offset += 3), 0xFF, 0xFF);
-                ray->end_y = 0;
-                ray->start_y = 0;
+                rays[created_index] = Ray(hue += 765);
             }
 
             // update existing rays
-            for (uint8_t i = 0; i < RAY_COUNT; i++) {
-                Ray* ray = &rays[i];
-
-                if (ray->end_y < PIXELS_PER_STRIP) {
-                    ray->end_y++;
-                } else if (ray->start_y < PIXELS_PER_STRIP) {
-                    ray->start_y++;
+            if (frame_count & 0b1) {
+                for (uint8_t i = 0; i < RAY_COUNT; i++) {
+                    rays[i].update();
                 }
-                ray->start_angle -= RAY_EXPANSION;
-                ray->end_angle += RAY_EXPANSION;
             }
         }
 
-        // update leds
-        for (uint16_t i = 0, y = 0; i < NUM_PIXELS; i++, y++) {
-            if (y == PIXELS_PER_STRIP) y = 0;
+        void render(uint16_t zero_angle) {
+            // update leds
+            for (uint16_t i = 0, y = 0; i < LEDS_COUNT; i++, y++) {
+                if (y == LEDS_PER_STRIP) y = 0;
 
-            uint16_t angle = zero_angle + Leds::get_angle(i);
-            uint32_t color = 0;
-            uint8_t render_index = index;
+                uint16_t angle = zero_angle + Leds::get_angle(i);
 
-            do {
-                Ray ray = rays[render_index];
-
-                if (ray.end_y >= y && ray.start_y <= y) {
-                    if (ray.start_angle > ray.end_angle) {
-                        // overflow
-                        if (angle > ray.start_angle || angle < ray.end_angle) {
-                            color = ray.color;
-                            break;
-                        }
-                    } else {
-                        if (angle > ray.start_angle && angle < ray.end_angle) {
-                            color = ray.color;
-                            break;
-                        }
-                    }
+                // lightning streaks
+                if (y > 20) {
+                    angle += 2000;
+                } else if (y > 10) {
+                    angle += 1000;
                 }
+
                 // update from index backward so the new rays are on-top.
-                if (--render_index == 0xFF) {
-                    render_index = RAY_COUNT - 1;
-                }
-            } while (render_index != index);
+                uint8_t ray_index = created_index;
 
-            Leds::set_color(i, color);
+                uint32_t color = 0;
+                do {
+                    if (rays[ray_index].show(y, angle, color)) {
+                        break;
+                    }
+                    if (--ray_index == 0xFF) {
+                        ray_index = RAY_COUNT - 1;
+                    }
+                } while (ray_index != created_index);
+
+                Leds::set_color(i, color);
+            }
         }
-    }
 };

@@ -1,12 +1,7 @@
 #pragma once
+#include "Mocks/MPU6050_Mock.h"
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#include <MPU6050.h>
-#else
-#include "MPU6050_Mock.h"
-#endif
-
-class WheelSensors {
+class Mpu {
 private:
     MPU6050 mpu;
     uint8_t mpu_radius;
@@ -14,8 +9,8 @@ private:
     int32_t rotation_rate;
 
 public:
-    WheelSensors();
-    void setup();
+    Mpu();
+    void setup(int16_t offsets[6]);
     void update() __attribute__((optimize("O3")));
     uint16_t get_angle();
     int32_t get_rotation_rate();

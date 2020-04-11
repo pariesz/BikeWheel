@@ -59,9 +59,9 @@ protected:
 
 public:
     Image_6BitColor(Image_Pixels& arc_pixels) {
-        vector<uint16_t> rows[PIXELS_PER_STRIP];
+        vector<uint16_t> rows[LEDS_PER_STRIP];
 
-        for (int i = 0; i < PIXELS_PER_STRIP; i++) {
+        for (int i = 0; i < LEDS_PER_STRIP; i++) {
             int res = arc_pixels.get_resolution(i);
             
             int edge_threshold = ((1 << 16) / res) * 3;

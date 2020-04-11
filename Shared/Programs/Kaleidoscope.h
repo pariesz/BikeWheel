@@ -4,9 +4,7 @@
 class Kaleidoscope : public Program {
 
 public:
-    void render(uint16_t zero_angle, int32_t rotation_rate) {
-        using namespace Colors;
-
+    void render(uint16_t zero_angle) {
         uint16_t ms = millis();
         zero_angle -= ms;
 
@@ -20,7 +18,7 @@ public:
             segment_shift = 12 - segment_shift;
         }
 
-        for (int i = 0; i < NUM_PIXELS; i++) {
+        for (int i = 0; i < LEDS_COUNT; i++) {
             uint16_t angle = zero_angle + Leds::get_angle(i);
 
             uint16_t segment_angle = angle & ((1 << 13) - 1);
@@ -29,7 +27,7 @@ public:
 
             // set black space between petals
             if (segment_angle < ((uint16_t)(inverse_dist) << segment_shift)) {
-                Leds::set_color(i, black);
+                Leds::set_color(i, COLOR_BLACK);
                 continue;
             }
 
@@ -41,20 +39,20 @@ public:
             }
 
             if ((segment_angle >> angle_shift) > inverse_dist) {
-                Leds::set_color(i, black);
+                Leds::set_color(i, COLOR_BLACK);
                 continue;
             }
 
             // set color of each petal
             switch ((angle >> 13) & 0x07) {
-                case 0: Leds::set_color(i, red); break;
-                case 1: Leds::set_color(i, orange); break;
-                case 2: Leds::set_color(i, yellow); break;
-                case 3: Leds::set_color(i, green); break;
-                case 4: Leds::set_color(i, aqua); break;
-                case 5: Leds::set_color(i, blue); break;
-                case 6: Leds::set_color(i, cyan); break;
-                case 7: Leds::set_color(i, purple); break;
+                case 0: Leds::set_color(i, COLOR_RED); break;
+                case 1: Leds::set_color(i, COLOR_ORANGE); break;
+                case 2: Leds::set_color(i, COLOR_YELLOW); break;
+                case 3: Leds::set_color(i, COLOR_GREEN); break;
+                case 4: Leds::set_color(i, COLOR_AQUA); break;
+                case 5: Leds::set_color(i, COLOR_BLUE); break;
+                case 6: Leds::set_color(i, COLOR_CYAN); break;
+                case 7: Leds::set_color(i, COLOR_PURPLE); break;
             }
         }
     }

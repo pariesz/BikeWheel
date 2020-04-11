@@ -1,7 +1,8 @@
 #pragma once
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
-#endif
+#include "Mocks/Arduino_Mock.h"
+
+#define HALL_PIN 3
+#define HALL_OFFSET 0
 
 class HallSensor {
 private:

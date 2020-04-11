@@ -1,13 +1,4 @@
 #pragma once
-
-#if defined(ARDUINO) && ARDUINO >= 100
-#include <avr/pgmspace.h>
-#include <Adafruit_DotStar.h>
-#else
-#include "Arduino_Mock.h"
-#include "Adafruit_DotStar_Mock.h"
-#endif
-
 #include "Leds.h"
 
 namespace Leds {

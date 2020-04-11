@@ -1,11 +1,4 @@
-#if defined(ARDUINO) && ARDUINO >= 100
-#define HALL_PIN 3
-#define HALL_OFFSET 28672 // upside down
-#else
-#include "SensorData.h"
-#include "Arduino_Mock.h"
-#define HALL_OFFSET 0 // offset the rotation relative to the y axis
-#endif
+#include "Mocks/Arduino_Mock.h"
 #include "HallSensor.h"
 #include "Logging.h"
 
@@ -23,11 +16,7 @@ void HallSensor::setup() {
 }
 
 void HallSensor::loop(bool reverse, uint32_t us, uint32_t us_diff) {
-#if defined(ARDUINO) && ARDUINO >= 100
     int read = digitalRead(HALL_PIN); // read OH137 Value
-#else
-    int read = SensorData::get().hall;
-#endif
 
     uint32_t us_rotation_diff = us - us_rotation;
 
