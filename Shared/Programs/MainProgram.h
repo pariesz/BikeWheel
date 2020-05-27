@@ -32,11 +32,20 @@ enum MainProgramState {
     transitionOut = 3
 };
 
+class MainProgramSettings {
+public:
+    uint32_t onRotationRate = 80000;
+    uint32_t offRotationRate = 60000;
+    const char* explodingText = " - BCN - Critical Mass - Test Critica";
+    uint8_t program = 0;
+};
+
 class MainProgram : public Program {
 private:
-    MainProgramState state;
-    uint8_t index = 0;
-    Program* program = nullptr;
+    MainProgramState state = off;
+    uint8_t index = 3;
+    Program* programPtr = new Program;
+    MainProgramSettings* settingsPtr;
 
 private:
     Program* get_program(int32_t rotation_rate) {
@@ -47,7 +56,7 @@ private:
             case  1: return new LaPandora;
             case  2: return new MasaCritica;
             case  3: return new Fist;
-            case  4: return new ExplodingText(37, "- BCN - Critical Mass - Masa Critica");
+            case  4: return new ExplodingText(settingsPtr->explodingText);
             case  5: return new NyanCat;
             case  6: return new Poo;
             case  7: return new Velocity;
@@ -73,15 +82,8 @@ private:
     }
 
 public:
-    MainProgram()
-        : state(off)
-        , program(new Program) {
-    }
-
-    MainProgram(uint8_t index)
-        : index(index)
-        , state(on)
-        , program(get_program(0)) {
+    MainProgram(MainProgramSettings* settings)
+        : settingsPtr(settings) {
     }
 
     void update(uint16_t frame_count, int32_t rotation_rate) override {
@@ -89,7 +91,7 @@ public:
             case on: {
                 if (abs(rotation_rate) < 60000) {
                     // too slow
-                    program = new Transition(program, false);
+                    programPtr = new Transition(programPtr, false);
                     state = transitionOut;
                 }
                 break;
@@ -100,34 +102,34 @@ public:
 
                     log_val("program", (int)index);
 
-                    delete program;
+                    delete programPtr;
 
                     Program* next_program = get_program(rotation_rate);
 
                     if (use_transition()) {
-                        program = new Transition(next_program, true);
+                        programPtr = new Transition(next_program, true);
                         state = transitionIn;
                     } else {
-                        program = next_program;
+                        programPtr = next_program;
                         state = on;
                     }
                 }
                 break;
             }
             case transitionIn: {
-                Transition* transition = (Transition*)program;
+                Transition* transition = (Transition*)programPtr;
 
                 if (transition->finished()) {
-                    program = transition->get_program();
+                    programPtr = transition->get_program();
                     delete transition;
                     state = on;
                 }
                 break;
             }
             case transitionOut: {
-                if (((Transition*)program)->finished()) {
-                    delete program;
-                    program = new Program;
+                if (((Transition*)programPtr)->finished()) {
+                    delete programPtr;
+                    programPtr = new Program;
                     state = off;
                     Leds::clear();
                 }
@@ -135,10 +137,10 @@ public:
             }
         }
 
-        program->update(frame_count, rotation_rate);
+        programPtr->update(frame_count, rotation_rate);
     };
 
     inline void render(uint16_t zero_angle) {
-        program->render(zero_angle);
+        programPtr->render(zero_angle);
     }
 };

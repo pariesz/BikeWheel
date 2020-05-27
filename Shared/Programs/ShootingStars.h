@@ -5,7 +5,7 @@
 #define STAR_FADE(length) ((length) >> 7)
 #define STAR_HUE_CHANGE_RATE 765 // increment hue x every birth
 #define STAR_LIFETIME 120 // stars will live for x frames
-#define STAR_BIRTH_RATE 8 // a start is born every x frames
+#define STAR_BIRTH_RATE 8 // a star is born every x frames
 #define STAR_MAX_LENGTH 0x7FFF
 #define STAR_FRAME(ms) (((ms) >> 5) & 0xFFFF) // 32 frames sec
 
@@ -13,8 +13,8 @@ class Star {
     private:
         uint16_t start_angle = random(0, 0xFFFF);
         uint16_t length = 0;
-        uint16_t created_frame;
         uint16_t hue;
+        uint16_t created_frame;
 
         inline uint32_t get_color(uint16_t length) {
             uint8_t fade = STAR_FADE(length);

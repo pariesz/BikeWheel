@@ -4,8 +4,8 @@
 class Transition : public Program {
 private:
     Program* program;
-    uint8_t index;
     bool in;
+    uint8_t index;
 
 public:
     Transition(Program* program, bool in)

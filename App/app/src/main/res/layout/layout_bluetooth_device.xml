@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    tools:theme="@style/AppTheme"
+    tools:context=".BluetoothRecyclerViewAdaptor"
+    tools:showIn="@layout/fragment_bluetooth"
+    android:id="@+id/layout_bluetoothDevice">
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        tools:src="@drawable/ic_bluetooth"
+        android:id="@+id/imageView_bluetoothDeviceStatus" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageView_bluetoothDeviceStatus"
+        android:layout_marginLeft="16dp"
+        android:id="@+id/textView_bluetoothDeviceName"
+        android:textSize="16sp"
+        tools:text="HC-06" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageView_bluetoothDeviceStatus"
+        android:layout_marginLeft="16dp"
+        android:id="@+id/textView_bluetoothDeviceAddress"
+        android:textSize="12sp"
+        tools:text="00:11:22:33:FF:EE"
+        android:layout_below="@id/textView_bluetoothDeviceName" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:id="@+id/textView_bluetoothDevicePaired"
+        android:textSize="12sp"
+        android:text="PAIRED" />
+</RelativeLayout>

@@ -1,4 +1,3 @@
-#pragma once
 #include "Colors.h"
 
 namespace Colors {

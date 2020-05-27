@@ -1,8 +1,7 @@
-#pragma once
 #include "Leds.h"
 
 namespace Leds {
-	Adafruit_DotStar leds = Adafruit_DotStar(144, DOTSTAR_BGR);
+	Adafruit_DotStar leds = Adafruit_DotStar(144, 11, 13, DOTSTAR_BGR);
 
 	const uint8_t min_dist = 0x33;
 

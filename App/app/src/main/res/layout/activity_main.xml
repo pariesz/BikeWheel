@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="?colorSurface"
+    tools:context=".MainActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:background="?colorPrimary">
+
+                <ImageView
+                    android:id="@+id/imageView_main_logo"
+                    android:layout_width="60dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_nyancat" />
+
+                <LinearLayout
+                    android:id="@+id/layout_bluetooth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="8dp"
+                    android:paddingRight="16dp">
+
+                    <ImageView
+                        android:id="@+id/imageView_bluetooth"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_bluetooth_searching"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginLeft="8dp" />
+
+                    <TextView
+                        android:id="@+id/textView_bluetooth"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Not Connected"
+                        android:layout_centerVertical="true"
+                        android:gravity="center"/>
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+
+                    <ProgressBar
+                        android:id="@+id/progressBar_battery"
+                        style="?android:progressBarStyleHorizontal"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="8dp"
+                        android:indeterminate="false"
+                        android:progressDrawable="@drawable/progress_ring_accent"
+                        android:progress="0"
+                        tools:progress="100" />
+
+                    <ImageView
+                        android:id="@+id/imageView_battery"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_marginLeft="12dp"
+                        android:layout_centerVertical="true"
+                        tools:src="@drawable/ic_battery_full" />
+
+                    <TextView
+                        android:id="@+id/textView_battery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@id/progressBar_battery"
+                        android:gravity="center"
+                        android:textSize="12sp"
+                        tools:text="12.0v" />
+                </RelativeLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/frame_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/appBar_main"
+        tools:showIn="@layout/activity_main" />
+</RelativeLayout>

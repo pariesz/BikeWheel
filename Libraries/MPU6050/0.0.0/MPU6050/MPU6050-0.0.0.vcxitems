@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding ="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" >
+  <PropertyGroup Label="Globals" >
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{f4b4a6d8-8208-4d7b-b80f-bf87f52c5a38}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MPU6050.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)helper_3dmath.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)MPU6050.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)MPU6050_6Axis_MotionApps20.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)MPU6050_6Axis_MotionApps_V6_12.h" />
+<ClInclude Include="$(MSBuildThisFileDirectory)MPU6050_9Axis_MotionApps41.h" />
+  </ItemGroup>
+  <ItemGroup>
+    
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)library.json" />
+  </ItemGroup>
+</Project>

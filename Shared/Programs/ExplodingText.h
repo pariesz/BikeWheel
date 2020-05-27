@@ -7,15 +7,15 @@ private:
     uint16_t angle_offset = 0;
     uint8_t y_top = 0;
     uint16_t hue = random(0, 0xFFFF);
+    const char* label;
     uint8_t label_length;
     uint8_t brightness;
     uint32_t color;
-    const char *label;
 
 public:
-    ExplodingText(uint8_t label_length, const char *label)
+    ExplodingText(const char *label)
         : label(label)
-        , label_length(label_length) {
+        , label_length(strlen(label)) {
     }
 
     void update(uint16_t frame_count, int32_t rotation_rate) override {

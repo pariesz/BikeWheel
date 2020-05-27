@@ -11,8 +11,9 @@
    To stop flicker at the threashold we add a buffer zone.
    Turn on at ~360 deg/ms and off at ~450 deg/s.
 */
-
-#define LOGGING 0
+#define LOGGING 1
+#define BATTERY_PIN 14
+#define BLUETOOTH Serial1
 #include <shared.h>
 
 inline uint16_t get_frame_count() {
@@ -20,15 +21,19 @@ inline uint16_t get_frame_count() {
 }
 
 Mpu mpu;
-MainProgram program;
+MainProgramSettings settings;
+MainProgram program = MainProgram(&settings);
 uint16_t frame_count = get_frame_count();
 
 void setup(void) {
+
 #if LOGGING == 1
     Serial.begin(9600);
     while (!Serial);
     log_ln("Connected");
 #endif
+
+    pinMode(BATTERY_PIN, INPUT);
 
     // Get offsets calibrated using ../MPU6050 Calibration/MPU6050Calibration.ino
     int16_t mpu_offsets[] = { 
@@ -45,6 +50,7 @@ void loop(void) {
     mpu.update();
     
     if (frame_count != get_frame_count()) {
+        read_serial(&BLUETOOTH);
         frame_count = get_frame_count();
         program.update(frame_count, mpu.get_rotation_rate());
     }
@@ -52,4 +58,51 @@ void loop(void) {
     program.render(mpu.get_angle());
     
     Leds::leds.show();
+}
+
+void read_serial(Stream* stream) {
+    while (stream->available()) {
+        String str = stream->readString();
+
+        Serial.print(str.substring(0, 3));
+        Serial.print(":");
+
+        bool write = str.length() > 3;
+
+        if (str.startsWith("PRO")) {
+            if (write) {
+                settings.program = str.substring(4).toInt();
+                program = MainProgram(&settings);
+            }
+            stream->println(settings.program);
+        }
+        else if (str.startsWith("BAT")) {
+            stream->println(analogRead(BATTERY_PIN));
+        }
+        else if (str.startsWith("ROT")) {
+            stream->println(mpu.get_rotation_rate());
+        }
+        else if (str.startsWith("ANG")) {
+            stream->println(mpu.get_angle());
+        }
+        //else if (str.startsWith("TXT")) {
+        //    if (write) settings.explodingText = str.substring(4);
+        //    stream->println(settings.explodingText);
+        //}
+        else if (str.startsWith("BRI")) {
+            if (write) Leds::set_brightness(str.substring(4).toInt());
+            stream->println(Leds::get_brightness());
+        }
+        else if (str.startsWith("ONR")) {
+            if (write) settings.onRotationRate = str.substring(4).toInt();
+            stream->println(settings.onRotationRate);
+        }
+        else if (str.startsWith("OFR")) {
+            if (write) settings.offRotationRate = str.substring(4).toInt();
+            stream->println(settings.offRotationRate);
+        }
+        else {
+            stream->println("unrecognised command");
+        }
+    }
 }

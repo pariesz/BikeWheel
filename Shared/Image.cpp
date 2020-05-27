@@ -1,4 +1,3 @@
-#pragma once
 #include "./Leds.h"
 #include "./Image.h"
 #include "./Logging.h"
@@ -11,7 +10,7 @@ void Image::Initialise() {
     }
 }
 
-inline uint32_t Image::get_led_color(uint8_t index, uint8_t y, uint16_t angle) {
+uint32_t Image::get_led_color(uint8_t index, uint8_t y, uint16_t angle) {
     uint16_t end = get_row_end(y);
     uint16_t arc = get_arc(iterators[index]);
 
@@ -24,8 +23,7 @@ inline uint32_t Image::get_led_color(uint8_t index, uint8_t y, uint16_t angle) {
         }
     }
 
-    // iterate forwards till the next_arc angle is bigger
-    // than the current angle
+    // iterate forwards till the next_arc angle is bigger than the current angle
     do {
         if (iterators[index] == end) {
             return get_color(arc);

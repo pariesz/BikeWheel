@@ -20,8 +20,7 @@ public:
             star_index = random(0, LEDS_COUNT - 1);
 
             //space_angle += rotation_rate >> 10;
-
-            uint8_t dist = Leds::get_distance(star_index);
+            //uint8_t dist = Leds::get_distance(star_index);
 
             star_color = Adafruit_DotStar::ColorHSV(0xC000, random(0x00, 0xFF), random(0x00, 0xFF));
         }

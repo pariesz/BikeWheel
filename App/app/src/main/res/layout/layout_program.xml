@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="114dp"
+    android:layout_height="114dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16px"
+    android:id="@+id/layout_program"
+    tools:context=".ProgramsRecyclerViewAdaptor"
+    tools:showIn="@layout/fragment_programs">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardBackgroundColor="?android:attr/colorBackground"
+        app:cardCornerRadius="57dp">
+
+            <FrameLayout
+                android:id="@+id/frameLayout_program"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/imageView_program"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    tools:src="@drawable/program_poo" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/imageView_programGradients"
+                    android:src="@drawable/wheel_gradient_sweep"
+                    android:visibility="invisible" />
+
+                <ImageView
+                    android:id="@+id/imageView_programCircle"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:visibility="invisible"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/wheel_center"
+                    android:layout_gravity="center" />
+            </FrameLayout>
+
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

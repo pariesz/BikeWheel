@@ -1,25 +1,27 @@
 #pragma once
 #include "Program.h"
 
-#define LINE_FRAME_SKIP 3
-#define LINE_MIN_WIDTH 0x1FFF
-#define LINE_MAX_WIDTH 0x2FFF
-#define LINE_COLOR_CHANGE_RATE 765
-#define LINE_ROTATION_RATE 100
+class PortalSettings {
+public:
+    uint8_t  lineFrameSkip = 3;
+    uint16_t lineMinWidth = 0x1FFF;
+    uint16_t lineMaxWidth = 0x2FFF;
+    uint16_t lineColorChangeRate = 765;
+    uint8_t  lineRotationRate = 100;
+};
 
-class Line {
+class PortalLine {
     private:
-        uint16_t start_angle = random(0, 0xFFFF);
-        uint16_t end_angle = start_angle + random(LINE_MIN_WIDTH, LINE_MAX_WIDTH);
-        uint32_t color;
+        uint32_t color = 0;
+        uint16_t start_angle = 0;
+        uint16_t end_angle = 0;
 
     public:
-        Line() 
-            : color(0) { 
-        }
-
-        Line(uint16_t hue) 
-            : color(Adafruit_DotStar::ColorHSV(hue)) {
+        PortalLine() { }
+        PortalLine(uint16_t hue, uint16_t width)
+            : color(Adafruit_DotStar::ColorHSV(hue))
+            , start_angle(random(0, 0xFFFF))
+            , end_angle(start_angle + width) {
         }
 
         bool show(uint16_t angle) {
@@ -43,22 +45,28 @@ class Line {
 
 class Portal : public Program {
     private:
-        Line lines[LEDS_PER_STRIP];
+        PortalLine lines[LEDS_PER_STRIP];
         uint8_t index = 0;
         uint16_t color_offset = random(0, 0xFFFF);
         uint16_t angle_offset = 0;
         uint32_t ms_prev = millis();
+        PortalSettings* settings;
 
     public:
+        Portal() {}
+        Portal(PortalSettings* settings)
+            :settings(settings) {
+        }
+
         void update(uint16_t frame_count, int32_t rotation_rate) override {
-            angle_offset += LINE_ROTATION_RATE;
+            angle_offset += settings->lineRotationRate;
 
             // create new stars
-            if (frame_count % LINE_FRAME_SKIP == 0) {
+            if (frame_count % settings->lineFrameSkip == 0) {
                 if (++index == LEDS_PER_STRIP) {
                     index = 0;
                 }
-                lines[index] = Line(color_offset += LINE_COLOR_CHANGE_RATE);
+                lines[index] = PortalLine(color_offset += settings->lineColorChangeRate, random(settings->lineMinWidth, settings->lineMaxWidth));
             }
         }
 
@@ -77,7 +85,7 @@ class Portal : public Program {
                     i_star = LEDS_PER_STRIP + i_star;
                 }
 
-                Line line = lines[i_star];
+                PortalLine line = lines[i_star];
 
                 if (line.show(zero_angle + Leds::get_angle(i))) {
                     Leds::set_color(i, line.get_color());

@@ -22,7 +22,8 @@ MockData data_source;
 Mpu mpu;
 Image_Base *image = nullptr;
 //ExplodingText program(37, "- BCN - Critical Mass - Masa Critica");
-MainProgram program(1);
+MainProgramSettings settings;
+MainProgram program = MainProgram(&settings);
 uint16_t frame_count;
 
 inline uint16_t get_frame_count() {

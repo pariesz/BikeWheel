@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--   A secondary color for controls like checkboxes and text fields -->
+    <color name="colorAccent">#3FC4FE</color>
+    <color name="colorRx">#00C400</color>
+    <color name="colorTx">#FF6600</color>
+</resources>

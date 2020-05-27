@@ -35,7 +35,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Colors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\peter\Documents\Arduino\BikeWheel\Shared\Mocks\Serial_Mock.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Mocks\Serial_Mock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -166,10 +166,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\NyanCat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\peter\Documents\Arduino\BikeWheel\Shared\Mocks\Serial_Mock.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Transition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Transition.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Mocks\Serial_Mock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

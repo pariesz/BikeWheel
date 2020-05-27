@@ -21,6 +21,12 @@ namespace Leds {
     inline void set_color(uint16_t index, uint32_t color) {
         leds.setPixelColor(index, color);
     }
+    inline uint8_t get_brightness() {
+        return leds.getBrightness();
+    }
+    inline void set_brightness(uint8_t value) {
+        leds.setBrightness(value);
+    }
     inline void clear() {
         leds.clear();
     }

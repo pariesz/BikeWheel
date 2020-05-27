@@ -42,6 +42,9 @@ int32_t Mpu::get_rotation_rate() {
 
 void Mpu::setup(int16_t offsets[6]) {
 #ifndef SIMULATION
+    // join I2C bus (I2Cdev library doesn't do this automatically)
+    Wire.begin();
+
     /* Switch to 400KHz I2C */
     TWBR = ((F_CPU / 400000L) - 16) / 2;
 

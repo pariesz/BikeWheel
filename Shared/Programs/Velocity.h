@@ -61,7 +61,7 @@ public:
                 
             } else if (y >= FONT_HEIGHT) {
                 // render decimal from 45deg to 135deg (8ch per 90deg)
-                // offset 8px down\
+                // offset 8px down
 
                 uint16_t x = (((uint32_t)angle - 0x2000) * (VELOCITY_DECIMAL_LEN << FONT_WIDTH_SHIFT)) >> 14;
                 uint8_t ch_x = x & (FONT_WIDTH - 1);
