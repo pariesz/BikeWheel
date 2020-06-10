@@ -1,6 +1,11 @@
-package pariesz.pov;
+package pariesz.pov.dialogs;
 
 import androidx.appcompat.app.AppCompatDialogFragment;
+
+import pariesz.pov.MainActivity;
+import pariesz.pov.WheelEepromMessage;
+import pariesz.pov.WheelMessage;
+import pariesz.pov.WheelService;
 
 public abstract class ProgramDialog extends AppCompatDialogFragment {
     protected WheelService getService() {
