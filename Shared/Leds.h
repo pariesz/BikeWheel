@@ -31,7 +31,8 @@ namespace Leds {
         leds.clear();
     }
 
-    inline void setup() {
+    inline void setup(uint16_t number, uint8_t dataPin, uint8_t clockPin, uint8_t o) {
+        leds = Adafruit_DotStar(number, dataPin, clockPin, o);
         leds.setBrightness(20);
         leds.begin();
         leds.show();

@@ -8,7 +8,10 @@ import android.os.Message;
 import android.util.Log;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -23,15 +26,22 @@ public class WheelService {
     public static final float VOLTAGE_MIN = 5.0f;
     public static final float VOLTAGE_MAX = 12.0f;
 
-    public static final String CMD_BATTERY = "BAT";
-    public static final String CMD_MOVING_PROGRAM = "PMO";
-    public static final String CMD_STATIONARY_PROGRAM = "PST";
-    public static final String CMD_ROTATION_RATE = "ROT";
-    public static final String CMD_ANGLE = "ANG";
-    public static final String CMD_BRIGHTNESS = "BRI";
-    public static final String CMD_MOVING_ROTATION_RATE = "VMO";
-    public static final String CMD_STATIONARY_ROTATION_RATE = "VST";
-    public static final String CMD_CIRCUMFERENCE = "CER";
+    public static final short EEPROM_WHEEL_CIRCUMFERENCE = 0; // int16
+    public static final short EEPROM_MOVING_RATE = 2; // int32
+    public static final short EEPROM_STATIONARY_RATE = 6; // int32
+    public static final short EEPROM_BRIGHTNESS = 10; // int8
+    public static final short EEPROM_EXPLODING_TEXT = 11; // 39 byte string (with NUL terminator)
+    public static final short EEPROM_TIMER_FRAMES = 50; // int16
+
+    public static final byte CMD_SET_EEPROM = 1;
+    public static final byte CMD_GET_EEPROM = 2;
+    public static final byte CMD_BATTERY = 3;
+    public static final byte CMD_ANGLE = 4;
+    public static final byte CMD_ROTATION_RATE = 5;
+    public static final byte CMD_SET_MOVING_PROGRAM = 6;
+    public static final byte CMD_GET_MOVING_PROGRAM = 7;
+    public static final byte CMD_SET_STATIONARY_PROGRAM = 8;
+    public static final byte CMD_GET_STATIONARY_PROGRAM = 9;
 
     public static final int STATUS_DISCONNECTED = 0;
     public static final int STATUS_CONNECTING = 1;
@@ -39,11 +49,11 @@ public class WheelService {
 
     private int status = STATUS_DISCONNECTED;
 
+    private String deviceName;
     private WheelThread thread;
     private List<OnMessageReceivedListener> registeredReceivedListeners = new ArrayList<>();
     private List<OnMessageSentListener> registeredSentListeners = new ArrayList<>();
     private List<OnStatusChangeListener> registeredStatusChangeListeners = new ArrayList<>();
-
     private Queue<WheelMessage> messages = new LinkedList<>();
 
     public interface OnMessageReceivedListener {
@@ -53,7 +63,7 @@ public class WheelService {
         void onMessageSent(WheelMessage message);
     }
     public interface OnStatusChangeListener {
-        void onStatusChange(int status);
+        void onStatusChange(int status, String message);
     }
     public void addOnMessageReceivedListener(OnMessageReceivedListener listener) {
         registeredReceivedListeners.add(listener);
@@ -73,11 +83,14 @@ public class WheelService {
     public void removeOnStatusChangeListener(OnStatusChangeListener listener) {
         registeredStatusChangeListeners.add(listener);
     }
+    public String getDeviceName() {
+        return deviceName;
+    }
 
-    private void setStatus(int status) {
+    private void setStatus(int status, String message) {
         this.status = status;
         for(OnStatusChangeListener listener: registeredStatusChangeListeners) {
-            listener.onStatusChange(status);
+            listener.onStatusChange(status, message);
         }
     }
 
@@ -85,12 +98,14 @@ public class WheelService {
         return messages;
     }
 
-    public void connect(ISocket socket) {
+    public void connect(ISocket socket, String deviceName) {
         if (thread != null) {
             thread.cancel();
         }
 
-        setStatus(STATUS_CONNECTING);
+        this.deviceName = deviceName;
+
+        setStatus(STATUS_CONNECTING, deviceName + " connecting");
         thread = new WheelThread(socket, threadHandler);
         thread.start();
     }
@@ -99,7 +114,7 @@ public class WheelService {
         try {
             String uuid = device.getUuids()[0].toString();
             BluetoothSocket btSocket = device.createInsecureRfcommSocketToServiceRecord(UUID.fromString(uuid));
-            connect(new BluetoothSocketWrapper(btSocket));
+            connect(new BluetoothSocketWrapper(btSocket), device.getName());
         } catch (Exception ex) {
             Log.e(TAG,"Error creating Insecure RF Comm Socket.", ex);
             return;
@@ -113,15 +128,15 @@ public class WheelService {
         public void handleMessage(Message msg) {
         switch (msg.what) {
             case WheelThread.MESSAGE_RECEIVED:
-                readMessage((String)msg.obj);
+                receive((WheelMessage)msg.obj);
                 break;
 
-            case WheelThread.MESSAGE_ERROR:
-                setStatus(STATUS_DISCONNECTED);
+            case WheelThread.MESSAGE_DISCONNECTED:
+                setStatus(STATUS_DISCONNECTED, (String)msg.obj);
                 break;
 
             case WheelThread.MESSAGE_CONNECTED:
-                setStatus(STATUS_CONNECTED);
+                setStatus(STATUS_CONNECTED, deviceName + " connected");
                 break;
         }
         }
@@ -131,51 +146,97 @@ public class WheelService {
         return status;
     }
 
-
-    public void writeMessage(String command, int value) throws IOException {
-        writeMessage(command + ":" + value);
+    public void getEeprom(short address, int length) {
+        try {
+            command(new WheelEepromMessage(CMD_GET_EEPROM, address, (byte) length));
+        } catch (IOException ex) {
+            Log.e(TAG, "getEeprom fail. address:" + address + " length:" + length, ex);
+        }
     }
 
-    public void writeMessage(String command, String value) throws IOException {
-        writeMessage(command + ":" + value);
+    public void setEeprom(short address, byte value) {
+        try {
+            command(new WheelEepromMessage(CMD_SET_EEPROM, address, new byte[] { value }, true));
+        } catch (IOException ex) {
+            Log.e(TAG, "setEeprom fail. address:" + address + " byte:" + value, ex);
+        }
     }
 
-    public void writeMessage(String text) throws IOException {
+    public void setEeprom(short address, short value) {
+        try {
+            command(new WheelEepromMessage(CMD_SET_EEPROM, address, ByteBuffer.allocate(2).putShort(value).array(), true));
+        } catch (IOException ex) {
+            Log.e(TAG, "setEeprom fail. address:" + address + " short:" + value, ex);
+        }
+    }
+
+    public void setEeprom(short address, int value) {
+        try {
+            command(new WheelEepromMessage(CMD_SET_EEPROM, address, ByteBuffer.allocate(4).putInt(value).array(), true));
+        } catch (IOException ex) {
+            Log.e(TAG, "setEeprom fail. address:" + address + " int:" + value, ex);
+        }
+    }
+
+    public void setEeprom(short address, String value) {
+        byte[] bytes = value.getBytes(StandardCharsets.US_ASCII);
+
+        // Add the c++ null terminator
+        final int length = bytes.length;
+        bytes = Arrays.copyOf(bytes, length + 1);
+        bytes[length] = 0;
+
+        try {
+            command(new WheelEepromMessage(CMD_SET_EEPROM, address, bytes, true));
+        } catch (IOException ex) {
+            Log.e(TAG, "setEeprom fail. address:" + address + " String:" + value, ex);
+        }
+    }
+
+    public void command(byte command) {
+        try {
+            command(new WheelMessage(command, true));
+        } catch (IOException ex) {
+            Log.e(TAG, "command " + command + " fail.", ex);
+        }
+    }
+
+    public void command(byte command, int value) throws IOException {
+        command(new WheelStringMessage( command, Integer.toString(value), true));
+    }
+
+    public void command(byte command, String value) throws IOException {
+        command(new WheelStringMessage( command, value, true));
+    }
+
+    public void command(WheelMessage message) throws IOException {
         if(status != STATUS_CONNECTED) {
-            Log.e(TAG, "Not connected, cannot write: " + text);
+            Log.e(TAG, "Not connected, cannot write: " + message);
             return;
         }
 
         //Log.d(TAG, "tx:" + text);
 
-        WheelMessage message = enqueueMessage(text, true);
+        enqueueMessage(message);
 
-        thread.transmitMessage(text);
+        thread.transmitMessage(message);
 
         for(OnMessageSentListener listener: registeredSentListeners) {
             listener.onMessageSent(message);
         }
     }
 
-    private void readMessage(String text) {
-        WheelMessage message = enqueueMessage(text, false);
-
-        //Log.d(TAG, "rx:" + text);
-
+    private void receive(WheelMessage message) {
+        enqueueMessage(message);
         for(OnMessageReceivedListener listener: registeredReceivedListeners) {
             listener.onMessageReceived(message);
         }
     }
 
-    private WheelMessage enqueueMessage(String text, boolean transmit) {
-        WheelMessage result = new WheelMessage(text, transmit);
-
-        messages.add(result);
-
+    private void enqueueMessage(WheelMessage message) {
+        messages.add(message);
         while (messages.size() > MAX_MESSAGE_SIZE) {
             messages.remove();
         }
-
-        return result;
     }
 }

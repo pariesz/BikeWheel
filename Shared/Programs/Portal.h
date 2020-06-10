@@ -50,23 +50,19 @@ class Portal : public Program {
         uint16_t color_offset = random(0, 0xFFFF);
         uint16_t angle_offset = 0;
         uint32_t ms_prev = millis();
-        PortalSettings* settings;
+        PortalSettings settings;
 
     public:
-        Portal() {}
-        Portal(PortalSettings* settings)
-            :settings(settings) {
-        }
 
         void update(uint16_t frame_count, int32_t rotation_rate) override {
-            angle_offset += settings->lineRotationRate;
+            angle_offset += settings.lineRotationRate;
 
             // create new stars
-            if (frame_count % settings->lineFrameSkip == 0) {
+            if (frame_count % settings.lineFrameSkip == 0) {
                 if (++index == LEDS_PER_STRIP) {
                     index = 0;
                 }
-                lines[index] = PortalLine(color_offset += settings->lineColorChangeRate, random(settings->lineMinWidth, settings->lineMaxWidth));
+                lines[index] = PortalLine(color_offset += settings.lineColorChangeRate, random(settings.lineMinWidth, settings.lineMaxWidth));
             }
         }
 

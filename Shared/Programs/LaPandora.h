@@ -10,8 +10,8 @@ class LaPandora : public Program {
 private:
     //Space space;
     Rocket rocket;
-    uint8_t star_index;
-    uint32_t star_color;
+    uint8_t star_index = 0;
+    uint32_t star_color = 0;
     //uint16_t space_angle = 0;
 
 public:

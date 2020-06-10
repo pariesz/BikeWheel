@@ -1,5 +1,6 @@
 #pragma once
 #include "Mocks/Arduino_Mock.h"
+#include "Mocks/Adafruit_DotStar_Mock.h"
 
 #define COLOR_BLACK 0
 #define COLOR_BLUE 0xFF
@@ -17,4 +18,9 @@ namespace Colors {
     // The dim_curve is used only on brightness/value and on saturation (inverted).
     // This looks the most natural.
     uint32_t HslToRgb(uint8_t h, uint8_t s, uint8_t l) __attribute__((optimize("O3")));
+
+    inline uint32_t RandomHue() {
+        return Adafruit_DotStar::ColorHSV(random(0, 0xFFFF), 255, 0xFF);
+    }
+
 }

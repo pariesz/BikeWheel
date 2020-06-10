@@ -24,7 +24,7 @@ namespace Colors {
         193, 196, 200, 203, 207, 211, 214, 218, 222, 226, 230, 234, 238, 242, 248, 255,
     };
 
-    inline uint32_t rgb(uint8_t r, uint8_t g, uint8_t b) {
+    inline uint32_t Rgb(uint8_t r, uint8_t g, uint8_t b) {
         return ((uint32_t)r << 16) + ((uint16_t)g << 8) + b;
     }
 
@@ -37,7 +37,7 @@ namespace Colors {
         if (l == 0) return 0;
 
         s = 255 - pgm_read_byte(&dim_curve[255 - s]);
-        if (s == 0) return rgb(l, l, l);
+        if (s == 0) return Rgb(l, l, l);
 
         uint8_t mod = h % 43;
         uint8_t p = ((uint16_t)l * (255 - s)) >> 8;
@@ -45,12 +45,12 @@ namespace Colors {
         uint8_t t = ((uint16_t)((l - p) * mod) / 43) + p;
 
         switch (h / 43) {
-            case 0:  return rgb(l, t, p);
-            case 1:  return rgb(q, l, p);
-            case 2:  return rgb(p, l, t);
-            case 3:  return rgb(p, q, l);
-            case 4:  return rgb(t, p, l);
-            default: return rgb(l, p, q);
+            case 0:  return Rgb(l, t, p);
+            case 1:  return Rgb(q, l, p);
+            case 2:  return Rgb(p, l, t);
+            case 3:  return Rgb(p, q, l);
+            case 4:  return Rgb(t, p, l);
+            default: return Rgb(l, p, q);
         }
     }
 }

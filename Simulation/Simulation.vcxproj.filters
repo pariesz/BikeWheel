@@ -74,9 +74,6 @@
     <ClInclude Include="Include\Leds_Export.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\SensorData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -93,6 +90,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\SensorData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

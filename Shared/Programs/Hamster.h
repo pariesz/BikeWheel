@@ -9,7 +9,7 @@ class Hamster : public Program {
 
 private:
     uint8_t speed = 0;
-    uint16_t angle_offset;
+    uint16_t angle_offset = 0;
 
     Image* frame1 = new HamsterRun1;
     Image* frame2 = new HamsterRun2;

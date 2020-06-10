@@ -22,9 +22,9 @@ public class ProgramsPagerAdaptor extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return ProgramsFragment.newInstance(WheelService.CMD_MOVING_PROGRAM);
+                return ProgramsFragment.newInstance(WheelService.CMD_GET_MOVING_PROGRAM, WheelService.CMD_SET_MOVING_PROGRAM);
             case 1:
-                return ProgramsFragment.newInstance(WheelService.CMD_STATIONARY_PROGRAM);
+                return ProgramsFragment.newInstance(WheelService.CMD_GET_STATIONARY_PROGRAM, WheelService.CMD_SET_STATIONARY_PROGRAM);
             default:
                 Log.e(TAG, "Invalid position: " + position);
                 return getItem(0);

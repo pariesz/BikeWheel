@@ -16,14 +16,16 @@
 #define BLUETOOTH Serial1
 #include <shared.h>
 
+// 31 frames a second
 inline uint16_t get_frame_count() {
     return (millis() >> 5) & 0xFFFF;
 }
 
 Mpu mpu;
-MainProgramSettings settings;
-MainProgram program = MainProgram(&settings);
+MainProgram program;
 uint16_t frame_count = get_frame_count();
+char command = 0;
+EEPROMSerialMessage message = EEPROMSerialMessage(false);
 
 void setup(void) {
 
@@ -43,7 +45,7 @@ void setup(void) {
 
     mpu.setup(mpu_offsets);
 
-    Leds::setup();
+    Leds::setup(144, 11, 13, DOTSTAR_BGR);
 }
 
 void loop(void) {
@@ -60,49 +62,82 @@ void loop(void) {
     Leds::leds.show();
 }
 
+
 void read_serial(Stream* stream) {
     while (stream->available()) {
-        String str = stream->readString();
+        char ch = stream->read(); // only read whats available so its non-blocking
 
-        Serial.print(str.substring(0, 3));
-        Serial.print(":");
+        if (command == 0) {
+            command = ch;
+            stream->print(command); // echo the command back
 
-        bool write = str.length() > 3;
+            log_val("cmd", ch);
 
-        if (str.startsWith("PRO")) {
-            if (write) {
-                settings.program = str.substring(4).toInt();
-                program = MainProgram(&settings);
+            switch (command) {
+                case CMD_BATTERY:
+                    stream->println(analogRead(BATTERY_PIN));
+                    break;
+
+                case CMD_ANGLE:
+                    stream->println(mpu.get_angle());
+                    break;
+
+                case CMD_ROTATION_RATE:
+                    stream->println(mpu.get_rotation_rate());
+                    break;
+
+                case CMD_GET_MOVING_PROGRAM:
+                    stream->println(program.getMovingProgram());
+                    break;
+
+                case CMD_GET_STATIONARY_PROGRAM:
+                    stream->println(program.getStationaryProgram());
+                    break;
+
+                case CMD_SET_EEPROM:
+                    message = EEPROMSerialMessage(true);
+                    continue;
+
+                case CMD_GET_EEPROM:
+                    message = EEPROMSerialMessage(false);
+                    continue;
+
+                default:
+                    continue; // wait for more input
             }
-            stream->println(settings.program);
+        } else {
+            switch (command) {
+                case CMD_SET_EEPROM:
+                    if (!message.consume(ch)) continue;
+                    message.print(stream);
+                    program.configure();
+                    break;
+
+                case CMD_GET_EEPROM:
+                    if (!message.consume(ch)) continue;
+                    message.print(stream);
+                    break;
+
+                case CMD_SET_MOVING_PROGRAM:
+                    log_val("program",  ch);
+                    program.setMovingProgram(ch);
+                    stream->println(program.getMovingProgram());
+                    break;
+
+                case CMD_SET_STATIONARY_PROGRAM:
+                    log_val("program", ch);
+                    program.setStationaryProgram(ch);
+                    stream->println(program.getStationaryProgram());
+                    break;
+
+                default:
+                    log_ln("err");
+                    stream->println("err");
+                    break;
+            }
         }
-        else if (str.startsWith("BAT")) {
-            stream->println(analogRead(BATTERY_PIN));
-        }
-        else if (str.startsWith("ROT")) {
-            stream->println(mpu.get_rotation_rate());
-        }
-        else if (str.startsWith("ANG")) {
-            stream->println(mpu.get_angle());
-        }
-        //else if (str.startsWith("TXT")) {
-        //    if (write) settings.explodingText = str.substring(4);
-        //    stream->println(settings.explodingText);
-        //}
-        else if (str.startsWith("BRI")) {
-            if (write) Leds::set_brightness(str.substring(4).toInt());
-            stream->println(Leds::get_brightness());
-        }
-        else if (str.startsWith("ONR")) {
-            if (write) settings.onRotationRate = str.substring(4).toInt();
-            stream->println(settings.onRotationRate);
-        }
-        else if (str.startsWith("OFR")) {
-            if (write) settings.offRotationRate = str.substring(4).toInt();
-            stream->println(settings.offRotationRate);
-        }
-        else {
-            stream->println("unrecognised command");
-        }
+
+        // command has been executed, clear it
+        command = 0;
     }
 }

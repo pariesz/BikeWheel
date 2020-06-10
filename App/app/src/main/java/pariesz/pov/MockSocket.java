@@ -20,54 +20,66 @@ public class MockSocket implements ISocket {
 
     private long millis;
 
-    private int battery = 1023; // 0-5v = 0-1023
+    private short battery = 1023; // 0-5v = 0-1023
     private int rotationRate = 100000; // 16bit angle per second
-    private int movingProgram = 0; // program id (not index!)
-    private int movingRotationRate = 80000; // 16bit angle per second
-    private int stationaryProgram = 0; // program id (not index!)
-    private int stationaryRotationRate = 60000; // 16bit angle per second
-    private int brightness = 20; // 0-100
-    private int angle = 0; // 16bit angle: 0-65535 = 0-360 degrees
-    private int wheelCircumference = 2299; // mm
+    private byte movingProgram = 0; // program id (not index!)
+    private byte stationaryProgram = 0; // program id (not index!)
+    private int angle = 0; // 16bit angle: 0-65535 = 0-360 degrees.  Use int (instead of short) to handle overflow.
+    private byte[] eeprom = new byte[4095];
 
-    public MockSocket() throws IOException {
+    public MockSocket() {
         out = new PipedOutputStream();
-        inputStream = new PipedInputStream(out);
-    }
-
-    private void mockTransmit(String text) throws IOException {
-        //Log.d(TAG, "tx:" + text);
-        WheelMessage message = new WheelMessage(text, true);
-        String cmd = message.getCommand();
-
-        if (message.getValue() != null) {
-            try {
-                setValue(cmd, message.getInt());
-            } catch (NumberFormatException ex) {
-                Log.e(TAG, "Invalid int value.", ex);
-            }
-        }
 
         try {
-            mockReceive(cmd + ":" + getValue(cmd) + "\n");
-        } catch (Exception ex) {
-            mockReceive(cmd + ":" + ex.getMessage() + "\n");
+            inputStream = new PipedInputStream(out);
+        } catch (IOException ex) {
+            Log.e(TAG, "Error creating PipedInputStream", ex);
         }
     }
 
-    private void mockReceive(String text) throws IOException {
-        //Log.d(TAG, "rx:" + text);
-        out.write(text.getBytes(StandardCharsets.US_ASCII));
+    private void mockTransmit(WheelMessage message) {
+        Log.d(TAG, message.toString());
+        try {
+            byte cmd = message.getCommand();
+            switch (cmd) {
+                case WheelService.CMD_SET_MOVING_PROGRAM:
+                    movingProgram = (byte) message.getValueInt();
+                    writeCommand(cmd);
+                    break;
+
+                case WheelService.CMD_SET_STATIONARY_PROGRAM:
+                    stationaryProgram = (byte) message.getValueInt();
+                    writeCommand(cmd);
+                    break;
+
+                case WheelService.CMD_SET_EEPROM:
+                    setEeprom((WheelEepromMessage) message);
+                case WheelService.CMD_GET_EEPROM:
+                    writeEeprom((WheelEepromMessage) message);
+                    break;
+
+                default:
+                    writeCommand(cmd);
+                    break;
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, "writeEeprom error: " + message, ex);
+        }
     }
 
-    private int getValue(String command) throws Exception {
+    private int getValue(byte command) throws Exception {
         switch (command) {
-            case WheelService.CMD_BATTERY: return battery -= 100; // battery is requested evey minute
-            case WheelService.CMD_MOVING_PROGRAM: return movingProgram;
-            case WheelService.CMD_STATIONARY_PROGRAM: return stationaryProgram;
-            case WheelService.CMD_ROTATION_RATE: return rotationRate += (Math.random() - 0.5) * 3000;
-            case WheelService.CMD_MOVING_ROTATION_RATE: return movingRotationRate;
-            case WheelService.CMD_STATIONARY_ROTATION_RATE: return stationaryRotationRate;
+            case WheelService.CMD_BATTERY:
+                return battery -= 100; // battery is requested evey minute
+            case WheelService.CMD_GET_MOVING_PROGRAM:
+            case WheelService.CMD_SET_MOVING_PROGRAM:
+                return movingProgram;
+            case WheelService.CMD_GET_STATIONARY_PROGRAM:
+            case WheelService.CMD_SET_STATIONARY_PROGRAM:
+                return stationaryProgram;
+
+            case WheelService.CMD_ROTATION_RATE:
+                return rotationRate += (Math.random() - 0.5) * 3000;
             case WheelService.CMD_ANGLE: {
                 if (millis == 0) {
                     millis = System.currentTimeMillis();
@@ -79,42 +91,82 @@ public class MockSocket implements ISocket {
 
                     angle += elapsed * rotationRate / 1000;
 
-                    while(angle > 65535) {
+                    while (angle > 65535) {
                         angle -= 65535;
                     }
                 }
                 return angle;
             }
-            case WheelService.CMD_BRIGHTNESS: return brightness;
-            case WheelService.CMD_CIRCUMFERENCE: return wheelCircumference;
-            default: throw new Exception("unrecognised command");
+            default:
+                throw new Exception("unrecognised command: " + command);
         }
     }
 
-    private void setValue(String command, int value) {
-        switch (command) {
-            case WheelService.CMD_MOVING_PROGRAM: movingProgram = value; return;
-            case WheelService.CMD_STATIONARY_PROGRAM: stationaryProgram = value; return;
-            case WheelService.CMD_BRIGHTNESS: brightness = value; return;
-            case WheelService.CMD_MOVING_ROTATION_RATE: movingRotationRate = value; return;
-            case WheelService.CMD_STATIONARY_ROTATION_RATE: stationaryRotationRate = value; return;
-            case WheelService.CMD_CIRCUMFERENCE: wheelCircumference = value; return;
+    private void writeCommand(byte command) throws Exception {
+        out.write(command);
+        try {
+            String value = Integer.toString(getValue(command));
+            Log.d(TAG, new WheelStringMessage(command, value, true).toString());
+            out.write(value.getBytes(StandardCharsets.US_ASCII));
+        } catch (Exception ex) {
+            out.write(ex.getMessage().getBytes(StandardCharsets.US_ASCII));
+        }
+        out.write('\n'); // Arduino uses println
+    }
+
+    private void writeEeprom(WheelEepromMessage message) throws Exception {
+        short address = message.getAddress();
+
+        byte[] value = new byte[message.getLength()];
+
+        for(int i=0; i<value.length; i++) {
+            value[i] = eeprom[address + i];
+        }
+
+        message = new WheelEepromMessage(message.getCommand(), message.getAddress(), value, true);
+        Log.d(TAG, message.toString());
+        message.write(out);
+    }
+
+    private void setEeprom(WheelEepromMessage message) {
+        byte[] bytes = message.getValueBytes();
+
+        short address = message.getAddress();
+
+        for(int i=0; i<bytes.length; i++) {
+            eeprom[address + i] = bytes[i];
         }
     }
 
     public OutputStream outputStream = new OutputStream() {
         private ByteBuffer buffer = ByteBuffer.allocate(1024);
+        private WheelMessageReader reader;
 
         @Override
-        public void write(int b) throws IOException {
-            if (b == 0) {
-                // transmit null to end the message
-                buffer.flip();
-                String text = CHARSET.decode(buffer).toString();
-                mockTransmit(text);
-                buffer.clear();
-            } else {
-                buffer.put((byte)b);
+        public void write(int ch) throws IOException {
+
+            try {
+                if (reader == null) {
+                    switch (ch) {
+                        case WheelService.CMD_SET_EEPROM:
+                        case WheelService.CMD_GET_EEPROM:
+                            reader = new MockWheelEepromMessageReader((byte)ch);
+                            break;
+                        case WheelService.CMD_SET_MOVING_PROGRAM:
+                        case WheelService.CMD_SET_STATIONARY_PROGRAM:
+                            reader = new WheelStringMessageReader((byte)ch, (char)0);
+                            break;
+                        default:
+                            mockTransmit(new WheelMessage((byte)ch, false));
+                            break;
+                    }
+                } else if (reader.consume((byte) ch)) {
+                    mockTransmit(reader.getMessage());
+                    reader = null;
+                }
+            } catch (Exception ex) {
+                Log.e(TAG, "reader (" + reader + ") error consuming " + ch, ex);
+                reader = null;
             }
         }
     };

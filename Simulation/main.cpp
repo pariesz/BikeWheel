@@ -16,14 +16,18 @@
 #include "Image_Grayscale.h"
 #include "Leds_Export.h"
 #include "Timer.h"
+#include "Programs/Rainbow.h"
+#include "Programs/Spiral.h"
+#include "Programs/PulseProgram.h"
+#include "Programs/TimerProgram.h"
+#include "Programs/MainProgram.h"
+#include "Programs/ExplodingText.h"
 
 //OutputData data_source("output.csv");
 MockData data_source;
 Mpu mpu;
 Image_Base *image = nullptr;
-//ExplodingText program(37, "- BCN - Critical Mass - Masa Critica");
-MainProgramSettings settings;
-MainProgram program = MainProgram(&settings);
+PulseProgram program;
 uint16_t frame_count;
 
 inline uint16_t get_frame_count() {
@@ -48,6 +52,12 @@ void setup() {
     int16_t mpu_offsets[] = { 0, 0, 0, 0, 0, 0 };
     mpu.setup(mpu_offsets);
     Leds::setup();
+
+    EEPROM.put(EEPROM_BRIGHTNESS, (uint8_t)20);
+    EEPROM.put(EEPROM_WHEEL_CIRCUMFERENCE, (uint16_t)2288);
+    EEPROM.put(EEPROM_STATIONARY_RATE, (uint16_t)60000);
+    EEPROM.put(EEPROM_MOVING_RATE, (uint16_t)80000);
+    Configuration::writeString(EEPROM_EXPLODING_TEXT, " - BCN - Critical Mass - Massa Critica");
 }
 
 void update_sensors() {

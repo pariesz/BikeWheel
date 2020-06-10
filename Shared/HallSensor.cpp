@@ -3,10 +3,10 @@
 #include "Logging.h"
 
 HallSensor::HallSensor()
-    : angle(HALL_OFFSET)
-    , rotation_rate(0)
+    : us_rotation(micros())
     , value(HIGH)
-    , us_rotation(micros()) {
+    , angle(HALL_OFFSET)
+    , rotation_rate(0) {
 }
 
 void HallSensor::setup() {

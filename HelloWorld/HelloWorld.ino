@@ -11,7 +11,7 @@
 #define ETX 0x03 // ASCII end of text
 #define NUL 0x00 // ASCII end of text
 
-//Adafruit_DotStar leds = Adafruit_DotStar(144, 11, 13, DOTSTAR_BGR);
+Adafruit_DotStar leds = Adafruit_DotStar(144, 11, 13, DOTSTAR_BGR);
 
 // Get offsets calibrated using ../MPU6050 Calibration/MPU6050Calibration.ino
 int16_t offsets[] = {
@@ -19,83 +19,67 @@ int16_t offsets[] = {
        39, -17,  164  // gyro x, y, z
 };
 
-//MPU6050 mpu;
+MPU6050 mpu;
 
-//HardwareSerial &hc06 = Serial1;
+HardwareSerial &hc06 = Serial1;
 //SoftwareSerial hc06(0, 1);
 
 void setup() {
     Serial.begin(9600); // USB is 12 Mbit/sec
-    //hc06.begin(9600);
-    //Wire.begin(); // join I2C bus (I2Cdev library doesn't do this automatically)
-    //led_setup();
-    //mpu_setup();
+    hc06.begin(9600);
+    Wire.begin(); // join I2C bus (I2Cdev library doesn't do this automatically)
+    led_setup();
+    mpu_setup();
     //hall_setup();
+
+    //Serial.println("connected");
 }
 
 void loop() {
-    //delay(1000);  // do not print too fast!
-    //Serial.print("test");
+    delay(1000);  // do not print too fast!
     //i2cscan_loop();
-    //led_loop();
-    //mpu_loop();
+    led_loop();
+    mpu_loop();
     //hc06_loop();
     //hall_loop();
     bluetooth_loop();
 }
 
-uint32_t color = 0;
-
 void bluetooth_loop() {
     while (Serial.available()) {
-        String str = Serial.readString();
-        if (str.startsWith("COL")) {
-            if (str.length() > 3) {
-                color = strtol(str.substring(4).c_str(), 0, 16);
-            }
-            Serial.println(str.substring(0, 10));
-        }
+        leds.setPixelColor(0, 0xFF0000);
+        Serial.write(Serial.read());
     }
 
-    //leds.show();
-}
-
-/*
-void hall_setup() {
-    pinMode(2, INPUT);
-    pinMode(3, INPUT);
-    pinMode(4, INPUT);
-    pinMode(5, INPUT);
-    pinMode(6, OUTPUT);
-    pinMode(7, OUTPUT);
-    pinMode(8, OUTPUT);
-    pinMode(9, OUTPUT);
-}
-
-void hall_loop() {
-    for (int j = 2; j <= 5; j++) {
-        digitalWrite(j+4, digitalRead(j));
-    }
-}
-
-void hc06_loop() {
-    // Write data from HC06 to Serial Monitor
     while (hc06.available()) {
+        leds.setPixelColor(0, 0x00FF00);
         Serial.write(hc06.read());
     }
 
-    // Write from Serial Monitor to HC06
-    while (Serial.available()) {
-        hc06.write(Serial.read());
-    }
+    leds.show();
+    leds.clear();
+}
+
+void led_setup() {
+    leds.setBrightness(20);
+    leds.begin();
+    leds.show();
+}
+
+int pixelIndex = 0;
+void led_loop() {
+    leds.clear();
+    leds.setPixelColor(pixelIndex++, 0xFF0000);
+    leds.show();
+    if (pixelIndex >= 144) pixelIndex = 0;
 }
 
 void mpu_setup() {
     TWBR = ((F_CPU / 400000L) - 16) / 2; // Switch to 400KHz I2C
     mpu.initialize();
 
-    Serial.print(F("testConnection: "));
-    Serial.println(mpu.testConnection() ? F("connection success") : F("connection failed"));
+    Serial.print(F("test mpu connection: "));
+    Serial.println(mpu.testConnection() ? F("success") : F("failed"));
 
     mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
     mpu.setFullScaleAccelRange(MPU6050_ACCEL_FS_8);
@@ -133,18 +117,34 @@ void mpu_loop() {
     Serial.println(")");
 }
 
-void led_setup() {
-    leds.setBrightness(20);
-    leds.begin();
-    leds.show();
+/*
+void hall_setup() {
+    pinMode(2, INPUT);
+    pinMode(3, INPUT);
+    pinMode(4, INPUT);
+    pinMode(5, INPUT);
+    pinMode(6, OUTPUT);
+    pinMode(7, OUTPUT);
+    pinMode(8, OUTPUT);
+    pinMode(9, OUTPUT);
 }
 
-int pixelIndex = 0;
-void led_loop() {
-    leds.clear();
-    leds.setPixelColor(pixelIndex++, 0xFF0000);
-    leds.show();
-    if (pixelIndex >= 144) pixelIndex = 0;
+void hall_loop() {
+    for (int j = 2; j <= 5; j++) {
+        digitalWrite(j+4, digitalRead(j));
+    }
+}
+
+void hc06_loop() {
+    // Write data from HC06 to Serial Monitor
+    while (hc06.available()) {
+        Serial.write(hc06.read());
+    }
+
+    // Write from Serial Monitor to HC06
+    while (Serial.available()) {
+        hc06.write(Serial.read());
+    }
 }
 
 void i2cscan_loop() {

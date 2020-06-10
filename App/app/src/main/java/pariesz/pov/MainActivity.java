@@ -8,13 +8,12 @@ import android.graphics.LightingColorFilter;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Handler;
 import android.util.Log;
@@ -32,10 +31,11 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String PREFERENCE_FILE_KEY = "pariesz_pov";
+    public static final String PREFERENCE_BT_ADDRESS = "BtAddress";
+
     private static final int REQUEST_ENABLE_BT = 1;
     private static final String TAG = "MainActivity";
-    private static final String PREFERENCE_FILE_KEY = "pariesz_pov";
-    private static final String PREFERENCE_BT_ADDRESS = "BtAddress";
     private static final long BATTERY_INTERVAL = 60 * 1000;
     private static final DecimalFormat BATTERY_FORMAT = new DecimalFormat("0.0");
 
@@ -90,36 +90,21 @@ public class MainActivity extends AppCompatActivity {
 
         super.onStart();
 
-        // TODO: temp, remove
-        if(true) {
-            try {
-                setService("Mock", new MockSocket());
-            } catch (IOException ex) {
-            }
-            return;
-        }
-
         if (bluetoothAdapter == null) {
             if(Utilities.isProbablyAnEmulator()) {
                 // The emulator does not support Bluetooth
-                Log.d(TAG, "Mocking bluetooth");
-
-                try {
-                    setService("Mock", new MockSocket());
-                } catch (IOException ex) {
-                    Log.e(TAG,"MockSocket error", ex);
-                }
+                service.connect(new MockSocket(), "Mock");
 
             } else {
                 Log.d(TAG, Build.PRODUCT + " does not support bluetooth");
-                setBluetoothDisconnected("Not supported");
+                setBluetoothStatus("Not supported", R.drawable.ic_bluetooth_disabled, R.attr.colorError);
             }
 
             return;
         }
 
         if (!bluetoothAdapter.isEnabled()) {
-            setBluetoothSearching("Enabling");
+            setBluetoothStatus("Enabling", R.drawable.ic_bluetooth_searching, R.attr.colorControlNormal);
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             return;
@@ -145,52 +130,71 @@ public class MainActivity extends AppCompatActivity {
         String address = preferences.getString(PREFERENCE_BT_ADDRESS, null);
 
         if (address == null) {
-            setBluetoothDisconnected("Not configured");
+            setBluetoothStatus("Not configured", R.drawable.ic_bluetooth_disabled, R.attr.colorError);
+            openBluetoothFragment();
             return;
         }
 
-        // TODO: connect
-        // Always cancel discovery because it will slow down connection
-        // bluetoothAdapter.cancelDiscovery();
-    }
-
-    private void setService(String deviceName, ISocket socket) {
-        service.connect(socket);
-        setBluetoothConnected(deviceName);
-    }
-
-    private BluetoothFragment.OnDeviceClickListener bluetoothDeviceClickListener = new BluetoothFragment.OnDeviceClickListener() {
-
-        @Override
-        public void onDeviceClick(BluetoothFragment dialog, BluetoothDevice device) {
-            preferences.edit().putString(PREFERENCE_BT_ADDRESS, device.getAddress()).commit();
-            // TODO: connect
+        for(BluetoothDevice device: bluetoothAdapter.getBondedDevices()) {
+            if(device.getAddress().equals(address)) {
+                service.connect(device);
+                return;
+            }
         }
-    };
+
+        setBluetoothStatus("Not paired", R.drawable.ic_bluetooth_disabled, R.attr.colorError);
+        openBluetoothFragment();
+    }
 
     private View.OnClickListener imageViewClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            openProgramsFragment();
+            getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.frame_main, new ProgramsPagerFragment())
+                .addToBackStack(TAG)
+                .commit();
         }
     };
 
     private View.OnClickListener bluetoothClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            // TODO: bluetooth click
+            getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.frame_main, new BluetoothFragment())
+                .addToBackStack(TAG)
+                .commit();
         }
     };
 
-    private void setBluetoothSearching(String text) {
-        setBluetoothStatus(text, R.drawable.ic_bluetooth_searching, R.attr.colorControlNormal);
+    @Override
+    public void onAttachFragment(@NonNull Fragment fragment) {
+        if (fragment instanceof BluetoothFragment) {
+            BluetoothFragment bluetoothFragment = (BluetoothFragment) fragment;
+            bluetoothFragment.setOnDeviceSelectedListener(bluetoothDeviceSelectedListener);
+            bluetoothFragment.setOnMockClickListener(mockClickListener);
+        }
+
+        super.onAttachFragment(fragment);
     }
-    private void setBluetoothConnected(String text) {
-        setBluetoothStatus(text, R.drawable.ic_bluetooth_connected, R.attr.colorControlNormal);
-    }
-    private void setBluetoothDisconnected(String text) {
-        setBluetoothStatus(text, R.drawable.ic_bluetooth_disabled, R.attr.colorError);
-    }
+
+    private BluetoothFragment.OnDeviceSelectedListener bluetoothDeviceSelectedListener = new BluetoothFragment.OnDeviceSelectedListener() {
+
+        @Override
+        public void onDeviceSelected(BluetoothDevice device) {
+            preferences.edit().putString(PREFERENCE_BT_ADDRESS, device.getAddress()).commit();
+            service.connect(device);
+        }
+    };
+
+    private BluetoothFragment.OnMockClickListener mockClickListener = new BluetoothFragment.OnMockClickListener() {
+
+        @Override
+        public void onMockClick() {
+            service.connect(new MockSocket(), "Mock");
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -209,47 +213,16 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment = GetFragmentForMenuItemId(id);
 
         if (fragment == null) {
-            Log.e(TAG, "menu item did not match fragment.");
             return false;
         }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-
-        fragmentManager
+        getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.frame_main, fragment)
                 .addToBackStack(TAG)
                 .commit();
 
         return true;
-    }
-
-    private void openProgramsFragment() {
-        if(service == null) {
-            Toast.makeText(this, "Bluetooth not connected!", Toast.LENGTH_SHORT);
-            return;
-        }
-
-        getSupportFragmentManager()
-            .beginTransaction()
-            .replace(R.id.frame_main, new ProgramsPagerFragment())
-            .commit();
-    }
-
-    private Fragment GetFragmentForMenuItemId(int menuItemId) {
-        if(service == null) {
-            Toast.makeText(this, "Bluetooth not connected!", Toast.LENGTH_SHORT);
-            return null;
-        }
-
-        switch (menuItemId) {
-            case R.id.action_settings:
-                return new SettingsFragment();
-            case R.id.action_console:
-                return new ConsoleFragment();
-            default:
-                return null;
-        }
     }
 
     // User returns to the activity
@@ -266,6 +239,13 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    @Override
+    protected void onDestroy() {
+        service.removeOnMessageReceivedListener(onMessageReceivedListener);
+        service.removeOnStatusChangeListener(onStatusChangeListener);
+        super.onDestroy();
+    }
+
     private Runnable batteryService = new Runnable() {
         @Override
         public void run() {
@@ -278,17 +258,19 @@ public class MainActivity extends AppCompatActivity {
 
     private WheelService.OnStatusChangeListener onStatusChangeListener = new WheelService.OnStatusChangeListener() {
         @Override
-        public void onStatusChange(int status) {
+        public void onStatusChange(int status, String message) {
+            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+
             switch (status) {
                 case WheelService.STATUS_CONNECTED:
+                    setBluetoothStatus(service.getDeviceName(), R.drawable.ic_bluetooth_connected, R.attr.colorControlNormal);
                     requestBattery();
                     openProgramsFragment();
                     break;
 
                 case WheelService.STATUS_DISCONNECTED:
                     setBluetoothStatus("Disconnected", R.drawable.ic_bluetooth_disabled, R.attr.colorError);
-                    // TODO: retry connection?
-                    // TODO: open bluetooth fragment
+                    openBluetoothFragment();
                     break;
 
                 case WheelService.STATUS_CONNECTING:
@@ -298,21 +280,13 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void requestBattery() {
-        try {
-            service.writeMessage(WheelService.CMD_BATTERY);
-        } catch (IOException ex) {
-            Log.e(TAG, "Request battery error.", ex);
-        }
-    }
-
     private WheelService.OnMessageReceivedListener onMessageReceivedListener = new WheelService.OnMessageReceivedListener() {
 
         @Override
         public void onMessageReceived(WheelMessage message) {
-            if(message.getCommand().equals(WheelService.CMD_BATTERY)) {
+            if(message.getCommand() == WheelService.CMD_BATTERY) {
                 try {
-                    float volts = Utilities.analogReadToVolts(message.getInt());
+                    float volts = Utilities.analogReadToVolts(message.getValueInt());
                     int progress = Utilities.voltsToProgress(volts);
                     batteryProgressBar.setProgress(progress);
                     batteryProgressBar.getProgressDrawable().setColorFilter(new LightingColorFilter(0xFF000000, getAttributeColor(progress > 20 ? R.attr.colorAccent : R.attr.colorError)));
@@ -326,11 +300,39 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    @Override
-    protected void onDestroy() {
-        service.removeOnMessageReceivedListener(onMessageReceivedListener);
-        service.removeOnStatusChangeListener(onStatusChangeListener);
-        super.onDestroy();
+    private void openProgramsFragment() {
+        getSupportFragmentManager()
+            .beginTransaction()
+            .replace(R.id.frame_main, new ProgramsPagerFragment())
+            .commit();
+    }
+
+    private void openBluetoothFragment() {
+        getSupportFragmentManager()
+            .beginTransaction()
+            .replace(R.id.frame_main, new BluetoothFragment())
+            .commit();
+    }
+
+    private Fragment GetFragmentForMenuItemId(int menuItemId) {
+        if(service == null) {
+            Toast.makeText(this, "Bluetooth not connected!", Toast.LENGTH_SHORT);
+            return null;
+        }
+
+        switch (menuItemId) {
+            case R.id.action_settings:
+                return new SettingsFragment();
+            case R.id.action_console:
+                return new ConsoleFragment();
+            default:
+                Log.e(TAG, "menuItemId " + menuItemId + " not supported.");
+                return null;
+        }
+    }
+
+    private void requestBattery() {
+        service.command(WheelService.CMD_BATTERY);
     }
 
     private void setBluetoothStatus(String text, int iconResourceId, int colorAttributeId) {

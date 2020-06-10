@@ -9,57 +9,28 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
 
 public class ProgramsFragment extends Fragment {
     private static final String TAG = "ProgramsFragment";
-    private static final String ARG_CMD = "cmd";
+    private static final String ARG_GET_CMD = "GetCmd";
+    private static final String ARG_SET_CMD = "SetCmd";
 
     private ProgramsRecyclerViewAdaptor recyclerViewAdaptor;
     private RecyclerView recyclerView;
     private WheelService service;
-    private String cmd;
+    private byte getCmd;
+    private byte setCmd;
 
-    private ArrayList<Program> getMovingPrograms() {
-        ArrayList<Program> programs = new ArrayList<>();
-        programs.add(new Program(13, R.drawable.ic_timer));
-        programs.add(new Program(0, R.drawable.program_nyancat));
-        programs.add(new Program(1, R.drawable.program_poo));
-        programs.add(new Program(2, R.drawable.program_fist));
-        programs.add(new Program(3, R.drawable.program_hamster));
-        programs.add(new Program(4, R.drawable.program_rocket));
-        programs.add(new Program(5, R.drawable.program_portal));
-        programs.add(new Program(6, R.drawable.program_lightning));
-        programs.add(new Program(7, R.drawable.program_text));
-        programs.add(new Program(8, R.drawable.program_velocity));
-        programs.add(new Program(9, R.drawable.program_masacritica));
-        programs.add(new Program(10, R.drawable.program_radioactive));
-        programs.add(new Program(11, R.drawable.program_shooting_stars));
-        programs.add(new Program(12, R.drawable.program_swirl));
-        return programs;
-    }
-
-    private ArrayList<Program> getStationaryPrograms() {
-        ArrayList<Program> programs = new ArrayList<>();
-        programs.add(new Program(0, R.drawable.ic_timer));
-        programs.add(new Program(1, R.drawable.program_pulse));
-        programs.add(new Program(2, R.drawable.program_rainbow));
-        programs.add(new Program(3, R.drawable.program_points));
-        return programs;
-    }
-
-    public static ProgramsFragment newInstance(String cmd) {
+    public static ProgramsFragment newInstance(byte getCmd, byte setCmd) {
         ProgramsFragment fragment = new ProgramsFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(ARG_CMD, cmd);
+        bundle.putByte(ARG_GET_CMD, getCmd);
+        bundle.putByte(ARG_SET_CMD, setCmd);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -68,7 +39,8 @@ public class ProgramsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         this.service = ((MainActivity)getActivity()).getService();
-        this.cmd = getArguments().getString(ARG_CMD);
+        this.getCmd = getArguments().getByte(ARG_GET_CMD);
+        this.setCmd = getArguments().getByte(ARG_SET_CMD);
         return inflater.inflate(R.layout.fragment_programs, container, false);
     }
 
@@ -77,7 +49,7 @@ public class ProgramsFragment extends Fragment {
         super.onStart();
 
         try {
-            service.writeMessage(cmd);
+            service.command(getCmd);
         } catch (Exception ex) {
             LogError("Error requesting program.", ex);
         }
@@ -85,9 +57,9 @@ public class ProgramsFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        ArrayList<Program> programs = cmd.equals(WheelService.CMD_MOVING_PROGRAM) ? getMovingPrograms() : getStationaryPrograms();
-        recyclerViewAdaptor = new ProgramsRecyclerViewAdaptor(programs, onItemClickListener, cmd);
+        boolean moving = getCmd == WheelService.CMD_GET_MOVING_PROGRAM;
+        ArrayList<Program> programs =  moving ? Program.PROGRAMS_MOVING : Program.PROGRAMS_STATIONARY;
+        recyclerViewAdaptor = new ProgramsRecyclerViewAdaptor(getActivity(), programs, onItemClickListener, moving);
         recyclerView = view.findViewById(R.id.recyclerView_programs);
         recyclerView.setAdapter(recyclerViewAdaptor);
 
@@ -102,7 +74,7 @@ public class ProgramsFragment extends Fragment {
         @Override
         public void onItemClick(Program program) {
             try {
-                service.writeMessage(cmd, program.id);
+                service.command(setCmd, program.getId());
             } catch (Exception ex) {
                 LogError("Error setting program.", ex);
             }
@@ -112,11 +84,11 @@ public class ProgramsFragment extends Fragment {
     private WheelService.OnMessageReceivedListener onMessageReceivedListener = new WheelService.OnMessageReceivedListener() {
         @Override
         public void onMessageReceived(WheelMessage message) {
-            if (message.getCommand().equals(cmd)) {
+            if (message.getCommand() == getCmd || message.getCommand() == setCmd) {
                 try {
-                    recyclerViewAdaptor.setActiveItem(message.getInt());
+                    recyclerViewAdaptor.setActiveItem(message.getValueInt());
                 } catch (Exception ex) {
-                    LogError("Error parsing message: " + message.getMessage(), ex);
+                    LogError("Error parsing message: " + message, ex);
                 }
 
             }

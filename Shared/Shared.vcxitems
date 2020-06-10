@@ -20,6 +20,7 @@
   <ItemGroup>
     <!-- <ClInclude Include="$(MSBuildThisFileDirectory)Shared.h" /> -->
     <ClInclude Include="$(MSBuildThisFileDirectory)Colors.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EEPROMSerialMessage.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Font.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HallSensor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Image.h" />
@@ -29,7 +30,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Images\HamsterGore2.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Mocks\Adafruit_DotStar_Mock.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Mocks\Arduino_Mock.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Mocks\avr_functions_mock.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Configuration.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Mocks\EEPROM_Mock.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Mocks\MPU6050_Mock.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Hamster.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Kaleidoscope.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Images\MrSplat.h" />
@@ -49,14 +54,18 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Logging.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Program.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\NyanCat.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Off.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\PulseProgram.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Radioactive.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\ExplodingText.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Rainbow.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Rays.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Portal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\ShootingStars.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Specs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Spiral.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\TestSegments.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Programs\TimerProgram.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Transition.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Programs\Velocity.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Mpu.h" />
@@ -64,13 +73,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Colors.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Configuration.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)EEPROMSerialMessage.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)HallSensor.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Image.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Leds.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Mocks\Adafruit_DotStar_Mock.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Mocks\Arduino_Mock.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Mocks\avr_functions_Mock.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Mocks\MPU6050_Mock.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Mpu.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Mocks\Serial_Mock.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Programs.cpp" />
   </ItemGroup>
 </Project>

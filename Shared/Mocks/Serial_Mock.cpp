@@ -4,6 +4,10 @@
 
 using namespace std;
 
+size_t Print::write(uint8_t c) {
+    cout << c;
+    return 1;
+}
 void Print::print(const char val[]) {
     cout << val;
 }
@@ -52,8 +56,17 @@ void Print::println(unsigned long val, int format) {
 void Print::println(double val, int precision) {
     cout << setprecision(precision) << val << endl;
 }
-void Print::println(void) {
+void Print::println() {
     cout << endl;
 }
 
+
+int Stream::available() {
+    return 0;
+}
+String Stream::readString(std::size_t max) {
+    return String();
+}
+
 Print Serial;
+Stream Serial1;

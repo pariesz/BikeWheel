@@ -3,10 +3,10 @@
 
 class Mpu {
 private:
-    MPU6050 mpu;
-    uint8_t mpu_radius;
     uint16_t angle;
     int32_t rotation_rate;
+    MPU6050 mpu;
+    uint8_t mpu_radius;
 
 public:
     Mpu();

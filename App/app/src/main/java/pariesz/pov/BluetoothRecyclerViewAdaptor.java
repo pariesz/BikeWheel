@@ -2,15 +2,12 @@ package pariesz.pov;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,21 +15,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class BluetoothRecyclerViewAdaptor extends RecyclerView.Adapter<BluetoothRecyclerViewAdaptor.ViewHolder> {
-    private int connectedItem = -1;
     private static final String TAG = "BluetoothRecyclerViewAdaptor";
     private ArrayList<BluetoothDevice> devices = new ArrayList<>();
     private final OnItemClickListener listener;
+    private String savedAddress;
 
     public interface OnItemClickListener {
         void onItemClick(ViewHolder view);
     }
 
-    public BluetoothRecyclerViewAdaptor(OnItemClickListener listener) {
+    public BluetoothRecyclerViewAdaptor(OnItemClickListener listener, String savedAddress) {
         this.listener = listener;
+        this.savedAddress = savedAddress;
     }
 
     public void addDevice(BluetoothDevice device) {
+        Log.d(TAG, "addDevice index:" + devices.size() + ", address:" + device.getAddress());
         devices.add(device);
+        notifyItemInserted(devices.size() - 1);
     }
 
     @NonNull
@@ -46,7 +46,7 @@ public class BluetoothRecyclerViewAdaptor extends RecyclerView.Adapter<Bluetooth
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: called.");
         BluetoothDevice device = devices.get(position);
-        holder.setDevice(device);
+        holder.setDevice(device, device.getAddress().equals(savedAddress));
     }
     @Override
     public int getItemCount() {
@@ -57,10 +57,10 @@ public class BluetoothRecyclerViewAdaptor extends RecyclerView.Adapter<Bluetooth
         private View itemView;
         private BluetoothDevice device;
         private RelativeLayout layout;
-        private TextView name;
-        private TextView address;
-        private TextView paired;
-        private ImageView status;
+        private TextView nameText;
+        private TextView addressText;
+        private TextView pairedText;
+        private TextView savedText;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,13 +69,10 @@ public class BluetoothRecyclerViewAdaptor extends RecyclerView.Adapter<Bluetooth
             layout = itemView.findViewById(R.id.layout_bluetoothDevice);
             layout.setOnClickListener(layoutClickListener);
 
-            name = itemView.findViewById(R.id.textView_bluetoothDeviceName);
-            address = itemView.findViewById(R.id.textView_bluetoothDeviceAddress);
-            paired = itemView.findViewById(R.id.textView_bluetoothDevicePaired);
-            status = itemView.findViewById(R.id.imageView_bluetoothDeviceStatus);
-
-            // TODO: bluetooth status
-            status.setImageResource(R.drawable.ic_bluetooth);
+            nameText = itemView.findViewById(R.id.textView_bluetoothDeviceName);
+            addressText = itemView.findViewById(R.id.textView_bluetoothDeviceAddress);
+            pairedText = itemView.findViewById(R.id.textView_bluetoothDevicePaired);
+            savedText = itemView.findViewById(R.id.textView_bluetoothDeviceSaved);
         }
 
         public BluetoothDevice getDevice() {
@@ -86,27 +83,29 @@ public class BluetoothRecyclerViewAdaptor extends RecyclerView.Adapter<Bluetooth
             return this.itemView.getContext();
         }
 
-        public void setDevice(BluetoothDevice device) {
+        public void setDevice(BluetoothDevice device, boolean saved) {
             this.device = device;
 
-            name.setText(device.getName());
+            nameText.setText(device.getName());
 
-            address.setText(device.getAddress());
+            addressText.setText(device.getAddress());
+
+            savedText.setVisibility(saved ? View.VISIBLE : View.INVISIBLE);
 
             switch(device.getBondState()) {
                 case BluetoothDevice.BOND_NONE:
-                    paired.setText("NONE");
-                    paired.setVisibility(View.INVISIBLE);
+                    pairedText.setText("NONE");
+                    pairedText.setVisibility(View.INVISIBLE);
                     break;
 
                 case BluetoothDevice.BOND_BONDING:
-                    paired.setText("PAIRING");
-                    paired.setVisibility(View.VISIBLE);
+                    pairedText.setText("PAIRING");
+                    pairedText.setVisibility(View.VISIBLE);
                     break;
 
                 case BluetoothDevice.BOND_BONDED:
-                    paired.setText("PAIRED");
-                    paired.setVisibility(View.VISIBLE);
+                    pairedText.setText("PAIRED");
+                    pairedText.setVisibility(View.VISIBLE);
                     break;
             }
         }

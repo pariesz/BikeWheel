@@ -1,5 +1,6 @@
 #pragma once
 #include "../Program.h"
+#include "../Configuration.h"
 
 #define VELOCITY_NUMBER_LEN 2 // ##
 #define VELOCITY_DECIMAL_LEN 6 // .# KMH
@@ -8,14 +9,32 @@ class Velocity : public Program {
 private:
     char number[6]; // ##.# + one extra for NUL
     char decimal[7] = ".0 KMH";
-    uint32_t color;
+    uint32_t color = 0;
+    float factor;
 
 public:
-    void update(uint16_t frame_count, int32_t rotation_rate) override {
+    Velocity() {
+        configure();
+    }
+
+    void configure() {
+        uint16_t wheelCircumference;
+
+        EEPROM.get(EEPROM_WHEEL_CIRCUMFERENCE, wheelCircumference);
+
+        // use a default to ensure we dont divide by 0
+        if (wheelCircumference == 0) {
+            wheelCircumference = 2288;
+        }
+
         // c (wheel circumference) for 29in rim + 2.1in tire = 2288mm
         // v = rotation_rate * c
         // v(kmh) = (rotation_rate / 0xFFFF) * 2288mm * 60sec * 60min / (1000mm * 1000m)
-        float v = abs(rotation_rate) / 7956.48795648795f;
+        factor = ((float)0xFFFF * 1000 * 1000) / ((uint32_t)wheelCircumference * 60 * 60);
+    }
+
+    void update(uint16_t frame_count, int32_t rotation_rate) override {
+        float v = abs(rotation_rate) / factor;
 
         // ##.# (4 char width, 1 decimal precision)
         dtostrf(v, 4, 1, number);

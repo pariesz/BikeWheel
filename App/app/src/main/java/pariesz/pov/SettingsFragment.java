@@ -6,9 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -25,7 +22,6 @@ import java.text.DecimalFormat;
 public class SettingsFragment extends Fragment {
     private static final String TAG = "SettingsFragment";
     private static final DecimalFormat velocityFormat = new DecimalFormat("0.0");
-    private static final DecimalFormat batteryFormat = new DecimalFormat("0.0");
     private static final int REQUEST_INTERVAL = 100;
 
     private Handler requestHandler = new Handler();
@@ -67,32 +63,19 @@ public class SettingsFragment extends Fragment {
         angleImageView = view.findViewById(R.id.imageView_settings_angle);
         service.addOnMessageReceivedListener(onMessageReceivedListener);
 
-        try {
-            // Circumference MUST be first as it is required for velocity readings
-            service.writeMessage(WheelService.CMD_CIRCUMFERENCE);
-            service.writeMessage(WheelService.CMD_BRIGHTNESS);
-            service.writeMessage(WheelService.CMD_MOVING_ROTATION_RATE);
-            service.writeMessage(WheelService.CMD_STATIONARY_ROTATION_RATE);
-        } catch (IOException ex) {
-            LogError("request error", ex);
-        }
+        // Circumference MUST be first as it is required for velocity readings
+        service.getEeprom(WheelService.EEPROM_WHEEL_CIRCUMFERENCE, 2);
+        service.getEeprom(WheelService.EEPROM_BRIGHTNESS, 1);
+        service.getEeprom(WheelService.EEPROM_MOVING_RATE, 4);
+        service.getEeprom(WheelService.EEPROM_STATIONARY_RATE, 4);
     }
 
     private RangeSeekBar.OnRangeSeekBarChangeListener<Float> stationaryMovingVelocityChangeListener = new  RangeSeekBar.OnRangeSeekBarChangeListener<Float>() {
 
         @Override
         public void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, Float minValue, Float maxValue) {
-            try {
-                service.writeMessage(WheelService.CMD_STATIONARY_ROTATION_RATE, kmhToInt16s(minValue));
-            } catch (IOException ex) {
-                LogError("set stationary velocity:" + minValue + " error", ex);
-            }
-
-            try {
-                service.writeMessage(WheelService.CMD_MOVING_ROTATION_RATE, kmhToInt16s(maxValue));
-            } catch (IOException ex) {
-                LogError("set moving velocity:" + maxValue + " error", ex);
-            }
+            service.setEeprom(WheelService.EEPROM_STATIONARY_RATE, kmhToInt16s(minValue));
+            service.setEeprom(WheelService.EEPROM_MOVING_RATE, kmhToInt16s(maxValue));
         }
     };
 
@@ -104,36 +87,24 @@ public class SettingsFragment extends Fragment {
             wheelCircumferenceText.setText(progress + "mm");
         }
 
-        public void onStartTrackingTouch(SeekBar seekBar) {
-            // TODO Auto-generated method stub
-        }
+        public void onStartTrackingTouch(SeekBar seekBar) { }
 
         public void onStopTrackingTouch(SeekBar seekBar) {
-            try {
-                service.writeMessage(WheelService.CMD_CIRCUMFERENCE, progress);
-            } catch (IOException ex) {
-                LogError("setWheelCircumference:" + progress + " error", ex);
-            }
+            service.setEeprom(WheelService.EEPROM_WHEEL_CIRCUMFERENCE, (short)progress);
         }
     };
 
     private SeekBar.OnSeekBarChangeListener  brightnessChangeListener = new SeekBar.OnSeekBarChangeListener() {
-        int progress = 0;
+        byte progress = 0;
 
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            this.progress = progress;
+            this.progress = (byte)progress;
         }
 
-        public void onStartTrackingTouch(SeekBar seekBar) {
-            // TODO Auto-generated method stub
-        }
+        public void onStartTrackingTouch(SeekBar seekBar) { }
 
         public void onStopTrackingTouch(SeekBar seekBar) {
-            try {
-                service.writeMessage(WheelService.CMD_BRIGHTNESS, progress);
-            } catch (IOException ex) {
-                LogError("setBrightness:" + progress + " error", ex);
-            }
+            service.setEeprom(WheelService.EEPROM_BRIGHTNESS, progress);
         }
     };
 
@@ -144,52 +115,57 @@ public class SettingsFragment extends Fragment {
             try {
                 switch (message.getCommand()) {
                     case WheelService.CMD_ANGLE:
-                        int degrees = Utilities.int16ToDegrees(message.getInt());
+                        int degrees = Utilities.int16ToDegrees(message.getValueInt());
                         angleText.setText(degrees + "°");
                         angleImageView.setRotation(degrees);
                         angleImageView.setRotation(degrees);
                         handler.postDelayed(angleService, REQUEST_INTERVAL);
                         break;
 
-                    case WheelService.CMD_BRIGHTNESS:
-                        brightnessSeekBar.setProgress(message.getInt());
-                        break;
+                    case WheelService.CMD_GET_EEPROM:
+                    case WheelService.CMD_SET_EEPROM:
+                        switch (((WheelEepromMessage) message).getAddress()) {
+                            case WheelService.EEPROM_BRIGHTNESS:
+                                brightnessSeekBar.setProgress(message.getValueInt());
+                                break;
 
-                    case WheelService.CMD_CIRCUMFERENCE:
-                        wheelCircumference = message.getInt();
-                        wheelCircumferenceSeekBar.setProgress(wheelCircumference);
+                            case WheelService.EEPROM_WHEEL_CIRCUMFERENCE:
+                                wheelCircumference = (short)message.getValueInt();
+                                wheelCircumferenceSeekBar.setProgress(wheelCircumference);
 
-                        if(movingRotationRate != 0) {
-                            stationaryMovingVelocity.setSelectedMaxValue(int16sToKmh(movingRotationRate));
-                        }
+                                if(movingRotationRate != 0) {
+                                    stationaryMovingVelocity.setSelectedMaxValue(int16sToKmh(movingRotationRate));
+                                }
 
-                        if(stationaryRotationRate != 0) {
-                            stationaryMovingVelocity.setSelectedMinValue(int16sToKmh(stationaryRotationRate));
-                        }
+                                if(stationaryRotationRate != 0) {
+                                    stationaryMovingVelocity.setSelectedMinValue(int16sToKmh(stationaryRotationRate));
+                                }
 
-                        if(rotationRate != 0) {
-                            velocityText.setText(velocityFormat.format(int16sToKmh(rotationRate)));
-                        }
-                        break;
+                                if(rotationRate != 0) {
+                                    velocityText.setText(velocityFormat.format(int16sToKmh(rotationRate)));
+                                }
+                                break;
 
-                    case WheelService.CMD_STATIONARY_ROTATION_RATE:
-                        stationaryRotationRate = message.getInt();
+                            case WheelService.EEPROM_STATIONARY_RATE:
+                                stationaryRotationRate = message.getValueInt();
 
-                        if(wheelCircumference != 0) {
-                            stationaryMovingVelocity.setSelectedMinValue(int16sToKmh(stationaryRotationRate));
-                        }
-                        break;
+                                if(wheelCircumference != 0) {
+                                    stationaryMovingVelocity.setSelectedMinValue(int16sToKmh(stationaryRotationRate));
+                                }
+                                break;
 
-                    case WheelService.CMD_MOVING_ROTATION_RATE:
-                        movingRotationRate = message.getInt();
+                            case WheelService.EEPROM_MOVING_RATE:
+                                movingRotationRate = message.getValueInt();
 
-                        if(wheelCircumference != 0) {
-                            stationaryMovingVelocity.setSelectedMaxValue(int16sToKmh(movingRotationRate));
+                                if(wheelCircumference != 0) {
+                                    stationaryMovingVelocity.setSelectedMaxValue(int16sToKmh(movingRotationRate));
+                                }
+                                break;
                         }
                         break;
 
                     case WheelService.CMD_ROTATION_RATE:
-                        rotationRate = message.getInt();
+                        rotationRate = message.getValueInt();
 
                         if(wheelCircumference != 0) {
                             velocityText.setText(velocityFormat.format(int16sToKmh(rotationRate)));
@@ -199,7 +175,7 @@ public class SettingsFragment extends Fragment {
                         break;
                 }
             } catch (Exception ex) {
-                LogError("Invalid integer value: " + message.getMessage(), ex);
+                LogError("Invalid message: " + message, ex);
             }
         }
     };
@@ -208,11 +184,7 @@ public class SettingsFragment extends Fragment {
         @Override
         public void run() {
             if(service.getStatus() == WheelService.STATUS_CONNECTED) {
-                try {
-                    service.writeMessage(WheelService.CMD_ANGLE);
-                } catch (IOException ex) {
-                    Log.e(TAG, WheelService.CMD_ANGLE + " command failure", ex);
-                }
+                service.command(WheelService.CMD_ANGLE);
             }
         }
     };
@@ -221,11 +193,7 @@ public class SettingsFragment extends Fragment {
         @Override
         public void run() {
             if(service.getStatus() == WheelService.STATUS_CONNECTED) {
-                try {
-                    service.writeMessage(WheelService.CMD_ROTATION_RATE);
-                } catch (IOException ex) {
-                    Log.e(TAG, WheelService.CMD_ROTATION_RATE + " command failure", ex);
-                }
+                service.command(WheelService.CMD_ROTATION_RATE);
             }
         }
     };
@@ -255,7 +223,6 @@ public class SettingsFragment extends Fragment {
     }
 
     private void LogError(String message, Exception ex) {
-        Log.e(TAG, message, ex);
         Toast.makeText(getContext(), message + " " + ex.getMessage(), Toast.LENGTH_SHORT);
     }
 

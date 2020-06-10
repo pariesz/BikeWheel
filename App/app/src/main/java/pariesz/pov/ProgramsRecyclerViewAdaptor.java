@@ -2,20 +2,14 @@ package pariesz.pov;
 
 import android.graphics.Color;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
+import android.view.*;
+import android.view.animation.*;
+import android.widget.*;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
 
 public class ProgramsRecyclerViewAdaptor extends RecyclerView.Adapter<ProgramsRecyclerViewAdaptor.ViewHolder> {
@@ -24,19 +18,21 @@ public class ProgramsRecyclerViewAdaptor extends RecyclerView.Adapter<ProgramsRe
 
     private static final String TAG = "ProgramsRecyclerViewAda";
 
+    private FragmentActivity activity;
     private ArrayList<Program> programs;
 
     private final OnItemClickListener listener;
-    private String cmd;
+    private boolean rotateAnimate;
 
     public interface OnItemClickListener {
         void onItemClick(Program program);
     }
 
-    public ProgramsRecyclerViewAdaptor(ArrayList<Program> programs, OnItemClickListener listener, String cmd) {
+    public ProgramsRecyclerViewAdaptor(FragmentActivity activity, ArrayList<Program> programs, OnItemClickListener listener, boolean rotateAnimate) {
+        this.activity = activity;
         this.programs = programs;
         this.listener = listener;
-        this.cmd = cmd;
+        this.rotateAnimate = rotateAnimate;
     }
 
     @NonNull
@@ -50,7 +46,8 @@ public class ProgramsRecyclerViewAdaptor extends RecyclerView.Adapter<ProgramsRe
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Program program = programs.get(position);
 
-        holder.setImageResource(program.resourceId);
+        holder.setImageResource(program.getResourceId());
+        holder.setDialogType(program.getDialogType());
 
         if(position == activeItem) {
             holder.setState(ViewHolder.STATE_ACTIVE);
@@ -60,6 +57,7 @@ public class ProgramsRecyclerViewAdaptor extends RecyclerView.Adapter<ProgramsRe
             holder.setState(ViewHolder.STATE_NONE);
         }
     }
+
     @Override
     public int getItemCount() {
         return programs.size();
@@ -69,7 +67,7 @@ public class ProgramsRecyclerViewAdaptor extends RecyclerView.Adapter<ProgramsRe
         for(int i = 0; i < programs.size(); i++) {
             Program program = programs.get(i);
 
-            if(program.id == id) {
+            if(program.getId() == id) {
                 if(activeItem != i && activeItem != -1) {
                     notifyItemChanged(activeItem);
                 }
@@ -99,10 +97,13 @@ public class ProgramsRecyclerViewAdaptor extends RecyclerView.Adapter<ProgramsRe
         private RelativeLayout layout;
         private FrameLayout iconLayout;
 
+        private Class dialogType;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             layout = itemView.findViewById(R.id.layout_program);
             layout.setOnClickListener(layoutClickListener);
+            layout.setOnLongClickListener(layoutLongClickListener);
             image = itemView.findViewById(R.id.imageView_program);
             circle = itemView.findViewById(R.id.imageView_programCircle);
             gradients = itemView.findViewById(R.id.imageView_programGradients);
@@ -133,7 +134,7 @@ public class ProgramsRecyclerViewAdaptor extends RecyclerView.Adapter<ProgramsRe
         }
 
         private void startAnimation() {
-            if(cmd.equals(WheelService.CMD_MOVING_PROGRAM)) {
+            if(rotateAnimate) {
                 RotateAnimation rotate = new RotateAnimation(0, 359, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                 rotate.setDuration(3000);
                 rotate.setInterpolator(new LinearInterpolator());
@@ -147,13 +148,9 @@ public class ProgramsRecyclerViewAdaptor extends RecyclerView.Adapter<ProgramsRe
         }
 
         private void stopAnimation() {
-            if(cmd.equals(WheelService.CMD_MOVING_PROGRAM)) {
+            if(rotateAnimate) {
                 Animation animation = gradients.getAnimation();
-
-                if (animation != null) {
-                    animation.cancel();
-                }
-
+                if (animation != null) animation.cancel();
                 gradients.setVisibility(View.GONE);
             }
 
@@ -171,5 +168,29 @@ public class ProgramsRecyclerViewAdaptor extends RecyclerView.Adapter<ProgramsRe
                 listener.onItemClick(programs.get(clickedItem));
             }
         };
+
+
+        private View.OnLongClickListener layoutLongClickListener = new View.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View v) {
+                Log.d(TAG, "onLongClick");
+
+                if(dialogType != null) {
+                    try {
+                        AppCompatDialogFragment dialog = (AppCompatDialogFragment)dialogType.getConstructor().newInstance();
+                        dialog.show(activity.getSupportFragmentManager(),"program dialog");
+                        return true;
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error constructing dialog: " + dialogType.getName(), e);
+                    }
+                }
+                return false;
+            }
+        };
+
+        public void setDialogType(Class dialogType) {
+            this.dialogType = dialogType;
+        }
     }
 }

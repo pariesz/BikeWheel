@@ -49,12 +49,12 @@ namespace Graphics {
     void keyCallback(GLFWwindow* window, int key, int scancode, int ation, int mods) {
         switch (key) {
             case GLFW_KEY_LEFT:
-                MockData::gyro_y -= 100;
+                MockData::gyro_y -= 1000;
                 std::cout << KMH(MockData::gyro_y) << " kmh" << std::endl;
                 break;
 
             case GLFW_KEY_RIGHT:
-                MockData::gyro_y += 100;
+                MockData::gyro_y += 1000;
                 std::cout << KMH(MockData::gyro_y) << " kmh" << std::endl;
                 break;
         }

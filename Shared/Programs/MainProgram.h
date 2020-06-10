@@ -2,136 +2,101 @@
 
 #include "../Program.h"
 #include "../Logging.h"
+#include "../Programs.h"
+#include "../Shared.h"
 
-#include "Hamster.h"
-#include "Kaleidoscope.h"
-#include "LaPandora.h"
-#include "MasaCritica.h"
-#include "NyanCat.h"
-#include "Radioactive.h"
-#include "ExplodingText.h"
-#include "Kaleidoscope.h"
-#include "Spiral.h"
-#include "Velocity.h"
-#include "ShootingStars.h"
-#include "Portal.h"
-#include "Rays.h"
-#include "Specs.h"
-#include "TestSegments.h"
 #include "Transition.h"
 
-#include "../Images/MrSplat.h"
-#include "../Images/finger.h"
-#include "../Images/Fist.h"
-#include "../Images/Poo.h"
-
-enum MainProgramState {
-    off = 0,
-    on = 1,
-    transitionIn = 2,
-    transitionOut = 3
-};
-
-class MainProgramSettings {
-public:
-    uint32_t onRotationRate = 80000;
-    uint32_t offRotationRate = 60000;
-    const char* explodingText = " - BCN - Critical Mass - Test Critica";
-    uint8_t program = 0;
-};
 
 class MainProgram : public Program {
-private:
-    MainProgramState state = off;
-    uint8_t index = 3;
-    Program* programPtr = new Program;
-    MainProgramSettings* settingsPtr;
 
 private:
-    Program* get_program(int32_t rotation_rate) {
-        log_val("program", index);
+    enum class TransitionState { Complete, Out, In };
 
-        switch (index) {
-            case  0: return new Spiral;
-            case  1: return new LaPandora;
-            case  2: return new MasaCritica;
-            case  3: return new Fist;
-            case  4: return new ExplodingText(settingsPtr->explodingText);
-            case  5: return new NyanCat;
-            case  6: return new Poo;
-            case  7: return new Velocity;
-            case  8: return new Hamster;
-            case  9: return new Portal;
-            case 10: return new Rays;
-            case 11: return new ShootingStars;
-        }
+    bool moving = false;
 
-        // loop back around
-        index = rotation_rate < 0 ? 11 : 0;
-        return get_program(rotation_rate);
-    }
+    TransitionState transitionState = TransitionState::Complete;
 
-    inline bool use_transition() {
-        switch (index) {
-            case  4: return false;
-            case  9: return false;
-            case 10: return false;
-            case 11: return false;
-            default: return true;
-        }
+    uint32_t movingRotationRate;
+    uint8_t movingProgram = PROGRAM_TIMER;
+
+    uint32_t stationaryRotationRate;
+    uint8_t stationaryProgram = PROGRAM_OFF;
+
+    Program* programPtr;
+
+    inline Program* createProgram() {
+        return Programs::get_program(moving ? movingProgram : stationaryProgram, moving);
     }
 
 public:
-    MainProgram(MainProgramSettings* settings)
-        : settingsPtr(settings) {
+    MainProgram() {
+        programPtr = createProgram();
+        configure();
+    }
+
+    inline void setMovingProgram(uint8_t index) {
+        movingProgram = index;
+        if (moving) transitionState = TransitionState::Out;
+    }
+
+    inline void setStationaryProgram(uint8_t index) {
+        stationaryProgram = index;
+        if (!moving) transitionState = TransitionState::Out;
+    }
+
+    inline uint8_t getMovingProgram() {
+        return movingProgram;
+    }
+
+    inline uint8_t getStationaryProgram() {
+        return stationaryProgram;
+    }
+
+    void configure() override {
+        programPtr->configure();
+        EEPROM.get(EEPROM_STATIONARY_RATE, stationaryRotationRate);
+        EEPROM.get(EEPROM_MOVING_RATE, movingRotationRate);
+        Leds::set_brightness(EEPROM.read(EEPROM_BRIGHTNESS));
     }
 
     void update(uint16_t frame_count, int32_t rotation_rate) override {
-        switch (state) {
-            case on: {
-                if (abs(rotation_rate) < 60000) {
-                    // too slow
+        switch (transitionState) {
+            case TransitionState::Complete:
+                if ((moving && abs(rotation_rate) < stationaryRotationRate) || (!moving && abs(rotation_rate) > movingRotationRate)) {
                     programPtr = new Transition(programPtr, false);
-                    state = transitionOut;
+                    transitionState = TransitionState::Out;
+                    log_ln("MainProgram Out");
+                    moving = !moving;
                 }
                 break;
-            }
-            case off: {
-                if (abs(rotation_rate) > 80000) {
-                    rotation_rate < 0 ? --index : ++index;
 
-                    log_val("program", (int)index);
-
-                    delete programPtr;
-
-                    Program* next_program = get_program(rotation_rate);
-
-                    if (use_transition()) {
-                        programPtr = new Transition(next_program, true);
-                        state = transitionIn;
-                    } else {
-                        programPtr = next_program;
-                        state = on;
+            case TransitionState::Out: {
+                Transition* transitionOut = (Transition*)programPtr;
+                if (transitionOut->finished()) {
+                    if (Programs::use_in_transition(moving ? movingProgram : stationaryProgram, moving)) {
+                        programPtr = new Transition(createProgram(), true);
+                        transitionState = TransitionState::In;
+                        log_ln("MainProgram In");
                     }
+                    else {
+                        programPtr = createProgram();
+                        transitionState = TransitionState::Complete;
+                        log_ln("MainProgram Complete");
+                    }
+                    delete transitionOut->get_program();
+                    delete transitionOut;
                 }
                 break;
             }
-            case transitionIn: {
-                Transition* transition = (Transition*)programPtr;
 
-                if (transition->finished()) {
-                    programPtr = transition->get_program();
-                    delete transition;
-                    state = on;
-                }
-                break;
-            }
-            case transitionOut: {
-                if (((Transition*)programPtr)->finished()) {
-                    delete programPtr;
-                    programPtr = new Program;
-                    state = off;
-                    Leds::clear();
+            case TransitionState::In: {
+                Transition* transitionIn = (Transition*)programPtr;
+                if (transitionIn->finished()) {
+                    programPtr = transitionIn->get_program();
+                    transitionState = TransitionState::Complete;
+                    log_ln("MainProgram Complete");
+                    delete transitionIn;
                 }
                 break;
             }

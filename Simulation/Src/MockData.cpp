@@ -1,6 +1,6 @@
 #include "MockData.h"
 
-int16_t MockData::gyro_y = 8000;
+int16_t MockData::gyro_y = 100;
 
 inline int16_t MPU6050_ACCEL_FS_8(float radians) {
     return radians * 0xFFF; // 1g

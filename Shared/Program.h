@@ -9,6 +9,7 @@
 
 class Program {
 public:
+    virtual void configure() { }
     virtual void update(uint16_t frame_count, int32_t rotation_rate) { };
     virtual void render(uint16_t zero_angle) __attribute__((optimize("O3"))) { };
     virtual ~Program() = default;

@@ -14,14 +14,6 @@
         android:id="@+id/textView_consoleLog_date"
         tools:text="12:00:00" />
 
-    <ImageView
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginLeft="8dp"
-        android:layout_centerVertical="true"
-        android:id="@+id/imageView_consoleLog"
-        tools:src="@drawable/ic_rx" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

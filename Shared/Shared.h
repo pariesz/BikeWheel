@@ -4,4 +4,6 @@
 #include "Leds.h"
 #include "Logging.h"
 #include "Colors.h"
+#include "Configuration.h"
+#include "EEPROMSerialMessage.h"
 #include "Programs/MainProgram.h"

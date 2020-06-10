@@ -1,11 +1,14 @@
 package pariesz.pov;
 
+import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,21 +22,32 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+// TODO: increase bluetooth bitrate using AT commands
 public class BluetoothFragment extends Fragment {
     private static final String TAG = "BluetoothFragment";
 
     private Button discoverButton;
+    private Button mockButton;
     private RecyclerView recyclerView;
-    private BluetoothRecyclerViewAdaptor recyclerAdaptor;
     private BluetoothAdapter bluetoothAdapter;
-    private OnDeviceClickListener onDeviceClickListener;
+    private BluetoothRecyclerViewAdaptor recyclerAdaptor;
+    private OnDeviceSelectedListener onDeviceSelectedListener;
+    private OnMockClickListener onMockClickListener;
 
-    public interface OnDeviceClickListener {
-        void onDeviceClick(BluetoothFragment dialog, BluetoothDevice device);
+    public interface OnDeviceSelectedListener {
+        void onDeviceSelected(BluetoothDevice device);
     }
 
-    public void setOnDeviceClickListener(OnDeviceClickListener value) {
-        this.onDeviceClickListener = value;
+    public interface OnMockClickListener {
+        void onMockClick();
+    }
+
+    public void setOnDeviceSelectedListener(OnDeviceSelectedListener callback) {
+        this.onDeviceSelectedListener = callback;
+    }
+
+    public void setOnMockClickListener(OnMockClickListener callback) {
+        this.onMockClickListener = callback;
     }
 
     @Override
@@ -45,32 +59,39 @@ public class BluetoothFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Create the builder and pass the context 'getActivity()'
-        getActivity().registerReceiver(actionFoundReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
-
-        IntentFilter discoveryFilter = new IntentFilter();
-        discoveryFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        discoveryFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-        getActivity().registerReceiver(discoveryReceiver, discoveryFilter);
-
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        discoverButton = view.findViewById(R.id.button_bluetoothDialog_discover);
+        discoverButton = view.findViewById(R.id.button_bluetooth_discover);
         discoverButton.setOnClickListener(discoverClickListener);
 
-        recyclerAdaptor = new BluetoothRecyclerViewAdaptor(onRecyclerViewDeviceClickListener);
-        recyclerView = view.findViewById(R.id.recyclerView_bluetoothDialog);
+        mockButton = view.findViewById(R.id.button_bluetooth_mock);
+        mockButton.setOnClickListener(mockClickListener);
+
+        String savedAddress = getActivity().getSharedPreferences(MainActivity.PREFERENCE_FILE_KEY, Activity.MODE_PRIVATE).getString(MainActivity.PREFERENCE_BT_ADDRESS, null);
+        recyclerAdaptor = new BluetoothRecyclerViewAdaptor(onRecyclerViewDeviceClickListener, savedAddress);
+        recyclerView = view.findViewById(R.id.recyclerView_bluetooth);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(recyclerAdaptor);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
-        bluetoothAdapter.getBondedDevices();
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        bluetoothAdapter.startDiscovery();
+        for (BluetoothDevice device : bluetoothAdapter.getBondedDevices()) {
+            recyclerAdaptor.addDevice(device);
+        }
+
+        startDiscovery();
+
+        // Create the builder and pass the context 'getActivity()'
+        getContext().registerReceiver(actionFoundReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+
+        IntentFilter discoveryFilter = new IntentFilter();
+        discoveryFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        discoveryFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        getContext().registerReceiver(discoveryReceiver, discoveryFilter);
     }
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy");
+        // Always cancel discovery because it will slow down connection
         bluetoothAdapter.cancelDiscovery();
         getContext().unregisterReceiver(actionFoundReceiver);
         getContext().unregisterReceiver(discoveryReceiver);
@@ -81,10 +102,8 @@ public class BluetoothFragment extends Fragment {
 
         @Override
         public void onItemClick(BluetoothRecyclerViewAdaptor.ViewHolder viewHolder) {
-            Log.d(TAG, "onDeviceClickListener.onClick");
-
-            if(onDeviceClickListener != null) {
-                onDeviceClickListener.onDeviceClick(BluetoothFragment.this, viewHolder.getDevice());
+            if (onDeviceSelectedListener != null) {
+                onDeviceSelectedListener.onDeviceSelected(viewHolder.getDevice());
             }
         }
     };
@@ -93,15 +112,23 @@ public class BluetoothFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            Log.d(TAG, "discoverClickListener.onClick");
-            bluetoothAdapter.startDiscovery();
+            startDiscovery();
+        }
+    };
+
+    private View.OnClickListener mockClickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            if (onMockClickListener != null) {
+                onMockClickListener.onMockClick();
+            }
         }
     };
 
     private BroadcastReceiver actionFoundReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "actionFoundReceiver.onReceive");
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
             recyclerAdaptor.addDevice(device);
         }
@@ -110,11 +137,39 @@ public class BluetoothFragment extends Fragment {
     private BroadcastReceiver discoveryReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "discoveryReceiver.onReceive");
             boolean discovering = bluetoothAdapter.isDiscovering();
             discoverButton.setText(discovering ? "Discovering..." : "Discover");
-            discoverButton.setAlpha(discovering ? 0.3F : 1F);
+            discoverButton.setAlpha(discovering ? 0.5F : 1F);
             discoverButton.setClickable(!discovering);
         }
     };
+
+    private void startDiscovery() {
+        checkBTPermissions();
+
+        if (bluetoothAdapter.isDiscovering()) {
+            Log.d(TAG, "Canceling discovery.");
+            bluetoothAdapter.cancelDiscovery();
+        }
+
+        bluetoothAdapter.startDiscovery();
+    }
+
+    /**
+     * This method is required for all devices running API23+
+     * Android must programmatically check the permissions for bluetooth. Putting the proper permissions
+     * in the manifest is not enough.
+     * NOTE: This will only execute on versions > LOLLIPOP because it is not needed otherwise.
+     */
+    private void checkBTPermissions() {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            int permissionCheck = getActivity().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
+            permissionCheck += getActivity().checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
+            if (permissionCheck != 0) {
+                this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
+            }
+        } else {
+            Log.d(TAG, "checkBTPermissions: No need to check permissions. SDK version < LOLLIPOP.");
+        }
+    }
 }

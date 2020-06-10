@@ -1,5 +1,6 @@
 #pragma once
 #include "../Program.h"
+#include "../Configuration.h"
 
 class ExplodingText : public Program {
 
@@ -7,15 +8,19 @@ private:
     uint16_t angle_offset = 0;
     uint8_t y_top = 0;
     uint16_t hue = random(0, 0xFFFF);
-    const char* label;
+    char label[38];
     uint8_t label_length;
-    uint8_t brightness;
-    uint32_t color;
+    uint8_t brightness = 0;
+    uint32_t color = 0;
 
 public:
-    ExplodingText(const char *label)
-        : label(label)
-        , label_length(strlen(label)) {
+    ExplodingText() {
+        configure();
+    }
+
+    void configure() override {
+        Configuration::readString(EEPROM_EXPLODING_TEXT, label);
+        label_length = strlen(label);
     }
 
     void update(uint16_t frame_count, int32_t rotation_rate) override {

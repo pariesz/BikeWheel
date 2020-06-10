@@ -14,7 +14,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_centerVertical="true"
-        tools:src="@drawable/ic_bluetooth"
+        android:src="@drawable/ic_bluetooth"
         android:id="@+id/imageView_bluetoothDeviceStatus" />
 
     <TextView
@@ -31,10 +31,10 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/imageView_bluetoothDeviceStatus"
         android:layout_marginLeft="16dp"
+        android:layout_below="@id/textView_bluetoothDeviceName"
         android:id="@+id/textView_bluetoothDeviceAddress"
         android:textSize="12sp"
-        tools:text="00:11:22:33:FF:EE"
-        android:layout_below="@id/textView_bluetoothDeviceName" />
+        tools:text="00:11:22:33:FF:EE" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -43,4 +43,13 @@
         android:id="@+id/textView_bluetoothDevicePaired"
         android:textSize="12sp"
         android:text="PAIRED" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/textView_bluetoothDevicePaired"
+        android:id="@+id/textView_bluetoothDeviceSaved"
+        android:textSize="12sp"
+        android:text="SAVED" />
 </RelativeLayout>

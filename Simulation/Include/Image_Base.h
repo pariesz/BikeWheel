@@ -6,6 +6,7 @@
 #include <shared.h>
 #include "Leds.h"
 #include "Export.h"
+#include "Image.h"
 
 using namespace std;
 
