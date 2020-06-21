@@ -1,9 +1,9 @@
 #pragma once
+#include "Logging.h"
 #include "Mpu.h"
 #include "HallSensor.h"
 #include "Leds.h"
-#include "Logging.h"
 #include "Colors.h"
 #include "Configuration.h"
-#include "EEPROMSerialMessage.h"
+#include "SerialMessage.h"
 #include "Programs/MainProgram.h"

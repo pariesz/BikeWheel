@@ -53,7 +53,7 @@ public class WheelThread extends Thread {
                                     reader = new WheelEepromMessageReader(ch);
                                     break;
                                 default:
-                                    reader = new WheelStringMessageReader(ch, '\n');
+                                    reader = new WheelStringMessageReader(ch);
                                     break;
                             }
                         } else {
@@ -67,6 +67,11 @@ public class WheelThread extends Thread {
                             }
                         }
                     }
+                } catch (IOException ex) {
+                    Log.e(TAG, "rx error", ex);
+                    handleIOException(ex);
+                    break;
+
                 } catch (Exception ex) {
                     reader = null;
                     Log.e(TAG, "error", ex);
@@ -74,29 +79,45 @@ public class WheelThread extends Thread {
             }
 
         } catch (IOException ex) {
-            cancel();
-
-            Log.e(TAG, "error", ex);
-
-            Message message = new Message();
-            message.what = MESSAGE_DISCONNECTED;
-            message.obj = ex.getMessage();
-
-            handler.sendMessage(message);
+            Log.e(TAG, "rx error", ex);
+            handleIOException(ex);
         }
     }
 
-    public void transmitMessage(WheelMessage message) throws IOException {
+    public void transmitMessage(WheelMessage message) {
         Log.d(TAG, message.toString());
-        message.write(outStream);
+
+        try {
+            message.write(outStream);
+        } catch (IOException ex) {
+            Log.e(TAG, "transmitMessage error: " + message, ex);
+            handleIOException(ex);
+        }
+    }
+
+    private void handleIOException(IOException ex) {
+        cancel();
+
+        Message message = new Message();
+        message.what = MESSAGE_DISCONNECTED;
+        message.obj = ex.getMessage();
+
+        handler.sendMessage(message);
     }
 
     public void cancel() {
         try {
             reader = null;
-            inStream.close();
-            outStream.close();
-            socket.close();
+
+            if(inStream != null) {
+                inStream.close();
+            }
+            if(outStream != null) {
+                outStream.close();
+            }
+            if(socket != null) {
+                socket.close();
+            }
         } catch (IOException ex) {
             Log.d(TAG, "Cancel error", ex);
         }

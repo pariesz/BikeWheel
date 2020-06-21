@@ -27,11 +27,27 @@
 MockData data_source;
 Mpu mpu;
 Image_Base *image = nullptr;
-PulseProgram program;
+MainProgram program;
 uint16_t frame_count;
 
 inline uint16_t get_frame_count() {
     return (millis() >> 5) & 0xFFFF; // 32 frames sec
+}
+
+void setup() {
+    int16_t mpu_offsets[] = { 0, 0, 0, 0, 0, 0 };
+    mpu.setup(mpu_offsets);
+    Leds::setup(144, 11, 13, DOTSTAR_BGR);
+
+    EEPROM.put(EEPROM_BRIGHTNESS, (uint8_t)20);
+    EEPROM.put(EEPROM_TIMER_FRAMES, (uint16_t)60);
+    EEPROM.put(EEPROM_WHEEL_CIRCUMFERENCE, (uint16_t)2288);
+    EEPROM.put(EEPROM_STATIONARY_RATE, (uint32_t)60000);
+    EEPROM.put(EEPROM_MOVING_RATE, (uint32_t)80000);
+    Configuration::writeString(EEPROM_EXPLODING_TEXT, " - BCN - Critical Mass - Massa Critica");
+
+    program.configure();
+    program.setStationaryProgram(PROGRAM_TIMER);
 }
 
 // Simulate the Arduino loop() and setup() functions
@@ -40,24 +56,12 @@ void loop() {
 
     if (frame_count != get_frame_count()) {
         frame_count = get_frame_count();
-        program.update(frame_count, mpu.get_rotation_rate());
+        program.update(mpu.get_rotation_rate());
     }
 
     program.render(mpu.get_angle());
 
     Leds::leds.show();
-}
-
-void setup() {
-    int16_t mpu_offsets[] = { 0, 0, 0, 0, 0, 0 };
-    mpu.setup(mpu_offsets);
-    Leds::setup();
-
-    EEPROM.put(EEPROM_BRIGHTNESS, (uint8_t)20);
-    EEPROM.put(EEPROM_WHEEL_CIRCUMFERENCE, (uint16_t)2288);
-    EEPROM.put(EEPROM_STATIONARY_RATE, (uint16_t)60000);
-    EEPROM.put(EEPROM_MOVING_RATE, (uint16_t)80000);
-    Configuration::writeString(EEPROM_EXPLODING_TEXT, " - BCN - Critical Mass - Massa Critica");
 }
 
 void update_sensors() {

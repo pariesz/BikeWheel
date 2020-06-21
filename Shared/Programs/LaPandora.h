@@ -13,10 +13,11 @@ private:
     uint8_t star_index = 0;
     uint32_t star_color = 0;
     //uint16_t space_angle = 0;
+    uint16_t frame_count = 0;
 
 public:
-    void update(uint16_t frame_count, int32_t rotation_rate) override {
-        if (frame_count & 0b1) {
+    void update(int32_t rotation_rate) override {
+        if (frame_count++ & 0b1) {
             star_index = random(0, LEDS_COUNT - 1);
 
             //space_angle += rotation_rate >> 10;
@@ -25,7 +26,7 @@ public:
             star_color = Adafruit_DotStar::ColorHSV(0xC000, random(0x00, 0xFF), random(0x00, 0xFF));
         }
 
-        rocket.update(frame_count, rotation_rate);
+        rocket.update(rotation_rate);
     }
 
     void render(uint16_t zero_angle) {

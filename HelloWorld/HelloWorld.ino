@@ -27,7 +27,6 @@ HardwareSerial &hc06 = Serial1;
 void setup() {
     Serial.begin(9600); // USB is 12 Mbit/sec
     hc06.begin(9600);
-    Wire.begin(); // join I2C bus (I2Cdev library doesn't do this automatically)
     led_setup();
     mpu_setup();
     //hall_setup();
@@ -75,6 +74,8 @@ void led_loop() {
 }
 
 void mpu_setup() {
+    Wire.begin(); // join I2C bus (I2Cdev library doesn't do this automatically)
+
     TWBR = ((F_CPU / 400000L) - 16) / 2; // Switch to 400KHz I2C
     mpu.initialize();
 

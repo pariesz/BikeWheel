@@ -30,7 +30,7 @@ public class WheelStringMessage extends WheelMessage {
     public void write(OutputStream stream) throws IOException {
         super.write(stream);
         stream.write(value.getBytes(StandardCharsets.US_ASCII));
-        stream.write(0); // NUL: null
+        stream.write(0); // NUL terminator
     }
 
     @NonNull

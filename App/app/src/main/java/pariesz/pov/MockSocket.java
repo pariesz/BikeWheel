@@ -22,7 +22,7 @@ public class MockSocket implements ISocket {
 
     private short battery = 1023; // 0-5v = 0-1023
     private int rotationRate = 100000; // 16bit angle per second
-    private byte movingProgram = 0; // program id (not index!)
+    private byte movingProgram = 1; // program id (not index!)
     private byte stationaryProgram = 0; // program id (not index!)
     private int angle = 0; // 16bit angle: 0-65535 = 0-360 degrees.  Use int (instead of short) to handle overflow.
     private byte[] eeprom = new byte[4095];
@@ -54,6 +54,7 @@ public class MockSocket implements ISocket {
 
                 case WheelService.CMD_SET_EEPROM:
                     setEeprom((WheelEepromMessage) message);
+
                 case WheelService.CMD_GET_EEPROM:
                     writeEeprom((WheelEepromMessage) message);
                     break;
@@ -71,15 +72,18 @@ public class MockSocket implements ISocket {
         switch (command) {
             case WheelService.CMD_BATTERY:
                 return battery -= 100; // battery is requested evey minute
+
             case WheelService.CMD_GET_MOVING_PROGRAM:
             case WheelService.CMD_SET_MOVING_PROGRAM:
                 return movingProgram;
+
             case WheelService.CMD_GET_STATIONARY_PROGRAM:
             case WheelService.CMD_SET_STATIONARY_PROGRAM:
                 return stationaryProgram;
 
             case WheelService.CMD_ROTATION_RATE:
                 return rotationRate += (Math.random() - 0.5) * 3000;
+
             case WheelService.CMD_ANGLE: {
                 if (millis == 0) {
                     millis = System.currentTimeMillis();
@@ -104,14 +108,22 @@ public class MockSocket implements ISocket {
 
     private void writeCommand(byte command) throws Exception {
         out.write(command);
+
         try {
             String value = Integer.toString(getValue(command));
             Log.d(TAG, new WheelStringMessage(command, value, true).toString());
             out.write(value.getBytes(StandardCharsets.US_ASCII));
+
         } catch (Exception ex) {
             out.write(ex.getMessage().getBytes(StandardCharsets.US_ASCII));
         }
-        out.write('\n'); // Arduino uses println
+
+        // Arduino Serial.println
+        // Prints data to the serial port as human-readable ASCII text followed by
+        // a carriage return character (ASCII 13, or '\r')
+        // and a newline character (ASCII 10, or '\n').
+        out.write('\r');
+        out.write('\n');
     }
 
     private void writeEeprom(WheelEepromMessage message) throws Exception {
@@ -144,7 +156,6 @@ public class MockSocket implements ISocket {
 
         @Override
         public void write(int ch) throws IOException {
-
             try {
                 if (reader == null) {
                     switch (ch) {
@@ -154,7 +165,7 @@ public class MockSocket implements ISocket {
                             break;
                         case WheelService.CMD_SET_MOVING_PROGRAM:
                         case WheelService.CMD_SET_STATIONARY_PROGRAM:
-                            reader = new WheelStringMessageReader((byte)ch, (char)0);
+                            reader = new WheelByteMessageReader((byte)ch);
                             break;
                         default:
                             mockTransmit(new WheelMessage((byte)ch, false));

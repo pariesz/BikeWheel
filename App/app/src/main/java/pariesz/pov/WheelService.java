@@ -100,12 +100,13 @@ public class WheelService {
 
     public void connect(ISocket socket, String deviceName) {
         if (thread != null) {
+            Log.e(TAG, "Cancelling thread.");
             thread.cancel();
         }
 
         this.deviceName = deviceName;
 
-        setStatus(STATUS_CONNECTING, deviceName + " connecting");
+        setStatus(STATUS_CONNECTING, deviceName + " connecting.");
         thread = new WheelThread(socket, threadHandler);
         thread.start();
     }
@@ -147,35 +148,19 @@ public class WheelService {
     }
 
     public void getEeprom(short address, int length) {
-        try {
-            command(new WheelEepromMessage(CMD_GET_EEPROM, address, (byte) length));
-        } catch (IOException ex) {
-            Log.e(TAG, "getEeprom fail. address:" + address + " length:" + length, ex);
-        }
+        command(new WheelEepromMessage(CMD_GET_EEPROM, address, (byte) length));
     }
 
     public void setEeprom(short address, byte value) {
-        try {
-            command(new WheelEepromMessage(CMD_SET_EEPROM, address, new byte[] { value }, true));
-        } catch (IOException ex) {
-            Log.e(TAG, "setEeprom fail. address:" + address + " byte:" + value, ex);
-        }
+        command(new WheelEepromMessage(CMD_SET_EEPROM, address, new byte[] { value }, true));
     }
 
     public void setEeprom(short address, short value) {
-        try {
-            command(new WheelEepromMessage(CMD_SET_EEPROM, address, ByteBuffer.allocate(2).putShort(value).array(), true));
-        } catch (IOException ex) {
-            Log.e(TAG, "setEeprom fail. address:" + address + " short:" + value, ex);
-        }
+        command(new WheelEepromMessage(CMD_SET_EEPROM, address, ByteBuffer.allocate(2).putShort(value).array(), true));
     }
 
     public void setEeprom(short address, int value) {
-        try {
-            command(new WheelEepromMessage(CMD_SET_EEPROM, address, ByteBuffer.allocate(4).putInt(value).array(), true));
-        } catch (IOException ex) {
-            Log.e(TAG, "setEeprom fail. address:" + address + " int:" + value, ex);
-        }
+        command(new WheelEepromMessage(CMD_SET_EEPROM, address, ByteBuffer.allocate(4).putInt(value).array(), true));
     }
 
     public void setEeprom(short address, String value) {
@@ -186,30 +171,18 @@ public class WheelService {
         bytes = Arrays.copyOf(bytes, length + 1);
         bytes[length] = 0;
 
-        try {
-            command(new WheelEepromMessage(CMD_SET_EEPROM, address, bytes, true));
-        } catch (IOException ex) {
-            Log.e(TAG, "setEeprom fail. address:" + address + " String:" + value, ex);
-        }
+        command(new WheelEepromMessage(CMD_SET_EEPROM, address, bytes, true));
     }
 
     public void command(byte command) {
-        try {
-            command(new WheelMessage(command, true));
-        } catch (IOException ex) {
-            Log.e(TAG, "command " + command + " fail.", ex);
-        }
+        command(new WheelMessage(command, true));
     }
 
-    public void command(byte command, int value) throws IOException {
-        command(new WheelStringMessage( command, Integer.toString(value), true));
+    public void command(byte command, byte value) throws IOException {
+        command(new WheelByteMessage( command, value, true));
     }
 
-    public void command(byte command, String value) throws IOException {
-        command(new WheelStringMessage( command, value, true));
-    }
-
-    public void command(WheelMessage message) throws IOException {
+    public void command(WheelMessage message) {
         if(status != STATUS_CONNECTED) {
             Log.e(TAG, "Not connected, cannot write: " + message);
             return;

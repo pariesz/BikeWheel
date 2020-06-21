@@ -47,9 +47,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Configuration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)EEPROMSerialMessage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="$(MSBuildThisFileDirectory)library.properties" />
@@ -208,7 +205,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Configuration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)EEPROMSerialMessage.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)SerialMessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

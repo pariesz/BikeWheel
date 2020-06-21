@@ -20,7 +20,7 @@
   <ItemGroup>
     <!-- <ClInclude Include="$(MSBuildThisFileDirectory)Shared.h" /> -->
     <ClInclude Include="$(MSBuildThisFileDirectory)Colors.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)EEPROMSerialMessage.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SerialMessage.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Font.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HallSensor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Image.h" />
@@ -74,7 +74,6 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Colors.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Configuration.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)EEPROMSerialMessage.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)HallSensor.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Image.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Leds.cpp" />

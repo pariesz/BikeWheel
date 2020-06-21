@@ -10,15 +10,16 @@ private:
     NyanCat2 frame2;
     Image* frame = &frame1;
     uint8_t star_index = 0xFF;
+    uint16_t frame_count = 0;
 
 public:
     inline uint32_t gray(uint8_t b) {
         return b << 16 | b << 8 | b;
     }
 
-    void update(uint16_t frame_count, int32_t rotation_rate) override {
-        frame = (frame_count & 0x10) ? (Image*)&frame1 : &frame2;
-        frame->update(frame_count, ~rotation_rate);
+    void update(int32_t rotation_rate) override {
+        frame = (frame_count++ & 0x10) ? (Image*)&frame1 : &frame2;
+        frame->update(~rotation_rate);
     }
 
     inline void render_star(uint16_t zero_angle) {

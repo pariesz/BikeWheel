@@ -2,18 +2,16 @@
     #include <I2Cdev.h>
     #include <Wire.h>
 #endif
-
-#include "Logging.h"
 #include "Mpu.h"
 
 // Expected orientation of MPU6050
 //      +z
 //       ^
 // -x <-- --> +x
-#define MPU_X_INDEX 0
-#define MPU_Y_INDEX 1
+#define MPU_X_INDEX 1
+#define MPU_Y_INDEX 0
 #define MPU_Z_INDEX 2
-#define MPU_X_REVERSE 1
+#define MPU_X_REVERSE 0
 #define MPU_Z_REVERSE 0
 
 // MPU sensors distance from wheel center in in mm
@@ -50,9 +48,7 @@ void Mpu::setup(int16_t offsets[6]) {
 
     mpu.initialize();
 
-#if LOGGING == 1
-    Serial.println(mpu.testConnection() ? F("MPU connected") : F("MPU failed"));
-#endif
+    log_val("MPU6050", mpu.testConnection() ? F("connected") : F("failed"));
 
     mpu.setI2CBypassEnabled(1);
     mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
@@ -196,6 +192,6 @@ inline uint16_t Mpu::get_acc_angle(int16_t* acc) {
     acc[2] -= (MPU_Z_POSITION * sq(x) * 0.417959);
 
     // Possible overflow, but we shouldn't be approaching those accelerations
-    // set 0 degreees in the up position for easier reference.
+    // set 0 degrees in the up position for easier reference.
     return atan2(acc[0], -acc[2]) * (0x8000 / (float)PI);
 }

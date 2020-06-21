@@ -11,31 +11,38 @@
    To stop flicker at the threashold we add a buffer zone.
    Turn on at ~360 deg/ms and off at ~450 deg/s.
 */
+
 #define LOGGING 1
-#define BATTERY_PIN 14
+
+// When used as analog pins, the Arduino software uses a separate set of zero-based numbers, 
+// so pin 0 (used with pinMode, digitalWrite, analogWrite, and digitalRead) is different than analog pin 0.
+#define BATTERY_PIN 0
+
 #define BLUETOOTH Serial1
+
 #include <shared.h>
 
 // 31 frames a second
 inline uint16_t get_frame_count() {
     return (millis() >> 5) & 0xFFFF;
 }
+uint16_t frame_count = get_frame_count();
 
 Mpu mpu;
+
 MainProgram program;
-uint16_t frame_count = get_frame_count();
-char command = 0;
-EEPROMSerialMessage message = EEPROMSerialMessage(false);
 
 void setup(void) {
 
 #if LOGGING == 1
     Serial.begin(9600);
     while (!Serial);
-    log_ln("Connected");
+    log_val("Serial", F("Connected"));
 #endif
 
-    pinMode(BATTERY_PIN, INPUT);
+    BLUETOOTH.begin(9600);
+
+    //pinMode(BATTERY_PIN, INPUT);
 
     // Get offsets calibrated using ../MPU6050 Calibration/MPU6050Calibration.ino
     int16_t mpu_offsets[] = { 
@@ -52,9 +59,9 @@ void loop(void) {
     mpu.update();
     
     if (frame_count != get_frame_count()) {
-        read_serial(&BLUETOOTH);
+        read_serial();
         frame_count = get_frame_count();
-        program.update(frame_count, mpu.get_rotation_rate());
+        program.update(mpu.get_rotation_rate());
     }
 
     program.render(mpu.get_angle());
@@ -63,78 +70,71 @@ void loop(void) {
 }
 
 
-void read_serial(Stream* stream) {
-    while (stream->available()) {
-        char ch = stream->read(); // only read whats available so its non-blocking
+uint8_t command = 0;
+SerialMessage* message = new SerialMessage(&BLUETOOTH);
+
+void read_serial() {
+    while (BLUETOOTH.available()) {
+        uint8_t ch = BLUETOOTH.read(); // only read whats available so its non-blocking
 
         if (command == 0) {
+            free(message);
+            message = new SerialMessage(&BLUETOOTH);
+
             command = ch;
-            stream->print(command); // echo the command back
+            BLUETOOTH.write(command); // echo the command back
 
             log_val("cmd", ch);
 
             switch (command) {
+                case CMD_SET_EEPROM:
+                    message = new EEPROMSetSerialMessage(&BLUETOOTH, &program);
+                    continue;
+
+                case CMD_GET_EEPROM:
+                    message = new EEPROMGetSerialMessage(&BLUETOOTH);
+                    continue;
+
                 case CMD_BATTERY:
-                    stream->println(analogRead(BATTERY_PIN));
+                    log_val("battery", analogRead(BATTERY_PIN));
+                    BLUETOOTH.println(analogRead(BATTERY_PIN));
                     break;
 
                 case CMD_ANGLE:
-                    stream->println(mpu.get_angle());
+                    log_val("angle", mpu.get_angle());
+                    BLUETOOTH.println(mpu.get_angle());
                     break;
 
                 case CMD_ROTATION_RATE:
-                    stream->println(mpu.get_rotation_rate());
-                    break;
-
-                case CMD_GET_MOVING_PROGRAM:
-                    stream->println(program.getMovingProgram());
-                    break;
-
-                case CMD_GET_STATIONARY_PROGRAM:
-                    stream->println(program.getStationaryProgram());
-                    break;
-
-                case CMD_SET_EEPROM:
-                    message = EEPROMSerialMessage(true);
-                    continue;
-
-                case CMD_GET_EEPROM:
-                    message = EEPROMSerialMessage(false);
-                    continue;
-
-                default:
-                    continue; // wait for more input
-            }
-        } else {
-            switch (command) {
-                case CMD_SET_EEPROM:
-                    if (!message.consume(ch)) continue;
-                    message.print(stream);
-                    program.configure();
-                    break;
-
-                case CMD_GET_EEPROM:
-                    if (!message.consume(ch)) continue;
-                    message.print(stream);
+                    log_val("rotation rate", mpu.get_rotation_rate());
+                    BLUETOOTH.println(mpu.get_rotation_rate());
                     break;
 
                 case CMD_SET_MOVING_PROGRAM:
-                    log_val("program",  ch);
-                    program.setMovingProgram(ch);
-                    stream->println(program.getMovingProgram());
+                    message = new SetMovingProgramSerialMessage(&BLUETOOTH, &program);
+                    continue;
+
+                case CMD_GET_MOVING_PROGRAM:
+                    log_val("moving program", program.getMovingProgram());
+                    BLUETOOTH.println(program.getMovingProgram());
                     break;
 
                 case CMD_SET_STATIONARY_PROGRAM:
-                    log_val("program", ch);
-                    program.setStationaryProgram(ch);
-                    stream->println(program.getStationaryProgram());
+                    message = new SetStationaryProgramSerialMessage(&BLUETOOTH, &program);
+                    continue;
+
+                case CMD_GET_STATIONARY_PROGRAM:
+                    log_val("stationary program", program.getStationaryProgram());
+                    BLUETOOTH.println(program.getStationaryProgram());
                     break;
 
                 default:
-                    log_ln("err");
-                    stream->println("err");
+                    log_val("command err", ch);
+                    BLUETOOTH.println("err");
                     break;
             }
+        } else if (!message->consume(ch)) {
+            continue;
         }
 
         // command has been executed, clear it

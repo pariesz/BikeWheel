@@ -17,7 +17,7 @@ private:
     Pulse pulses[LEDS_STRIPS_COUNT];
 
 public:
-    void update(uint16_t frame_count, int32_t rotation_rate) override {
+    void update(int32_t rotation_rate) override {
         // Progress the existing pulses
         for (uint8_t i = 0; i < LEDS_STRIPS_COUNT; i++) {
             Pulse* pulse = &pulses[i];

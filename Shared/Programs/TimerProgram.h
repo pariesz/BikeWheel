@@ -25,13 +25,16 @@ public:
 
     void configure() override {
         programPtr->configure();
-        EEPROM.get(EEPROM_EXPLODING_TEXT, delayFrames);
+        EEPROM.get(EEPROM_TIMER_FRAMES, delayFrames);
+        log_val("TimerProgram delayFrames", delayFrames);
     }
 
-    void update(uint16_t frame_count, int32_t rotation_rate) override {
+    void update(int32_t rotation_rate) override {
         switch (transitionState) {
             case TransitionState::Complete:
                 if (++frame > delayFrames) {
+                    log_ln("TimerProgram Out");
+
                     if (moving) {
                         if (++program >= PROGRAM_MOVING_COUNT) {
                             program = 2;
@@ -45,7 +48,6 @@ public:
 
                     programPtr = new Transition(programPtr, false);
                     transitionState = TransitionState::Out;
-                    log_ln("TimerProgram Out");
                     frame = 0;
                 }
                 break;
@@ -63,16 +65,16 @@ public:
             case TransitionState::In: {
                 Transition* transitionIn = (Transition*)programPtr;
                 if (transitionIn->finished()) {
+                    log_ln("TimerProgram Complete");
                     programPtr = transitionIn->get_program();
                     transitionState = TransitionState::Complete;
-                    log_ln("TimerProgram Complete");
                     delete transitionIn;
                 }
                 break;
             }
         }
 
-        programPtr->update(frame_count, rotation_rate);
+        programPtr->update(rotation_rate);
     }
 
     void transitionIn() {

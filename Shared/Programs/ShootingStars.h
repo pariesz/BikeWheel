@@ -82,28 +82,26 @@ private:
     uint16_t birth_prev = 0;
 
 public:
-    void update(uint16_t frame_count, int32_t rotation_rate) override {
+    void update(int32_t rotation_rate) override {
         // update existing star
         for (uint8_t i = 0; i < LEDS_PER_STRIP; i++) {
             stars[i].update();
         }
 
-        if (abs(frame_count - birth_prev) > STAR_BIRTH_RATE) {
-            birth_prev = frame_count;
-
+        if (frame % STAR_BIRTH_RATE == 0) {
             uint8_t j = 0;
 
             do {
                 uint8_t create_index = random(0, LEDS_PER_STRIP - 1);
 
-                if (stars[create_index].isDead(frame_count)) {
-                    stars[create_index] = Star(hue += STAR_HUE_CHANGE_RATE, frame_count);
+                if (stars[create_index].isDead(frame)) {
+                    stars[create_index] = Star(hue += STAR_HUE_CHANGE_RATE, frame);
                     break;
                 }
             } while (++j < LEDS_PER_STRIP);
         }
 
-        frame = frame_count;
+        frame++;
     }
 
     void render(uint16_t zero_angle) {

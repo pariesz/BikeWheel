@@ -41,7 +41,7 @@ uint32_t Image::get_led_color(uint8_t index, uint8_t y, uint16_t angle) {
     } while (true);
 }
 
-void Image::update(uint16_t frame_count, int32_t rotation_rate) {
+void Image::update(int32_t rotation_rate) {
     reverse = rotation_rate < 0;
 }
 

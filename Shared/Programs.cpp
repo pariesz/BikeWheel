@@ -31,7 +31,8 @@ namespace Programs {
         if (index == PROGRAM_TIMER) {
             return new TimerProgram(moving);
         }
-        else if (moving) {
+
+        if (moving) {
             switch (index) {
             case  2: return new MasaCritica;
             case  3: return new Fist;
@@ -47,8 +48,7 @@ namespace Programs {
             case 13: return new LaPandora;
             case 14: return new Radioactive;
             }
-        }
-        else {
+        } else {
             switch (index) {
             case 2: return new PulseProgram;
             case 3: return new Rainbow;

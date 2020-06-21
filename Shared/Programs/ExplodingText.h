@@ -12,6 +12,7 @@ private:
     uint8_t label_length;
     uint8_t brightness = 0;
     uint32_t color = 0;
+    uint16_t frame = 0;
 
 public:
     ExplodingText() {
@@ -23,8 +24,8 @@ public:
         label_length = strlen(label);
     }
 
-    void update(uint16_t frame_count, int32_t rotation_rate) override {
-        if (frame_count % 4 == 0) {
+    void update(int32_t rotation_rate) override {
+        if (frame++ % 4 == 0) {
             angle_offset -= 500;
 
             if (++y_top > LEDS_PER_STRIP + FONT_HEIGHT) {

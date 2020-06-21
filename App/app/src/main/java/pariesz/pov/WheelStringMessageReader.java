@@ -8,9 +8,9 @@ import java.nio.charset.StandardCharsets;
 public class WheelStringMessageReader implements WheelMessageReader {
     private ByteBuffer buffer = ByteBuffer.allocate(1024);
     private byte command;
-    private char terminator;
+    private boolean flipped;
 
-    public WheelStringMessageReader(byte command, char terminator) throws IllegalArgumentException {
+    public WheelStringMessageReader(byte command) throws IllegalArgumentException {
         switch (command) {
             case 0:
             case WheelService.CMD_GET_EEPROM:
@@ -19,29 +19,44 @@ public class WheelStringMessageReader implements WheelMessageReader {
         }
 
         this.command = command;
-        this.terminator = terminator;
     }
 
     @Override
     public boolean consume(byte ch) {
-        if (ch == terminator) {
-            buffer.flip();
-            return true;
+        // Arduino Serial.println
+        // Prints data to the serial port as human-readable ASCII text followed by
+        // a carriage return character (ASCII 13, or '\r')
+        // and a newline character (ASCII 10, or '\n').
 
-        } else {
-            buffer.put((byte) ch);
+        if (ch == '\r') {
             return false;
         }
+
+        if (ch == '\n') {
+            buffer.flip();
+            flipped = true;
+            return true;
+        }
+
+        buffer.put((byte) ch);
+        return false;
     }
 
     @Override
     public WheelMessage getMessage() {
-        return new WheelStringMessage(command, StandardCharsets.US_ASCII.decode(buffer).toString(), false);
+        ByteBuffer b = buffer;
+
+        if(!flipped) {
+            b = b.duplicate();
+            b.flip();
+        }
+
+        return new WheelStringMessage(command, StandardCharsets.US_ASCII.decode(b).toString(), false);
     }
 
     @NonNull
     @Override
     public String toString() {
-        return Byte.toString(command);
+        return getMessage().toString();
     }
 }

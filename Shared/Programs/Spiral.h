@@ -7,7 +7,7 @@ private:
     uint16_t spiral_offset = 0;
 
 public:
-    void update(uint16_t frame_count, int32_t rotation_rate) override {
+    void update(int32_t rotation_rate) override {
         spiral_offset += rotation_rate >> 8;
     }
 

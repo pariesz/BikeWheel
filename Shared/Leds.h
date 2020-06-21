@@ -35,6 +35,7 @@ namespace Leds {
         leds = Adafruit_DotStar(number, dataPin, clockPin, o);
         leds.setBrightness(20);
         leds.begin();
+        leds.clear();
         leds.show();
     }
 };

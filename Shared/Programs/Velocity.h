@@ -33,7 +33,7 @@ public:
         factor = ((float)0xFFFF * 1000 * 1000) / ((uint32_t)wheelCircumference * 60 * 60);
     }
 
-    void update(uint16_t frame_count, int32_t rotation_rate) override {
+    void update(int32_t rotation_rate) override {
         float v = abs(rotation_rate) / factor;
 
         // ##.# (4 char width, 1 decimal precision)

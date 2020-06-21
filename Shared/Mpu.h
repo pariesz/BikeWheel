@@ -1,5 +1,6 @@
 #pragma once
 #include "Mocks/MPU6050_Mock.h"
+#include "Logging.h"
 
 class Mpu {
 private:

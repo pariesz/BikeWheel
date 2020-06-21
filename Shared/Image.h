@@ -21,7 +21,7 @@ public:
 
     uint32_t get_led_color(uint8_t index, uint8_t y, uint16_t angle) __attribute__((optimize("O3")));
     
-    void update(uint16_t frame_count, int32_t rotation_rate);
+    void update(int32_t rotation_rate);
 
     void render(uint16_t zero_angle) __attribute__((optimize("O3")));
     

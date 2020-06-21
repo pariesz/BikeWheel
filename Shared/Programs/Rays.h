@@ -69,6 +69,7 @@ class Rays : public Program {
         Ray rays[RAY_COUNT];
         uint8_t created_index = 0;
         uint16_t hue = random(0, 0xFFFF);
+        uint16_t frame = 0;
 
     public:
         Rays() {
@@ -78,9 +79,9 @@ class Rays : public Program {
             }
         }
 
-        void update(uint16_t frame_count, int32_t rotation_rate) override {
+        void update(int32_t rotation_rate) override {
             // create new rays
-            if (frame_count % RAY_BIRTH_RATE == 0) {
+            if (frame % RAY_BIRTH_RATE == 0) {
 
                 // loop back around
                 if (++created_index == RAY_COUNT) {
@@ -91,11 +92,13 @@ class Rays : public Program {
             }
 
             // update existing rays
-            if (frame_count & 0b1) {
+            if (frame & 0b1) {
                 for (uint8_t i = 0; i < RAY_COUNT; i++) {
                     rays[i].update();
                 }
             }
+
+            frame++;
         }
 
         void render(uint16_t zero_angle) {

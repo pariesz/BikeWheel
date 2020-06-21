@@ -63,7 +63,7 @@ public:
         Image::Initialise();
 	}
     
-    void update(uint16_t frame_count, int32_t rotation_rate) override {
+    void update(int32_t rotation_rate) override {
         color = Adafruit_DotStar::ColorHSV(hue + 42);
     };
 protected:

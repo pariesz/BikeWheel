@@ -51,19 +51,22 @@ class Portal : public Program {
         uint16_t angle_offset = 0;
         uint32_t ms_prev = millis();
         PortalSettings settings;
+        uint16_t frame = 0;
 
     public:
 
-        void update(uint16_t frame_count, int32_t rotation_rate) override {
+        void update(int32_t rotation_rate) override {
             angle_offset += settings.lineRotationRate;
 
             // create new stars
-            if (frame_count % settings.lineFrameSkip == 0) {
+            if (frame % settings.lineFrameSkip == 0) {
                 if (++index == LEDS_PER_STRIP) {
                     index = 0;
                 }
                 lines[index] = PortalLine(color_offset += settings.lineColorChangeRate, random(settings.lineMinWidth, settings.lineMaxWidth));
             }
+
+            frame++;
         }
 
         void render(uint16_t zero_angle) {

@@ -8,10 +8,10 @@ import pariesz.pov.dialogs.TimerDialog;
 public class Program {
     private Class dialogType;
     private int resourceId;
-    private int id;
+    private byte id;
 
     public Program(int id, int resourceId) {
-        this.id = id;
+        this.id = (byte)id;
         this.resourceId = resourceId;
     }
 
@@ -53,7 +53,7 @@ public class Program {
         return dialogType;
     }
 
-    public int getId() {
+    public byte getId() {
         return id;
     }
 }

@@ -127,6 +127,10 @@ public class MainActivity extends AppCompatActivity {
     private void onBtEnabled() {
         bluetoothLayout.setOnClickListener(bluetoothClickListener);
 
+        if (service.getStatus() == WheelService.STATUS_CONNECTED) {
+            return;
+        }
+
         String address = preferences.getString(PREFERENCE_BT_ADDRESS, null);
 
         if (address == null) {

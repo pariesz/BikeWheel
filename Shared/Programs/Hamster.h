@@ -30,7 +30,7 @@ private:
     }
 
 public:
-    void update(uint16_t frame_count, int32_t rotation_rate) override {
+    void update(int32_t rotation_rate) override {
         uint32_t ms = millis();
 
         uint32_t rate = abs(rotation_rate);
@@ -93,7 +93,7 @@ public:
         }
 
         frame = frame_select ? frame1 : frame2;
-        frame->update(frame_count, ~rotation_rate);
+        frame->update(~rotation_rate);
     }
 
     inline void render(uint16_t zero_angle) {
