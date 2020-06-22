@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -133,10 +134,12 @@ public class WheelService {
                 break;
 
             case WheelThread.MESSAGE_DISCONNECTED:
+                Log.d(TAG, "Disconnected: " + msg.obj);
                 setStatus(STATUS_DISCONNECTED, (String)msg.obj);
                 break;
 
             case WheelThread.MESSAGE_CONNECTED:
+                Log.d(TAG, "Connected: " + deviceName);
                 setStatus(STATUS_CONNECTED, deviceName + " connected");
                 break;
         }
@@ -156,11 +159,11 @@ public class WheelService {
     }
 
     public void setEeprom(short address, short value) {
-        command(new WheelEepromMessage(CMD_SET_EEPROM, address, ByteBuffer.allocate(2).putShort(value).array(), true));
+        command(new WheelEepromMessage(CMD_SET_EEPROM, address, ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putShort(value).array(), true));
     }
 
     public void setEeprom(short address, int value) {
-        command(new WheelEepromMessage(CMD_SET_EEPROM, address, ByteBuffer.allocate(4).putInt(value).array(), true));
+        command(new WheelEepromMessage(CMD_SET_EEPROM, address, ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array(), true));
     }
 
     public void setEeprom(short address, String value) {

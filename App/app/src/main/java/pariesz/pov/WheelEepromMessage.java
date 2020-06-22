@@ -47,6 +47,7 @@ public class WheelEepromMessage extends WheelMessage {
             if(value[i] == 0) {
                 break;
             }
+
             builder.append((char)value[i]);
         }
         return builder.toString();
@@ -54,7 +55,9 @@ public class WheelEepromMessage extends WheelMessage {
 
     public int getValueInt() {
         int result = 0;
-        for(int i=0; i<value.length; i++) {
+
+        // Bytes are sent in host order, Arduino uses little-edian
+        for(int i=value.length-1; i>=0; i--) {
             result = (result << 8) | (value[i] & 0xFF);
         }
         return result;
@@ -64,8 +67,10 @@ public class WheelEepromMessage extends WheelMessage {
     public void write(OutputStream stream) throws IOException {
         super.write(stream);
 
-        stream.write(address >> 8);
+        // Bytes are sent in host order, Arduino uses little-edian
         stream.write(address); // The byte to be written is the eight low-order bits
+        stream.write(address  >> 8);
+
         stream.write(length);
 
         if(value != null) {
@@ -79,7 +84,7 @@ public class WheelEepromMessage extends WheelMessage {
         if(value == null) {
             return super.toString() + " address:" + address + " len:" + length;
         } else {
-            return super.toString() + " address:" + address + " len:" + length + " data:" + Utilities.bytesToHex(value);
+            return super.toString() + " address:" + address + " len:" + length + " data: 0x" + Utilities.bytesToHex(value);
         }
     }
 }

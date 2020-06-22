@@ -32,7 +32,6 @@ public class TimerDialog extends ProgramDialog {
         delaySeeBar = view.findViewById(R.id.seekBar_timer_delay);
         delaySeeBar.setOnSeekBarChangeListener(delayChangeListener);
 
-        getService().getEeprom(WheelService.EEPROM_TIMER_FRAMES, 2);
         return new AlertDialog.Builder(getActivity()).setView(view).setTitle("Timer").create();
     }
 
@@ -53,6 +52,12 @@ public class TimerDialog extends ProgramDialog {
             getService().setEeprom(WheelService.EEPROM_TIMER_FRAMES, (short)progress);
         }
     };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getService().getEeprom(WheelService.EEPROM_TIMER_FRAMES, 2);
+    }
 
     @Override
     protected void onEepromMessageReceived(WheelEepromMessage message) {

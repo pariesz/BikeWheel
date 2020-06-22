@@ -39,10 +39,13 @@ public class WheelThread extends Thread {
             while (true) {
                 try {
                     if (inStream.available() > 0) {
-                        byte ch = (byte) inStream.read();
-                        if (ch == -1) {
+                        int ret =  inStream.read();
+                        if (ret == -1) {
+                            Log.e(TAG, "Unexpected end of stream.");
                             continue;
                         }
+
+                        byte ch = (byte)ret;
 
                         if (reader == null) {
                             switch (ch) {

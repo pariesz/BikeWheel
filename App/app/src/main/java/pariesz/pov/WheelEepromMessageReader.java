@@ -22,12 +22,11 @@ public class WheelEepromMessageReader implements WheelMessageReader {
     public boolean consume(byte ch) throws Exception {
         switch (++position) {
             case 1:
-                address = (short)(ch << 8);
-                if(address > 4095) throw new Exception("invalid address: " + address);
+                address = ch;
                 return false;
 
             case 2:
-                address |= (ch & 0xFF);
+                address |= (((short)ch) << 8); // Bytes are sent in host order, Arduino uses little-edian
                 if(address > 4095) throw new Exception("invalid address: " + address);
                 return false;
 

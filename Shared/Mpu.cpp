@@ -48,7 +48,9 @@ void Mpu::setup(int16_t offsets[6]) {
 
     mpu.initialize();
 
-    log_val("MPU6050", mpu.testConnection() ? F("connected") : F("failed"));
+    connected = mpu.testConnection();
+
+    log_val("MPU6050", connected ? F("Connected") : F("Fail"));
 
     mpu.setI2CBypassEnabled(1);
     mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
@@ -66,6 +68,8 @@ void Mpu::setup(int16_t offsets[6]) {
     mpu.setZGyroOffset(offsets[5]);
 
     delay(100); // Wait for sensor to stabilize
+#else
+    connected = true;
 #endif
 
     int16_t acc[3];
@@ -107,7 +111,13 @@ void Mpu::update() {
 
     // validate data
     if (acc[0] == 0 && acc[2] == 0) {
-        log_ln("MPU6050 Error: 0 read");
+
+#if defined LOGGING == 1
+        if (connected) {
+            log_ln("MPU6050 Error: 0 read");
+        }
+#endif
+
         angle = get_rotation_rate_angle(us_diff);
         return;
     }

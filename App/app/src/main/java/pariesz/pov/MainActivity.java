@@ -125,6 +125,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onBtEnabled() {
+        Log.d(TAG, "onBtEnabled");
+
         bluetoothLayout.setOnClickListener(bluetoothClickListener);
 
         if (service.getStatus() == WheelService.STATUS_CONNECTED) {
@@ -263,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
     private WheelService.OnStatusChangeListener onStatusChangeListener = new WheelService.OnStatusChangeListener() {
         @Override
         public void onStatusChange(int status, String message) {
-            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
 
             switch (status) {
                 case WheelService.STATUS_CONNECTED:
@@ -320,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Fragment GetFragmentForMenuItemId(int menuItemId) {
         if(service == null) {
-            Toast.makeText(this, "Bluetooth not connected!", Toast.LENGTH_SHORT);
+            Toast.makeText(this, "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
             return null;
         }
 

@@ -25,7 +25,7 @@ public class ExplodingTextDialog extends ProgramDialog {
     private static final String TAG = "ExplodingTextDialog";
 
     private EditText editText;
-    private String text;
+    private String text = "";
 
     @NonNull
     @Override
@@ -38,7 +38,6 @@ public class ExplodingTextDialog extends ProgramDialog {
         editText = view.findViewById(R.id.editText_explodingText);
         editText.addTextChangedListener(textWatcher);
 
-        getService().getEeprom(WheelService.EEPROM_EXPLODING_TEXT, 39);
         return new AlertDialog.Builder(getActivity()).setView(view).setTitle("Exploding Text").create();
     }
 
@@ -73,6 +72,12 @@ public class ExplodingTextDialog extends ProgramDialog {
             }, 600);
         }
     };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getService().getEeprom(WheelService.EEPROM_EXPLODING_TEXT, 39);
+    }
 
     @Override
     protected void onEepromMessageReceived(WheelEepromMessage message) {

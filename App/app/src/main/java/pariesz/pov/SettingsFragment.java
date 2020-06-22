@@ -223,7 +223,7 @@ public class SettingsFragment extends Fragment {
     }
 
     private void LogError(String message, Exception ex) {
-        Toast.makeText(getContext(), message + " " + ex.getMessage(), Toast.LENGTH_SHORT);
+        Toast.makeText(getContext(), message + " " + ex.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -69,12 +69,15 @@ protected:
     }
 
     void print() {
-        bluetooth->write((uint8_t)(address >> 8));
+        // Host byte order (little-edian)
         bluetooth->write((uint8_t)(address & 0xFF));
+        bluetooth->write((uint8_t)(address >> 8));
+
         bluetooth->write(length);
 
         log("data: 0x");
         for (uint16_t i = address; i < address + length; i++) {
+            // Host byte order (little-edian)
             log_hex(EEPROM.read(i));
             bluetooth->write(EEPROM.read(i));
         }
@@ -91,11 +94,11 @@ public:
     bool consume(char ch) override {
         switch (++position) {
         case 1:
-            address = (uint16_t)ch << 8;
+            address = ch;
             return false;
 
         case 2:
-            address |= ch;
+            address |= ((uint16_t)ch << 8); // little-edian
             log_val("address", address);
             return false;
 
@@ -124,11 +127,11 @@ public:
     bool consume(char ch) override {
         switch (++position) {
         case 1:
-            address = (uint16_t)ch << 8;
+            address = ch;
             return false;
 
         case 2:
-            address |= ch;
+            address |= ((uint16_t)ch << 8); // little-edian
             log_val("address", address);
             return false;
 
@@ -137,7 +140,7 @@ public:
             log_val("length", length);
             return false;
 
-        default: // >= 4
+        default: // >= 4  data must be sent in host byte order (little-edian)
             if (position - 3 < length) {
                 EEPROM.write(address + position - 4, ch);
                 return false;

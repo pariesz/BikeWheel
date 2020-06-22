@@ -8,21 +8,10 @@
     tools:context=".BluetoothFragment">
 
     <Button
-        android:id="@+id/button_bluetooth_discover"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="16dp"
-        android:clickable="false"
-        android:alpha="0.5"
-        android:text="discovering..." />
-
-    <Button
         android:id="@+id/button_bluetooth_mock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/button_bluetooth_discover"
+        android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginRight="16dp"
         android:clickable="false"

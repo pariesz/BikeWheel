@@ -102,7 +102,7 @@ public class ProgramsFragment extends Fragment {
 
     private void LogError(String message, Exception ex) {
         Log.e(TAG, message, ex);
-        Toast.makeText(getContext(), message + " " + ex.getMessage(), Toast.LENGTH_SHORT);
+        Toast.makeText(getContext(), message + " " + ex.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
